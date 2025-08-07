@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory OS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom scrollbar for webkit browsers */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #2d3748; /* bg-gray-700 */
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #f6e05e; /* text-yellow-400 */
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ddb942; /* darker yellow */
+    }
+  </style>
+  
+  <!-- START: Critical Firebase Configuration -->
+  <!-- This script block MUST run before your application scripts. -->
+  <script>
+    window.__firebase_config_str = JSON.stringify({
+      apiKey: "AIzaSyAJDGWpoUIprmd-l9XFlF0ecm0mK17iw5s",
+      authDomain: "inventory-management-app-4a9f4.firebaseapp.com",
+      projectId: "inventory-management-app-4a9f4",
+      storageBucket: "inventory-management-app-4a9f4.firebasestorage.app",
+      messagingSenderId: "1080071581471",
+      appId: "1:1080071581471:web:551fc2019a03e09ee84a2a",
+      measurementId: "G-VPE2ZY0V2C"
+    });
+    // For constants.ts to pick up
+    window.__firebase_config = window.__firebase_config_str; 
+
+    try {
+      const parsedFbConfig = JSON.parse(window.__firebase_config_str);
+      if (parsedFbConfig && parsedFbConfig.appId) {
+        window.__app_id = parsedFbConfig.appId;
+      } else {
+        window.__app_id = "FALLBACK_APP_ID_IF_PARSE_FAILS"; 
+        console.warn("__firebase_config.appId not found, using fallback for __app_id.");
+      }
+    } catch (e) {
+      window.__app_id = "ERROR_PARSING_FB_CONFIG_APP_ID";
+      console.error("Error parsing __firebase_config to set __app_id:", e);
+    }
+  </script>
+  <!-- END: Critical Firebase Configuration -->
+
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "firebase/": "https://esm.sh/firebase@^11.9.1/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.4.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.514.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-black">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

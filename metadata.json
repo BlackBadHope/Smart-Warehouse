@@ -1,0 +1,6 @@
+
+{
+  "name": "Inventory OS v2.6",
+  "description": "A smart inventory management system with Google Sign-In, an advanced AI assistant capable of performing inventory actions, providing summaries, and offering suggestions. Manages items across warehouses, rooms, and containers.",
+  "requestFramePermissions": []
+}
