@@ -69,25 +69,4 @@ export const DEFAULT_NEW_ITEM_VALUES = {
   unit: 'pcs' as Unit,
 };
 
-export const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-let parsedFirebaseConfig: Record<string, any> = {};
-let configError: string | null = null;
-
-try {
-  if (typeof __firebase_config !== 'undefined' && __firebase_config && __firebase_config.trim() !== "") {
-    parsedFirebaseConfig = JSON.parse(__firebase_config);
-  } else {
-    configError = "Global __firebase_config variable is undefined, empty, or not a string.";
-    console.error(`[CONSTANTS] ${configError}`);
-  }
-} catch (e) {
-  configError = `Error parsing __firebase_config JSON: ${e instanceof Error ? e.message : String(e)}`;
-  console.error(`[CONSTANTS] ${configError}`);
-  parsedFirebaseConfig = {}; // Ensure it's an empty object on error
-}
-
-export const FIREBASE_CONFIG = parsedFirebaseConfig;
-export const FIREBASE_CONFIG_ERROR = configError;
-
-export const GEMINI_MODEL_TEXT = 'gemini-2.5-flash-preview-04-17';
+export const APP_ID = 'inventory-os-v2.6-local';

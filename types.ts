@@ -1,6 +1,4 @@
 
-// import { Timestamp } from 'firebase/firestore'; // Removed for v8 compatibility
-import { Part } from "@google/genai";
 
 // Interface to represent the structure of a Firestore Timestamp relevant to the app
 // This avoids needing to import 'firebase' directly into this type definition file.
@@ -52,19 +50,21 @@ export interface FirebaseEntity {
   createdAt?: FirestoreTimestamp | Date; // Changed Timestamp to FirestoreTimestamp
 }
 
-export interface Warehouse extends FirebaseEntity {}
-export interface Room extends FirebaseEntity {}
-export interface Shelf extends FirebaseEntity {} // Represents a container
+export interface Warehouse extends FirebaseEntity {
+  rooms?: Room[];
+}
+export interface Room extends FirebaseEntity {
+  shelves?: Shelf[];
+}
+export interface Shelf extends FirebaseEntity {
+  items?: Item[];
+}
 
 export interface UserProfile {
   username: string;
   currency: string; // e.g., 'USD'
 }
 
-export interface ChatMessage {
-  role: "user" | "model" | "function"; // Added "function" role
-  parts: Part[]; // Use Part[] from @google/genai
-}
 
 // For AddItemModal form state
 export interface NewItemFormState {
@@ -141,10 +141,3 @@ export interface InventorySummary {
 }
 
 
-// Provided by Canvas Environment
-declare global {
-  var __app_id: string | undefined;
-  var __firebase_config: string | undefined;
-  // process.env.API_KEY is assumed to be available globally from the environment
-  // Removed explicit 'var process' declaration to avoid conflict.
-}
