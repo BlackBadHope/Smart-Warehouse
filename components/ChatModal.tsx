@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Send, BrainCircuit, XCircle, Key, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
+import { Send, BrainCircuit, XCircle, Key, CheckCircle, Bot } from 'lucide-react';
 import { ASCII_COLORS } from '../constants';
-import * as claudeService from '../services/claudeService';
+const claudeService = await import('../services/claudeService');
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -23,6 +23,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ show, onClose, onDataChange }) =>
   const [apiKey, setApiKey] = useState('');
   const [isApiKeySet, setIsApiKeySet] = useState(false);
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const [provider, setProvider] = useState<'claude' | 'openai' | 'gemini'>('claude');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -55,6 +56,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ show, onClose, onDataChange }) =>
     if (!apiKey.trim()) return;
     
     try {
+      // Пока поддерживается только Claude. В будущем можно ветвить по provider.
       claudeService.initializeClaudeAPI(apiKey.trim());
       setIsApiKeySet(true);
       setShowApiKeyInput(false);
@@ -153,12 +155,25 @@ const ChatModal: React.FC<ChatModalProps> = ({ show, onClose, onDataChange }) =>
       <div className={`${ASCII_COLORS.modalBg} rounded-lg shadow-2xl w-full max-w-4xl h-5/6 border-2 ${ASCII_COLORS.border} flex flex-col`}>
         {/* Header */}
         <div className={`flex items-center justify-between p-4 border-b-2 ${ASCII_COLORS.border}`}>
-          <div className="flex items-center">
-            <BrainCircuit className={`w-6 h-6 mr-3 ${ASCII_COLORS.accent}`} />
-            <h2 className={`${ASCII_COLORS.accent} text-xl font-bold`}>
-              SMARTIE AI Assistant
-              {isApiKeySet && <span className="ml-2 text-green-400 text-sm">●</span>}
+          <div className="flex items-center gap-3">
+            <BrainCircuit className={`w-6 h-6 ${ASCII_COLORS.accent}`} />
+            <h2 className={`${ASCII_COLORS.accent} text-xl font-bold flex items-center gap-2`}>
+              SMARTIE
+              {isApiKeySet && <span className="text-green-400 text-sm">●</span>}
             </h2>
+            <div className="ml-4 flex items-center gap-2">
+              <Bot className="w-4 h-4 text-gray-300"/>
+              <select
+                value={provider}
+                onChange={(e)=>setProvider(e.target.value as any)}
+                className={`text-sm p-1 rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text} border ${ASCII_COLORS.border}`}
+                title="AI Provider"
+              >
+                <option value="claude">Claude</option>
+                <option value="openai" disabled>OpenAI (скоро)</option>
+                <option value="gemini" disabled>Gemini (скоро)</option>
+              </select>
+            </div>
           </div>
           <button
             onClick={onClose}

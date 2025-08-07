@@ -24,48 +24,8 @@
     }
   </style>
   
-  <!-- START: Critical Firebase Configuration -->
-  <!-- This script block MUST run before your application scripts. -->
-  <script>
-    window.__firebase_config_str = JSON.stringify({
-      apiKey: "AIzaSyAJDGWpoUIprmd-l9XFlF0ecm0mK17iw5s",
-      authDomain: "inventory-management-app-4a9f4.firebaseapp.com",
-      projectId: "inventory-management-app-4a9f4",
-      storageBucket: "inventory-management-app-4a9f4.firebasestorage.app",
-      messagingSenderId: "1080071581471",
-      appId: "1:1080071581471:web:551fc2019a03e09ee84a2a",
-      measurementId: "G-VPE2ZY0V2C"
-    });
-    // For constants.ts to pick up
-    window.__firebase_config = window.__firebase_config_str; 
-
-    try {
-      const parsedFbConfig = JSON.parse(window.__firebase_config_str);
-      if (parsedFbConfig && parsedFbConfig.appId) {
-        window.__app_id = parsedFbConfig.appId;
-      } else {
-        window.__app_id = "FALLBACK_APP_ID_IF_PARSE_FAILS"; 
-        console.warn("__firebase_config.appId not found, using fallback for __app_id.");
-      }
-    } catch (e) {
-      window.__app_id = "ERROR_PARSING_FB_CONFIG_APP_ID";
-      console.error("Error parsing __firebase_config to set __app_id:", e);
-    }
-  </script>
-  <!-- END: Critical Firebase Configuration -->
-
-<script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.1.0/",
-    "react": "https://esm.sh/react@^19.1.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
-    "firebase/": "https://esm.sh/firebase@^11.9.1/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.4.0",
-    "lucide-react": "https://esm.sh/lucide-react@^0.514.0"
-  }
-}
-</script>
+  <!-- Cloud integrations are disabled in this build.
+       No API keys or third-party configs are embedded here. -->
 <link rel="stylesheet" href="/index.css">
 </head>
 <body class="bg-black">

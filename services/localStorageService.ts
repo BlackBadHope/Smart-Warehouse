@@ -27,17 +27,38 @@ export const initializeLocalStorage = () => {
   }
 };
 
-// Save data to localStorage
+// Save data to localStorage (debounced to reduce write pressure)
+let saveTimer: number | null = null;
 const saveToLocalStorage = () => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
+    if (saveTimer !== null) {
+      clearTimeout(saveTimer);
+    }
+    // @ts-expect-error setTimeout in browser returns number
+    saveTimer = setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
+      } catch (error) {
+        console.error('Error saving data to localStorage:', error);
+      } finally {
+        saveTimer = null;
+      }
+    }, 300);
   } catch (error) {
-    console.error('Error saving data to localStorage:', error);
+    console.error('Error scheduling save to localStorage:', error);
   }
 };
 
 // Initialize on module load
 initializeLocalStorage();
+
+// Test helper: reset all local data (not used in app runtime)
+export const __resetLocalDataForTests = () => {
+  localData = { warehouses: [], bucketItems: [], shoppingList: [] };
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {}
+};
 
 // Utility functions
 const findWarehouseById = (id: string): Warehouse | undefined => {
