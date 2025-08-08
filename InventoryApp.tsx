@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit } from 'lucide-react';
+import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download } from 'lucide-react';
 
 import { Warehouse, Room, Shelf, Item, ItemCore, BucketItem, UserProfile } from './types';
 import { ASCII_COLORS } from './constants';
@@ -10,6 +10,8 @@ import InfoModal from './components/InfoModal';
 import ConfirmModal from './components/ConfirmModal';
 import AddItemModal from './components/AddItemModal';
 import ChatModal from './components/ChatModal';
+import ImportExportModal from './components/ImportExportModal';
+import VisualView from './components/VisualView';
 import ItemCard from './components/ItemCard';
 
 const InventoryApp: React.FC = () => {
@@ -52,6 +54,8 @@ const InventoryApp: React.FC = () => {
   const [itemToMoveFromBucket, setItemToMoveFromBucket] = useState<BucketItem | null>(null);
   const [showDestinationSelector, setShowDestinationSelector] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [showImportExport, setShowImportExport] = useState(false);
+  const [showVisual, setShowVisual] = useState(false);
 
   const showNotification = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     if (type === 'success') setSuccessMessage(message);
@@ -595,6 +599,20 @@ const InventoryApp: React.FC = () => {
             <Info/>
           </button>
           <button 
+            onClick={() => setShowVisual(true)} 
+            className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+            title="Visual View"
+          >
+            <ImageIcon/>
+          </button>
+          <button 
+            onClick={() => setShowImportExport(true)} 
+            className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+            title="Import / Export"
+          >
+            <Download/>
+          </button>
+          <button 
             onClick={() => setShowChat(true)} 
             className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
             title="AI Assistant SMARTIE"
@@ -605,6 +623,8 @@ const InventoryApp: React.FC = () => {
       </header>
       
       <main>
+        <ImportExportModal show={showImportExport} onClose={() => setShowImportExport(false)} />
+        <VisualView show={showVisual} onClose={() => setShowVisual(false)} />
         {containerToMove ? (
           <div className={`${ASCII_COLORS.inputBg} p-4 border-2 ${ASCII_COLORS.border} rounded-lg`}>
             <h2 className={`text-xl font-bold mb-4 ${ASCII_COLORS.accent}`}>Move Container: {containerToMove.name}</h2>

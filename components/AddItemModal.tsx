@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { ItemCore, Priority, Unit, NewItemFormState } from '../types';
 import { ASCII_COLORS, DEFAULT_NEW_ITEM_VALUES, UNITS } from '../constants';
+import BarcodeScannerModal from './BarcodeScannerModal';
 
 interface AddItemModalProps {
   show: boolean;
@@ -27,6 +28,7 @@ const initialFormState: NewItemFormState = {
 
 const AddItemModal: React.FC<AddItemModalProps> = ({ show, onClose, onSubmit, initialData, editingItemId, currency }) => {
   const [newItem, setNewItem] = useState<NewItemFormState>(initialFormState);
+  const [showScanner, setShowScanner] = useState(false);
 
   useEffect(() => {
     if (show) {
@@ -42,6 +44,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ show, onClose, onSubmit, in
           priority: initialData.priority || 'Normal',
           description: initialData.description || '',
           labels: initialData.labels?.join(', ') || '',
+          barcode: (initialData as any).barcode || '',
         });
       } else {
         setNewItem(initialFormState);
@@ -69,6 +72,9 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ show, onClose, onSubmit, in
     if (newItem.purchaseDate.trim()) itemDataForFirestore.purchaseDate = newItem.purchaseDate;
     if (newItem.expiryDate.trim()) itemDataForFirestore.expiryDate = newItem.expiryDate;
     if (newItem.description.trim()) itemDataForFirestore.description = newItem.description.trim();
+    if ((newItem as any).barcode && (newItem as any).barcode.trim()) {
+      (itemDataForFirestore as any).barcode = (newItem as any).barcode.trim();
+    }
     
     const labelsArray = newItem.labels.split(',').map(s => s.trim()).filter(Boolean);
     if (labelsArray.length > 0) itemDataForFirestore.labels = labelsArray;
@@ -120,6 +126,15 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ show, onClose, onSubmit, in
               <label className={`block text-sm ${ASCII_COLORS.text}`}>Expiry Date:</label>
               <input name="expiryDate" type="date" value={newItem.expiryDate} onChange={handleInputChange} className={`w-full p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} />
             </div>
+            <div className="sm:col-span-2">
+              <label className={`block text-sm ${ASCII_COLORS.text}`}>Barcode:</label>
+              <div className="flex gap-2">
+                <input name="barcode" value={(newItem as any).barcode || ''} onChange={handleInputChange} className={`flex-1 p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} placeholder="Scan or enter barcode" />
+                <button type="button" onClick={() => setShowScanner(true)} className={`${ASCII_COLORS.buttonBg} ${ASCII_COLORS.text} p-2 px-3 rounded ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`}>
+                  [SCAN]
+                </button>
+              </div>
+            </div>
             <div>
               <label className={`block text-sm ${ASCII_COLORS.text}`}>Priority:</label>
               <select name="priority" value={newItem.priority} onChange={handleInputChange} className={`w-full p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`}>
@@ -147,6 +162,11 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ show, onClose, onSubmit, in
             </button>
           </div>
         </form>
+        <BarcodeScannerModal
+          show={showScanner}
+          onClose={() => setShowScanner(false)}
+          onDetected={(code) => { setNewItem(prev => ({ ...prev, barcode: code } as any)); setShowScanner(false); }}
+        />
       </div>
     </div>
   );

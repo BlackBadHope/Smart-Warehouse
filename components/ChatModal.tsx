@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Send, BrainCircuit, XCircle, Key, CheckCircle, Bot } from 'lucide-react';
 import { ASCII_COLORS } from '../constants';
 const claudeService = await import('../services/claudeService');
+const localLlmService = await import('../services/localLlmService');
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -23,7 +24,11 @@ const ChatModal: React.FC<ChatModalProps> = ({ show, onClose, onDataChange }) =>
   const [apiKey, setApiKey] = useState('');
   const [isApiKeySet, setIsApiKeySet] = useState(false);
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
-  const [provider, setProvider] = useState<'claude' | 'openai' | 'gemini'>('claude');
+  const [provider, setProvider] = useState<'claude' | 'openai' | 'gemini' | 'local'>('claude');
+  // Local LLM config
+  const [localBaseUrl, setLocalBaseUrl] = useState('http://192.168.222.135:5174');
+  const [localModel, setLocalModel] = useState('openai/gpt-oss-20b');
+  const [localApiKey, setLocalApiKey] = useState('');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -35,11 +40,21 @@ const ChatModal: React.FC<ChatModalProps> = ({ show, onClose, onDataChange }) =>
   }, [chatHistory, show]);
 
   useEffect(() => {
-    setIsApiKeySet(claudeService.isClaudeInitialized());
-    if (show && !claudeService.isClaudeInitialized()) {
+    if (provider === 'claude') {
+      setIsApiKeySet(claudeService.isClaudeInitialized());
+      if (show && !claudeService.isClaudeInitialized()) {
+        setShowApiKeyInput(true);
+      }
+    } else if (provider === 'local') {
+      setIsApiKeySet(localLlmService.isLocalLLMInitialized());
+      if (show && !localLlmService.isLocalLLMInitialized()) {
+        setShowApiKeyInput(true);
+      }
+    } else {
+      setIsApiKeySet(false);
       setShowApiKeyInput(true);
     }
-  }, [show]);
+  }, [show, provider]);
 
   useEffect(() => {
     // Приветственное сообщение при первом запуске
@@ -53,16 +68,24 @@ const ChatModal: React.FC<ChatModalProps> = ({ show, onClose, onDataChange }) =>
   }, [show, chatHistory.length, isApiKeySet]);
 
   const handleSetApiKey = () => {
-    if (!apiKey.trim()) return;
-    
     try {
-      // Пока поддерживается только Claude. В будущем можно ветвить по provider.
-      claudeService.initializeClaudeAPI(apiKey.trim());
+      if (provider === 'claude') {
+        if (!apiKey.trim()) return;
+        claudeService.initializeClaudeAPI(apiKey.trim());
+        setApiKey('');
+      } else if (provider === 'local') {
+        // apiKey опционален
+        const sanitizedUrl = localBaseUrl.trim().replace(/^@/, '');
+        if (!sanitizedUrl) return alert('Укажите Base URL локальной модели');
+        localLlmService.initializeLocalLLM({ baseUrl: sanitizedUrl, apiKey: localApiKey.trim() || undefined, model: localModel.trim() || undefined });
+        setLocalApiKey('');
+      } else {
+        return alert('Выбранный провайдер пока не поддерживается.');
+      }
+
       setIsApiKeySet(true);
       setShowApiKeyInput(false);
-      setApiKey(''); // Очистить ключ из state по соображениям безопасности
       
-      // Добавить приветственное сообщение
       setChatHistory([{
         role: 'assistant',
         content: '🤖 Привет! Я SMARTIE - ваш умный помощник по складу.\n\nЯ могу:\n• Создавать склады, комнаты и контейнеры\n• Добавлять и искать товары\n• Показывать статистику\n• Отвечать на вопросы о складе\n\nПопробуйте: "создай склад Главный" или "покажи сводку"',
@@ -87,10 +110,15 @@ const ChatModal: React.FC<ChatModalProps> = ({ show, onClose, onDataChange }) =>
     setIsLoading(true);
 
     try {
-      const response = await claudeService.sendMessageToSMARTIE(
-        userMessage.content, 
-        chatHistory.map(msg => ({ role: msg.role, content: msg.content }))
-      );
+      const history = chatHistory.map(msg => ({ role: msg.role, content: msg.content }));
+      let response = '';
+      if (provider === 'claude') {
+        response = await claudeService.sendMessageToSMARTIE(userMessage.content, history);
+      } else if (provider === 'local') {
+        response = await localLlmService.sendMessageToSMARTIE(userMessage.content, history);
+      } else {
+        response = '❌ Провайдер пока не поддерживается.';
+      }
 
       const assistantMessage: ChatMessage = {
         role: 'assistant',
@@ -163,13 +191,14 @@ const ChatModal: React.FC<ChatModalProps> = ({ show, onClose, onDataChange }) =>
             </h2>
             <div className="ml-4 flex items-center gap-2">
               <Bot className="w-4 h-4 text-gray-300"/>
-              <select
+               <select
                 value={provider}
                 onChange={(e)=>setProvider(e.target.value as any)}
                 className={`text-sm p-1 rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text} border ${ASCII_COLORS.border}`}
                 title="AI Provider"
               >
                 <option value="claude">Claude</option>
+                 <option value="local">Local LLM</option>
                 <option value="openai" disabled>OpenAI (скоро)</option>
                 <option value="gemini" disabled>Gemini (скоро)</option>
               </select>
@@ -183,34 +212,83 @@ const ChatModal: React.FC<ChatModalProps> = ({ show, onClose, onDataChange }) =>
           </button>
         </div>
 
-        {/* API Key Setup */}
+        {/* Provider Setup */}
         {showApiKeyInput && (
           <div className={`p-4 border-b-2 ${ASCII_COLORS.border} bg-yellow-900 bg-opacity-20`}>
-            <div className="flex items-center mb-3">
-              <Key className="w-5 h-5 mr-2 text-yellow-400" />
-              <span className="text-yellow-300 font-semibold">Требуется Claude API ключ</span>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="password"
-                placeholder="Введите ваш Anthropic API ключ..."
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className={`flex-1 p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text} text-sm`}
-              />
-              <button
-                onClick={handleSetApiKey}
-                disabled={!apiKey.trim()}
-                className={`${ASCII_COLORS.buttonBg} p-2 px-4 rounded ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} disabled:opacity-50 flex items-center`}
-              >
-                <CheckCircle className="w-4 h-4 mr-1" />
-                Установить
-              </button>
-            </div>
-            <p className="text-xs text-gray-400 mt-2">
-              Ключ можно получить на <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">console.anthropic.com</a>
-            </p>
+            {provider === 'claude' && (
+              <>
+                <div className="flex items-center mb-3">
+                  <Key className="w-5 h-5 mr-2 text-yellow-400" />
+                  <span className="text-yellow-300 font-semibold">Требуется Claude API ключ</span>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="password"
+                    placeholder="Введите ваш Anthropic API ключ..."
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className={`flex-1 p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text} text-sm`}
+                  />
+                  <button
+                    onClick={handleSetApiKey}
+                    disabled={!apiKey.trim()}
+                    className={`${ASCII_COLORS.buttonBg} p-2 px-4 rounded ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} disabled:opacity-50 flex items-center`}
+                  >
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    Установить
+                  </button>
+                </div>
+                <p className="text-xs text-gray-400 mt-2">
+                  Ключ можно получить на <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">console.anthropic.com</a>
+                </p>
+              </>
+            )}
+            {provider === 'local' && (
+              <>
+                <div className="flex items-center mb-3">
+                  <Key className="w-5 h-5 mr-2 text-yellow-400" />
+                  <span className="text-yellow-300 font-semibold">Настройка локальной модели (OpenAI API совместимая)</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <input
+                    type="text"
+                    placeholder="Base URL (e.g. http://192.168.0.2:5174)"
+                    value={localBaseUrl}
+                    onChange={(e) => setLocalBaseUrl(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className={`p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text} text-sm md:col-span-2`}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Model (e.g. openai/gpt-oss-20b)"
+                    value={localModel}
+                    onChange={(e) => setLocalModel(e.target.value)}
+                    className={`p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text} text-sm`}
+                  />
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="password"
+                    placeholder="API Key (опционально)"
+                    value={localApiKey}
+                    onChange={(e) => setLocalApiKey(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className={`flex-1 p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text} text-sm`}
+                  />
+                  <button
+                    onClick={handleSetApiKey}
+                    className={`${ASCII_COLORS.buttonBg} p-2 px-4 rounded ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} flex items-center`}
+                  >
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    Установить
+                  </button>
+                </div>
+                <p className="text-xs text-gray-400 mt-2">
+                  Убедитесь, что сервер LM Studio доступен по указанному адресу и порту.
+                </p>
+              </>
+            )}
           </div>
         )}
 

@@ -24,6 +24,7 @@ export interface ItemCore {
   priority: Priority;
   description?: string;
   labels?: string[];
+  barcode?: string;
   createdAt?: FirestoreTimestamp | Date; // Changed Timestamp to FirestoreTimestamp
 }
 
@@ -78,6 +79,7 @@ export interface NewItemFormState {
   priority: Priority;
   description: string;
   labels: string; // Comma-separated string
+  barcode?: string;
 }
 
 export interface ShoppingListItem {
