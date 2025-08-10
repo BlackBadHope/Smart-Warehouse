@@ -49,7 +49,7 @@ export const detectConflicts = (bundle: ExportBundle): IdConflict[] => {
   const roomIds = new Set(existingWarehouses.flatMap((w) => w.rooms?.map((r) => r.id) || []));
   const shelfIds = new Set(existingWarehouses.flatMap((w) => w.rooms?.flatMap((r) => r.shelves?.map((s) => s.id) || []) || []));
   const itemIds = new Set(
-    existingWarehouses.flatMap((w) => w.rooms?.flatMap((r) => r.shelves?.flatMap((s) => s.items?.map((i) => i.id) || []) || []) || []
+    existingWarehouses.flatMap((w) => w.rooms?.flatMap((r) => r.shelves?.flatMap((s) => s.items?.map((i) => i.id) || []) || []) || [])
   );
   const bucketItemIds = new Set(localStorageService.getBucketItems().map((b) => b.id));
   const shoppingIds = new Set(localStorageService.getShoppingList().map((s) => s.id));

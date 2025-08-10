@@ -278,7 +278,27 @@ export const updateBucketItem = (itemId: string, data: Partial<BucketItem>): voi
 };
 
 export const removeBucketItem = (itemId: string): void => {
+  console.log('🗑️ Before remove - bucket items count:', localData.bucketItems.length);
+  console.log('🎯 Removing item with ID:', itemId);
+  console.log('📋 Current bucket items:', localData.bucketItems.map(i => ({ id: i.id, name: i.name })));
+  
+  if (!itemId || itemId === 'undefined') {
+    console.error('❌ Cannot remove item: invalid ID:', itemId);
+    return;
+  }
+  
+  const itemsBefore = localData.bucketItems.length;
   localData.bucketItems = localData.bucketItems.filter(i => i.id !== itemId);
+  const itemsAfter = localData.bucketItems.length;
+  
+  console.log('✅ After remove - bucket items count:', itemsAfter);
+  console.log('📋 Remaining items:', localData.bucketItems.map(i => ({ id: i.id, name: i.name })));
+  console.log('🔢 Removed items count:', itemsBefore - itemsAfter);
+  
+  if (itemsBefore === itemsAfter) {
+    console.warn('⚠️ No items were removed - ID not found:', itemId);
+  }
+  
   saveToLocalStorage();
 };
 

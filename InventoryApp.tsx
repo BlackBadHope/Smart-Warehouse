@@ -13,11 +13,16 @@ import ChatModal from './components/ChatModal';
 import ImportExportModal from './components/ImportExportModal';
 import VisualView from './components/VisualView';
 import ItemCard from './components/ItemCard';
+import LanguageSwitcher from './components/LanguageSwitcher';
+import localizationService from './services/localizationService';
 
 const InventoryApp: React.FC = () => {
   const userProfile: UserProfile = {
-    username: 'Пользователь',
-    currency: 'RUB'
+    username: localizationService.getCurrentLocale() === 'uk' ? 'Користувач' : 
+              localizationService.getCurrentLocale() === 'en' ? 'User' : 
+              localizationService.getCurrentLocale() === 'de' ? 'Benutzer' :
+              localizationService.getCurrentLocale() === 'pl' ? 'Użytkownik' : 'Пользователь',
+    currency: localizationService.getAvailableCurrencies()[0] || 'USD'
   };
 
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -619,6 +624,7 @@ const InventoryApp: React.FC = () => {
           >
             <BrainCircuit className="text-purple-400"/>
           </button>
+          <LanguageSwitcher />
         </div>
       </header>
       
@@ -816,7 +822,7 @@ const InventoryApp: React.FC = () => {
                   key={item.id} 
                   item={item} 
                   context={currentDisplayContext} 
-                  currency={userProfile.currency} 
+                  currency={item.currency || userProfile.currency} 
                   onMoveClick={showBucketView ? (itm) => handleEditBucketItemPath(itm as BucketItem) : (itm) => handleMoveToBucket(itm as Item)}
                   onEditClick={handleOpenEditItemModal} 
                   onDeleteClick={handleDeleteItem} 

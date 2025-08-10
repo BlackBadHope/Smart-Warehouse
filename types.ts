@@ -19,6 +19,7 @@ export interface ItemCore {
   quantity: number;
   unit?: Unit;
   price?: number;
+  currency?: string; // USD, EUR, UAH, RUB, PLN, etc.
   purchaseDate?: string; // YYYY-MM-DD
   expiryDate?: string; // YYYY-MM-DD
   priority: Priority;
