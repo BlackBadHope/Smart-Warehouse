@@ -33,16 +33,19 @@ const InputModal: React.FC<InputModalProps> = ({ show, title, label, onSubmit, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    debugService.action('InputModal: Form submitted', { title, inputValue: inputValue.trim() });
-    if (inputValue.trim()) {
+    // Clean input more thoroughly for mobile/international characters
+    const cleanedValue = inputValue.replace(/^\s+|\s+$/g, '').replace(/\u00A0/g, ' ').trim();
+    debugService.action('InputModal: Form submitted', { title, inputValue: cleanedValue, originalValue: inputValue });
+    
+    if (cleanedValue && cleanedValue.length > 0) {
       try {
-        await onSubmit(inputValue.trim()); // Await if onSubmit is async
-        debugService.info('InputModal: Successfully submitted');
+        await onSubmit(cleanedValue);
+        debugService.info('InputModal: Successfully submitted', { submittedValue: cleanedValue });
       } catch (error) {
         debugService.error('InputModal: Submit failed', error);
       }
     } else {
-      debugService.warning('InputModal: Empty input submitted');
+      debugService.warning('InputModal: Empty input submitted', { inputValue, cleanedValue, inputLength: inputValue.length });
     }
   };
 
@@ -60,11 +63,17 @@ const InputModal: React.FC<InputModalProps> = ({ show, title, label, onSubmit, o
             type="text"
             className={`w-full p-3 text-lg border ${ASCII_COLORS.border} rounded-md ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`}
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              debugService.action('InputModal: Input changed', { newValue, charCode: newValue.charCodeAt(newValue.length - 1) });
+              setInputValue(newValue);
+            }}
             autoComplete="off"
             autoCorrect="on"
             autoCapitalize="words"
             spellCheck={true}
+            inputMode="text"
+            lang="ru"
             required
             style={{ fontSize: '16px' }} // Prevents zoom on iOS
           />

@@ -105,11 +105,11 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ show, onClose, onSubmit, in
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className={`block text-sm ${ASCII_COLORS.text}`}>Name:</label>
-              <input name="name" value={newItem.name} onChange={handleInputChange} className={`w-full p-3 text-base border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} required autoComplete="off" autoCorrect="on" autoCapitalize="words" spellCheck={true} style={{ fontSize: '16px' }} />
+              <input name="name" value={newItem.name} onChange={handleInputChange} className={`w-full p-3 text-base border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} required autoComplete="off" autoCorrect="on" autoCapitalize="words" spellCheck={true} inputMode="text" lang="ru" style={{ fontSize: '16px' }} />
             </div>
             <div>
               <label className={`block text-sm ${ASCII_COLORS.text}`}>Category:</label>
-              <input name="category" value={newItem.category} onChange={handleInputChange} className={`w-full p-3 text-base border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} autoComplete="off" autoCorrect="on" autoCapitalize="words" spellCheck={true} style={{ fontSize: '16px' }} />
+              <input name="category" value={newItem.category} onChange={handleInputChange} className={`w-full p-3 text-base border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} autoComplete="off" autoCorrect="on" autoCapitalize="words" spellCheck={true} inputMode="text" lang="ru" style={{ fontSize: '16px' }} />
             </div>
             <div>
               <label className={`block text-sm ${ASCII_COLORS.text}`}>Quantity:</label>

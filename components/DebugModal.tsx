@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, RefreshCw, Trash2 } from 'lucide-react';
+import { X, RefreshCw, Trash2, Copy } from 'lucide-react';
 import debugService from '../services/debugService';
 import { ASCII_COLORS } from '../constants';
 
@@ -26,6 +26,37 @@ const DebugModal: React.FC<DebugModalProps> = ({ show, onClose }) => {
     setEvents([]);
   };
 
+  const handleCopyLog = async () => {
+    const logText = events.map(event => {
+      let text = `[${event.type.toUpperCase()}] ${event.timestamp}\n${event.message}`;
+      if (event.details) {
+        text += `\nDetails: ${JSON.stringify(event.details, null, 2)}`;
+      }
+      return text;
+    }).join('\n\n---\n\n');
+    
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(logText);
+        debugService.info('Debug log copied to clipboard');
+      } else {
+        // Fallback for older browsers/mobile
+        const textArea = document.createElement('textarea');
+        textArea.value = logText;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        debugService.info('Debug log copied to clipboard (fallback)');
+      }
+    } catch (error) {
+      debugService.error('Failed to copy log to clipboard', error);
+    }
+  };
+
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'error': return 'text-red-400';
@@ -49,6 +80,13 @@ const DebugModal: React.FC<DebugModalProps> = ({ show, onClose }) => {
               title="Refresh"
             >
               <RefreshCw size={16} />
+            </button>
+            <button 
+              onClick={handleCopyLog} 
+              className={`${ASCII_COLORS.buttonBg} p-2 rounded ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`}
+              title="Copy log to clipboard"
+            >
+              <Copy size={16} />
             </button>
             <button 
               onClick={handleClear} 
