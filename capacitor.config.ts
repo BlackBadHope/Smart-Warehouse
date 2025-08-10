@@ -23,8 +23,9 @@ const config: CapacitorConfig = {
       presentationOptions: ['badge', 'sound', 'alert']
     },
     StatusBar: {
-      style: 'DEFAULT',
-      backgroundColor: '#ffffff'
+      style: 'DARK',
+      backgroundColor: '#000000',
+      overlaysWebView: false
     },
     Filesystem: {
       ioTimeout: 60000

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download } from 'lucide-react';
+import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download, Bug } from 'lucide-react';
 
 import { Warehouse, Room, Shelf, Item, ItemCore, BucketItem, UserProfile } from './types';
 import { ASCII_COLORS } from './constants';
@@ -14,7 +14,9 @@ import ImportExportModal from './components/ImportExportModal';
 import VisualView from './components/VisualView';
 import ItemCard from './components/ItemCard';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import DebugModal from './components/DebugModal';
 import localizationService from './services/localizationService';
+import debugService from './services/debugService';
 
 const InventoryApp: React.FC = () => {
   const userProfile: UserProfile = {
@@ -61,6 +63,7 @@ const InventoryApp: React.FC = () => {
   const [showChat, setShowChat] = useState(false);
   const [showImportExport, setShowImportExport] = useState(false);
   const [showVisual, setShowVisual] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
 
   const showNotification = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     if (type === 'success') setSuccessMessage(message);
@@ -73,9 +76,11 @@ const InventoryApp: React.FC = () => {
 
   // Initialize and load data
   useEffect(() => {
+    debugService.info('Initializing Inventory OS');
     localStorageService.initializeLocalStorage();
     loadWarehouses();
     loadBucketItems();
+    debugService.action('App initialized successfully');
   }, []);
 
   const loadWarehouses = () => {
@@ -161,6 +166,8 @@ const InventoryApp: React.FC = () => {
   };
 
   const createEntity = (type: 'warehouse' | 'room' | 'shelf') => {
+    debugService.action(`Creating ${type}`, { selectedWarehouseId, selectedRoomId, selectedShelfId });
+    
     let title = '', label = '';
     
     if (type === 'warehouse') {
@@ -173,6 +180,7 @@ const InventoryApp: React.FC = () => {
       title = `CREATE NEW CONTAINER (in ${selectedRoomName || 'Selected Room'})`;
       label = 'Container Name:';
     } else {
+      debugService.error(`Cannot create ${type}: missing parent selection`, { selectedWarehouseId, selectedRoomId });
       showNotification("Please select the parent location first.", "error");
       return;
     }
@@ -181,12 +189,17 @@ const InventoryApp: React.FC = () => {
       title, label, initialValue: '',
       onSubmit: async (name) => {
         try {
+          debugService.action(`Attempting to create ${type} with name: ${name}`);
+          
           if (type === 'warehouse') {
             localStorageService.addWarehouse(name);
+            debugService.info(`Warehouse "${name}" created successfully`);
           } else if (type === 'room' && selectedWarehouseId) {
             localStorageService.addRoom(selectedWarehouseId, name);
+            debugService.info(`Room "${name}" created successfully in warehouse ${selectedWarehouseId}`);
           } else if (type === 'shelf' && selectedWarehouseId && selectedRoomId) {
             localStorageService.addShelf(selectedWarehouseId, selectedRoomId, name);
+            debugService.info(`Container "${name}" created successfully in room ${selectedRoomId}`);
           }
           
           showNotification(`${type} "${name}" created!`);
@@ -195,6 +208,7 @@ const InventoryApp: React.FC = () => {
           if (selectedWarehouseId) loadRooms(selectedWarehouseId);
           if (selectedWarehouseId && selectedRoomId) loadShelves(selectedWarehouseId, selectedRoomId);
         } catch (e) {
+          debugService.error(`Error creating ${type}`, { error: (e as Error).message, name, selectedWarehouseId, selectedRoomId });
           showNotification(`Error creating ${type}: ${(e as Error).message}`, 'error');
         }
       }
@@ -624,6 +638,13 @@ const InventoryApp: React.FC = () => {
           >
             <BrainCircuit className="text-purple-400"/>
           </button>
+          <button 
+            onClick={() => setShowDebug(true)} 
+            className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+            title="Debug Log"
+          >
+            <Bug className="text-orange-400"/>
+          </button>
           <LanguageSwitcher />
         </div>
       </header>
@@ -631,6 +652,7 @@ const InventoryApp: React.FC = () => {
       <main>
         <ImportExportModal show={showImportExport} onClose={() => setShowImportExport(false)} />
         <VisualView show={showVisual} onClose={() => setShowVisual(false)} />
+        <DebugModal show={showDebug} onClose={() => setShowDebug(false)} />
         {containerToMove ? (
           <div className={`${ASCII_COLORS.inputBg} p-4 border-2 ${ASCII_COLORS.border} rounded-lg`}>
             <h2 className={`text-xl font-bold mb-4 ${ASCII_COLORS.accent}`}>Move Container: {containerToMove.name}</h2>

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { ItemCore, Priority, Unit, NewItemFormState } from '../types';
 import { ASCII_COLORS, DEFAULT_NEW_ITEM_VALUES, UNITS } from '../constants';
 import BarcodeScannerModal from './BarcodeScannerModal';
+import debugService from '../services/debugService';
 
 interface AddItemModalProps {
   show: boolean;
@@ -56,6 +57,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ show, onClose, onSubmit, in
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    debugService.action('AddItemModal: Submitting item', { name: newItem.name, isEditing: !!editingItemId });
 
     const itemDataForFirestore: Partial<ItemCore> & Pick<ItemCore, 'name' | 'quantity' | 'unit' | 'priority'> = {
       name: newItem.name.trim(),
@@ -79,7 +81,12 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ show, onClose, onSubmit, in
     const labelsArray = newItem.labels.split(',').map(s => s.trim()).filter(Boolean);
     if (labelsArray.length > 0) itemDataForFirestore.labels = labelsArray;
 
-    await onSubmit(itemDataForFirestore, editingItemId || null);
+    try {
+      await onSubmit(itemDataForFirestore, editingItemId || null);
+      debugService.info('AddItemModal: Item submitted successfully');
+    } catch (error) {
+      debugService.error('AddItemModal: Submit failed', error);
+    }
     // onClose(); // The caller (InventoryApp) now handles closing the modal in its onSubmit callback.
   };
 
@@ -89,8 +96,8 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ show, onClose, onSubmit, in
   };
 
   return (
-    <div className={`fixed inset-0 ${ASCII_COLORS.bg} bg-opacity-90 flex items-center justify-center z-40 p-4`}>
-      <div className={`${ASCII_COLORS.modalBg} p-6 rounded-lg shadow-xl w-full max-w-lg border-2 ${ASCII_COLORS.border} max-h-[90vh] flex flex-col`}>
+    <div className={`fixed inset-0 ${ASCII_COLORS.bg} bg-opacity-90 flex items-center justify-center z-40 p-2 sm:p-4`} style={{ paddingBottom: '60px' }}>
+      <div className={`${ASCII_COLORS.modalBg} p-3 sm:p-6 rounded-lg shadow-xl w-full max-w-lg border-2 ${ASCII_COLORS.border} max-h-[calc(100vh-80px)] flex flex-col`}>
         <h2 className={`text-xl font-bold mb-4 ${ASCII_COLORS.accent}`}>
           {editingItemId ? '[EDIT ITEM]' : '[ADD NEW ITEM]'}
         </h2>
@@ -98,19 +105,19 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ show, onClose, onSubmit, in
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className={`block text-sm ${ASCII_COLORS.text}`}>Name:</label>
-              <input name="name" value={newItem.name} onChange={handleInputChange} className={`w-full p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} required />
+              <input name="name" value={newItem.name} onChange={handleInputChange} className={`w-full p-3 text-base border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} required autoComplete="off" autoCorrect="on" autoCapitalize="words" spellCheck={true} style={{ fontSize: '16px' }} />
             </div>
             <div>
               <label className={`block text-sm ${ASCII_COLORS.text}`}>Category:</label>
-              <input name="category" value={newItem.category} onChange={handleInputChange} className={`w-full p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} />
+              <input name="category" value={newItem.category} onChange={handleInputChange} className={`w-full p-3 text-base border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} autoComplete="off" autoCorrect="on" autoCapitalize="words" spellCheck={true} style={{ fontSize: '16px' }} />
             </div>
             <div>
               <label className={`block text-sm ${ASCII_COLORS.text}`}>Quantity:</label>
-              <input name="quantity" type="number" step="any" value={newItem.quantity} onChange={handleInputChange} className={`w-full p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} required min="0"/>
+              <input name="quantity" type="number" step="any" value={newItem.quantity} onChange={handleInputChange} className={`w-full p-3 text-base border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} required min="0" style={{ fontSize: '16px' }} />
             </div>
             <div>
               <label className={`block text-sm ${ASCII_COLORS.text}`}>Unit:</label>
-              <select name="unit" value={newItem.unit} onChange={handleInputChange} className={`w-full p-2 border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`}>
+              <select name="unit" value={newItem.unit} onChange={handleInputChange} className={`w-full p-3 text-base border ${ASCII_COLORS.border} rounded ${ASCII_COLORS.inputBg} ${ASCII_COLORS.text}`} style={{ fontSize: '16px' }}>
                 {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
               </select>
             </div>

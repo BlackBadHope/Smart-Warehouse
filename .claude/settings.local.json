@@ -6,7 +6,9 @@
       "Bash($env:JAVA_HOME = \"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.8.9-hotspot\")",
       "Bash(.gradlew.bat assembleDebug)",
       "Bash(gradlew.bat assembleDebug:*)",
-      "Bash(./gradlew:*)"
+      "Bash(./gradlew:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx cap copy:*)"
     ]
   },
   "dangerouslySkipPermissions": true
