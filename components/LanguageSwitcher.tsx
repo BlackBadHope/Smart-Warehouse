@@ -21,10 +21,13 @@ export default function LanguageSwitcher({ className = '' }: LanguageSwitcherPro
     if (localizationService.setLocale(localeCode)) {
       setCurrentLocale(localeCode);
       setIsOpen(false);
-      debugService.info('LanguageSwitcher: Locale changed successfully, reloading page');
+      debugService.info('LanguageSwitcher: Locale changed successfully');
       
-      // Перезагружаем страницу для применения локализации
-      window.location.reload();
+      // Force component re-render instead of full page reload
+      setTimeout(() => {
+        const event = new CustomEvent('localeChanged', { detail: { locale: localeCode } });
+        document.dispatchEvent(event);
+      }, 100);
     } else {
       debugService.error('LanguageSwitcher: Failed to change locale', { localeCode });
     }
@@ -35,12 +38,12 @@ export default function LanguageSwitcher({ className = '' }: LanguageSwitcherPro
       {/* Current language button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 ${ASCII_COLORS.buttonBg} border ${ASCII_COLORS.border} rounded-lg ${ASCII_COLORS.buttonHoverBg} focus:outline-none focus:ring-2 focus:ring-yellow-500`}
+        className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 ${ASCII_COLORS.buttonBg} border ${ASCII_COLORS.border} rounded-lg ${ASCII_COLORS.buttonHoverBg} focus:outline-none text-white bg-gray-800 hover:bg-gray-700`}
         title="Change language"
       >
-        <Globe className={`w-4 h-4 ${ASCII_COLORS.accent}`} />
+        <Globe className="w-4 h-4 text-yellow-400" />
         <span className="text-base sm:text-lg">{currentLocaleConfig?.flag}</span>
-        <span className={`text-xs sm:text-sm font-medium ${ASCII_COLORS.text} hidden sm:block`}>{currentLocaleConfig?.name}</span>
+        <span className="text-xs sm:text-sm font-medium text-yellow-400 hidden sm:block">{currentLocaleConfig?.name}</span>
       </button>
 
       {/* Dropdown menu */}

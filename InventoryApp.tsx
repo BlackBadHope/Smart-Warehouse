@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download, Bug } from 'lucide-react';
+import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download, Bug, Palette } from 'lucide-react';
 
 import { Warehouse, Room, Shelf, Item, ItemCore, BucketItem, UserProfile } from './types';
 import { ASCII_COLORS } from './constants';
@@ -16,8 +16,13 @@ import ItemCard from './components/ItemCard';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import DebugModal from './components/DebugModal';
 import CurrencySelector from './components/CurrencySelector';
+import UserSwitcher from './components/UserSwitcher';
+import QRSyncModal from './components/QRSyncModal';
+import ThemeSelector from './components/ThemeSelector';
 import localizationService from './services/localizationService';
 import debugService from './services/debugService';
+import userService from './services/userService';
+import themeService from './services/themeService';
 
 const InventoryApp: React.FC = () => {
   const [currentCurrency, setCurrentCurrency] = useState<string>(
@@ -75,6 +80,8 @@ const InventoryApp: React.FC = () => {
   const [showImportExport, setShowImportExport] = useState(false);
   const [showVisual, setShowVisual] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
+  const [showQRSync, setShowQRSync] = useState(false);
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
 
   const showNotification = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     if (type === 'success') setSuccessMessage(message);
@@ -91,7 +98,32 @@ const InventoryApp: React.FC = () => {
     localStorageService.initializeLocalStorage();
     loadWarehouses();
     loadBucketItems();
+    // Initialize theme service
+    themeService.onUserChanged();
+    
+    // Listen for theme changes
+    const handleThemeChange = (event: CustomEvent) => {
+      debugService.info('Theme changed, forcing re-render', event.detail);
+      // Force component re-render by updating a dummy state
+      setCurrentCurrency(curr => curr);
+    };
+    
+    // Listen for locale changes
+    const handleLocaleChange = (event: CustomEvent) => {
+      debugService.info('Locale changed, updating interface', event.detail);
+      // Force component re-render to update all text
+      setCurrentCurrency(curr => curr);
+    };
+    
+    document.addEventListener('themeChanged', handleThemeChange as EventListener);
+    document.addEventListener('localeChanged', handleLocaleChange as EventListener);
+    
     debugService.action('App initialized successfully');
+    
+    return () => {
+      document.removeEventListener('themeChanged', handleThemeChange as EventListener);
+      document.removeEventListener('localeChanged', handleLocaleChange as EventListener);
+    };
   }, []);
 
   const loadWarehouses = () => {
@@ -603,64 +635,108 @@ const InventoryApp: React.FC = () => {
         </div>
       )}
 
-      <header className="flex flex-wrap items-center justify-between mb-6 border-b-2 pb-4 border-dashed border-yellow-700">
-        <h1 className={`${ASCII_COLORS.accent} text-2xl sm:text-3xl font-bold`}>[ INVENTORY OS v2.6 LOCAL ]</h1>
-        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-          <div className="flex items-center text-sm mr-2 border border-yellow-700 px-2 py-1 rounded-md">
-            <UserCircle size={18} className="mr-2 text-green-400"/> {userProfile.username}
-          </div>
-          <button 
-            onClick={() => setShowBucketView(!showBucketView)} 
-            className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} relative`} 
-            title={showBucketView ? "View Storage" : "View Bucket"}
-          >
-            {showBucketView ? <Archive/> : <ShoppingCart/> }
-            {bucketItems.length > 0 && !showBucketView && (
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {bucketItems.length}
-              </span>
+      <header className="mb-6 border-b-2 pb-4 border-dashed border-yellow-700">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <h1 className={`${ASCII_COLORS.accent} text-xl sm:text-2xl lg:text-3xl font-bold`}>[ INVENTORY OS v2.6 LOCAL ]</h1>
+          
+          {/* Main Action Buttons */}
+          <div className="flex items-center justify-between lg:justify-end gap-2 flex-wrap">
+            {/* Primary Actions */}
+            <div className="flex items-center gap-1">
+              <UserSwitcher onUserChange={() => {
+                loadWarehouses();
+                loadBucketItems();
+                themeService.onUserChanged();
+              }} />
+              
+              <button 
+                onClick={() => setShowBucketView(!showBucketView)} 
+                className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} relative`} 
+                title={showBucketView ? "View Storage" : "View Bucket"}
+              >
+                {showBucketView ? <Archive size={18} /> : <ShoppingCart size={18} />}
+                {bucketItems.length > 0 && !showBucketView && (
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {bucketItems.length}
+                  </span>
+                )}
+              </button>
+
+              <button 
+                onClick={() => setShowChat(true)} 
+                className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                title="AI Assistant SMARTIE"
+              >
+                <BrainCircuit size={18} className="text-purple-400"/>
+              </button>
+            </div>
+
+            {/* Secondary Actions Group */}
+            <div className="flex items-center gap-1">
+              <button 
+                onClick={() => setShowThemeSelector(true)} 
+                className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                title="Theme Designer"
+              >
+                <Palette size={16} className="text-pink-400"/>
+              </button>
+              
+              <button 
+                onClick={() => setShowQRSync(true)} 
+                className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                title="Device Sync"
+              >
+                <Download size={16}/>
+              </button>
+
+              <button 
+                onClick={() => setShowVisual(true)} 
+                className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                title="Visual View"
+              >
+                <ImageIcon size={16}/>
+              </button>
+            </div>
+
+            {/* Utility Group */}
+            <div className="flex items-center gap-1">
+              <LanguageSwitcher />
+              <CurrencySelector 
+                currentCurrency={currentCurrency}
+                onCurrencyChange={handleCurrencyChange}
+              />
+            </div>
+
+            {/* Admin Only */}
+            {userService.canExportData() && (
+              <div className="flex items-center gap-1">
+                <button 
+                  onClick={() => setShowImportExport(true)} 
+                  className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                  title="Import/Export (Master)"
+                >
+                  <Archive size={16} className="text-orange-400"/>
+                </button>
+                
+                <button 
+                  onClick={() => setShowDebug(true)} 
+                  className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                  title="Debug Log"
+                >
+                  <Bug size={16} className="text-orange-400"/>
+                </button>
+              </div>
             )}
-          </button>
-          <button 
-            onClick={() => setShowInfoModal(true)} 
-            className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-            title="Info"
-          >
-            <Info/>
-          </button>
-          <button 
-            onClick={() => setShowVisual(true)} 
-            className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-            title="Visual View"
-          >
-            <ImageIcon/>
-          </button>
-          <button 
-            onClick={() => setShowImportExport(true)} 
-            className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-            title="Import / Export"
-          >
-            <Download/>
-          </button>
-          <button 
-            onClick={() => setShowChat(true)} 
-            className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-            title="AI Assistant SMARTIE"
-          >
-            <BrainCircuit className="text-purple-400"/>
-          </button>
-          <button 
-            onClick={() => setShowDebug(true)} 
-            className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-            title="Debug Log"
-          >
-            <Bug className="text-orange-400"/>
-          </button>
-          <CurrencySelector 
-            currentCurrency={currentCurrency}
-            onCurrencyChange={handleCurrencyChange}
-          />
-          <LanguageSwitcher />
+
+            {/* Info - Always Last */}
+            <button 
+              onClick={() => setShowInfoModal(true)} 
+              className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+              title="Info"
+            >
+              <Info size={16}/>
+            </button>
+          </div>
         </div>
       </header>
       
@@ -668,6 +744,8 @@ const InventoryApp: React.FC = () => {
         <ImportExportModal show={showImportExport} onClose={() => setShowImportExport(false)} />
         <VisualView show={showVisual} onClose={() => setShowVisual(false)} />
         <DebugModal show={showDebug} onClose={() => setShowDebug(false)} />
+        <QRSyncModal show={showQRSync} onClose={() => setShowQRSync(false)} />
+        <ThemeSelector show={showThemeSelector} onClose={() => setShowThemeSelector(false)} />
         {containerToMove ? (
           <div className={`${ASCII_COLORS.inputBg} p-4 border-2 ${ASCII_COLORS.border} rounded-lg`}>
             <h2 className={`text-xl font-bold mb-4 ${ASCII_COLORS.accent}`}>Move Container: {containerToMove.name}</h2>
@@ -700,12 +778,14 @@ const InventoryApp: React.FC = () => {
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-xl font-bold">WAREHOUSES</h2>
-                <button 
-                  onClick={() => createEntity('warehouse')} 
-                  className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`}
-                >
-                  <Plus/>
-                </button>
+                {userService.hasPermission('canCreateWarehouses') && (
+                  <button 
+                    onClick={() => createEntity('warehouse')} 
+                    className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`}
+                  >
+                    <Plus/>
+                  </button>
+                )}
               </div>
               <div className={`${ASCII_COLORS.inputBg} border-2 ${ASCII_COLORS.border} rounded-lg p-2 flex-grow min-h-[150px] max-h-[300px] overflow-y-auto`}>
                 <ul className="space-y-1">
@@ -719,18 +799,22 @@ const InventoryApp: React.FC = () => {
                         <Home className="w-4 h-4 mr-2 shrink-0"/>{w.name}
                       </span>
                       <span className="flex items-center">
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); renameEntity('warehouse', w); }} 
-                          className="p-1 hover:text-yellow-400"
-                        >
-                          <Edit size={16}/>
-                        </button>
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); deleteEntity('warehouse', w); }} 
-                          className="p-1 hover:text-red-500"
-                        >
-                          <Trash2 size={16}/>
-                        </button>
+                        {userService.hasPermission('canDeleteWarehouses') && (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); renameEntity('warehouse', w); }} 
+                            className="p-1 hover:text-yellow-400"
+                          >
+                            <Edit size={16}/>
+                          </button>
+                        )}
+                        {userService.hasPermission('canDeleteWarehouses') && (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); deleteEntity('warehouse', w); }} 
+                            className="p-1 hover:text-red-500"
+                          >
+                            <Trash2 size={16}/>
+                          </button>
+                        )}
                       </span>
                     </li>
                   ))}
@@ -741,13 +825,15 @@ const InventoryApp: React.FC = () => {
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-2">
                 <h2 className={`text-xl font-bold ${!selectedWarehouseId ? 'opacity-50' : ''}`}>ROOMS</h2>
-                <button 
-                  onClick={() => createEntity('room')} 
-                  disabled={!selectedWarehouseId} 
-                  className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} disabled:opacity-50`}
-                >
-                  <Plus/>
-                </button>
+                {userService.hasPermission('canCreateRooms') && (
+                  <button 
+                    onClick={() => createEntity('room')} 
+                    disabled={!selectedWarehouseId} 
+                    className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} disabled:opacity-50`}
+                  >
+                    <Plus/>
+                  </button>
+                )}
               </div>
               <div className={`${ASCII_COLORS.inputBg} border-2 ${ASCII_COLORS.border} rounded-lg p-2 flex-grow min-h-[150px] max-h-[300px] overflow-y-auto`}>
                 <ul className="space-y-1">
@@ -783,13 +869,15 @@ const InventoryApp: React.FC = () => {
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-2">
                 <h2 className={`text-xl font-bold ${!selectedRoomId ? 'opacity-50' : ''}`}>CONTAINERS</h2>
-                <button 
-                  onClick={() => createEntity('shelf')} 
-                  disabled={!selectedRoomId} 
-                  className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} disabled:opacity-50`}
-                >
-                  <Plus/>
-                </button>
+                {userService.hasPermission('canCreateContainers') && (
+                  <button 
+                    onClick={() => createEntity('shelf')} 
+                    disabled={!selectedRoomId} 
+                    className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} disabled:opacity-50`}
+                  >
+                    <Plus/>
+                  </button>
+                )}
               </div>
               <div className={`${ASCII_COLORS.inputBg} border-2 ${ASCII_COLORS.border} rounded-lg p-2 flex-grow min-h-[150px] max-h-[300px] overflow-y-auto`}>
                 <ul className="space-y-1">

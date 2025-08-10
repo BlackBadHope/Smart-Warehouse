@@ -48,7 +48,7 @@ const InputModal: React.FC<InputModalProps> = ({ show, title, label, onSubmit, o
       charInfo: charInfo.slice(0, 10) // Log first 10 chars for debugging
     });
     
-    if (!isEmptyText(inputValue)) {
+    if (!isEmptyText(cleanedValue)) {
       try {
         await onSubmit(cleanedValue);
         debugService.info('InputModal: Successfully submitted', { submittedValue: cleanedValue });

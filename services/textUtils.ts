@@ -4,29 +4,27 @@
 
 /**
  * Safely cleans input text, handling international characters, mobile keyboard quirks, and invisible characters
+ * FIXED: More conservative cleaning to preserve Cyrillic and other international characters
  */
 export const cleanTextInput = (input: string): string => {
   if (!input || typeof input !== 'string') {
     return '';
   }
 
-  // Remove all types of whitespace from start/end, including:
-  // - Regular spaces (\x20)
-  // - Non-breaking spaces (\u00A0, \u202F, \u2009, etc.)
-  // - Zero-width spaces (\u200B, \u200C, \u200D, \uFEFF)
-  // - Other Unicode whitespace characters
+  // MINIMAL cleaning - only remove truly invisible characters at start/end
+  // Preserve ALL visible characters including Cyrillic, emojis, etc.
   let cleaned = input
-    .replace(/^[\s\u00A0\u1680\u2000-\u200B\u2028\u2029\u202F\u205F\u3000\uFEFF]+/g, '') // Start whitespace
-    .replace(/[\s\u00A0\u1680\u2000-\u200B\u2028\u2029\u202F\u205F\u3000\uFEFF]+$/g, '') // End whitespace
-    .replace(/[\u200B\u200C\u200D\uFEFF]/g, ''); // Remove zero-width characters anywhere
+    .replace(/^[\uFEFF\u200B\u200C\u200D]+/g, '') // Remove only zero-width chars at start
+    .replace(/[\uFEFF\u200B\u200C\u200D]+$/g, '') // Remove only zero-width chars at end
+    .replace(/[\uFEFF\u200B\u200C\u200D]/g, ''); // Remove zero-width chars anywhere
 
-  // Normalize Unicode characters (NFC normalization)
+  // Light trim of regular whitespace only
+  cleaned = cleaned.trim();
+
+  // Normalize Unicode (helps with composite characters)
   if (cleaned.normalize) {
     cleaned = cleaned.normalize('NFC');
   }
-
-  // Replace any remaining non-breaking spaces with regular spaces
-  cleaned = cleaned.replace(/\u00A0/g, ' ');
 
   return cleaned;
 };

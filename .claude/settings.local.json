@@ -9,7 +9,9 @@
       "Bash(./gradlew:*)",
       "Bash(npm run build:*)",
       "Bash(npx cap copy:*)",
-      "Bash(npx cap:*)"
+      "Bash(npx cap:*)",
+      "Bash(npm install:*)",
+      "Bash(git add:*)"
     ]
   },
   "dangerouslySkipPermissions": true
