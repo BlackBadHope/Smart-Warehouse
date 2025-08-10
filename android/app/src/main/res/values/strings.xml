@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Inventory OS Home</string>
+    <string name="title_activity_main">Inventory OS Home</string>
+    <string name="package_name">com.inventoryos.home</string>
+    <string name="custom_url_scheme">com.inventoryos.home</string>
+</resources>
