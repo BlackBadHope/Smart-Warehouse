@@ -15,16 +15,27 @@ import VisualView from './components/VisualView';
 import ItemCard from './components/ItemCard';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import DebugModal from './components/DebugModal';
+import CurrencySelector from './components/CurrencySelector';
 import localizationService from './services/localizationService';
 import debugService from './services/debugService';
 
 const InventoryApp: React.FC = () => {
+  const [currentCurrency, setCurrentCurrency] = useState<string>(
+    localStorage.getItem('inventory-os-currency') || localizationService.getAvailableCurrencies()[0] || 'USD'
+  );
+  
   const userProfile: UserProfile = {
     username: localizationService.getCurrentLocale() === 'uk' ? 'Користувач' : 
               localizationService.getCurrentLocale() === 'en' ? 'User' : 
               localizationService.getCurrentLocale() === 'de' ? 'Benutzer' :
               localizationService.getCurrentLocale() === 'pl' ? 'Użytkownik' : 'Пользователь',
-    currency: localizationService.getAvailableCurrencies()[0] || 'USD'
+    currency: currentCurrency
+  };
+  
+  const handleCurrencyChange = (newCurrency: string) => {
+    setCurrentCurrency(newCurrency);
+    localStorage.setItem('inventory-os-currency', newCurrency);
+    debugService.info('Currency changed globally', { newCurrency });
   };
 
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -572,7 +583,7 @@ const InventoryApp: React.FC = () => {
         onSubmit={handleItemFormSubmit} 
         initialData={editingItem} 
         editingItemId={editingItem?.id} 
-        currency={userProfile.currency} 
+        currency={currentCurrency} 
       />
       <ChatModal 
         show={showChat} 
@@ -645,6 +656,10 @@ const InventoryApp: React.FC = () => {
           >
             <Bug className="text-orange-400"/>
           </button>
+          <CurrencySelector 
+            currentCurrency={currentCurrency}
+            onCurrencyChange={handleCurrencyChange}
+          />
           <LanguageSwitcher />
         </div>
       </header>
@@ -844,7 +859,7 @@ const InventoryApp: React.FC = () => {
                   key={item.id} 
                   item={item} 
                   context={currentDisplayContext} 
-                  currency={item.currency || userProfile.currency} 
+                  currency={item.currency || currentCurrency} 
                   onMoveClick={showBucketView ? (itm) => handleEditBucketItemPath(itm as BucketItem) : (itm) => handleMoveToBucket(itm as Item)}
                   onEditClick={handleOpenEditItemModal} 
                   onDeleteClick={handleDeleteItem} 

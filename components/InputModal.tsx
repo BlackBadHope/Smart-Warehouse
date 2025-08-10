@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ASCII_COLORS } from '../constants';
 import debugService from '../services/debugService';
+import { cleanTextInput, isEmptyText, getCharInfo } from '../services/textUtils';
 
 interface InputModalProps {
   show: boolean;
@@ -33,11 +34,21 @@ const InputModal: React.FC<InputModalProps> = ({ show, title, label, onSubmit, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Clean input more thoroughly for mobile/international characters
-    const cleanedValue = inputValue.replace(/^\s+|\s+$/g, '').replace(/\u00A0/g, ' ').trim();
-    debugService.action('InputModal: Form submitted', { title, inputValue: cleanedValue, originalValue: inputValue });
     
-    if (cleanedValue && cleanedValue.length > 0) {
+    // Use advanced text cleaning for mobile/international characters
+    const cleanedValue = cleanTextInput(inputValue);
+    const charInfo = getCharInfo(inputValue);
+    
+    debugService.action('InputModal: Form submitted', { 
+      title, 
+      originalValue: inputValue,
+      cleanedValue, 
+      originalLength: inputValue.length,
+      cleanedLength: cleanedValue.length,
+      charInfo: charInfo.slice(0, 10) // Log first 10 chars for debugging
+    });
+    
+    if (!isEmptyText(inputValue)) {
       try {
         await onSubmit(cleanedValue);
         debugService.info('InputModal: Successfully submitted', { submittedValue: cleanedValue });
@@ -45,7 +56,12 @@ const InputModal: React.FC<InputModalProps> = ({ show, title, label, onSubmit, o
         debugService.error('InputModal: Submit failed', error);
       }
     } else {
-      debugService.warning('InputModal: Empty input submitted', { inputValue, cleanedValue, inputLength: inputValue.length });
+      debugService.warning('InputModal: Empty input submitted', { 
+        inputValue, 
+        cleanedValue, 
+        inputLength: inputValue.length,
+        charCodes: charInfo.map(c => c.code)
+      });
     }
   };
 
@@ -65,7 +81,14 @@ const InputModal: React.FC<InputModalProps> = ({ show, title, label, onSubmit, o
             value={inputValue}
             onChange={(e) => {
               const newValue = e.target.value;
-              debugService.action('InputModal: Input changed', { newValue, charCode: newValue.charCodeAt(newValue.length - 1) });
+              const lastChar = newValue[newValue.length - 1];
+              debugService.action('InputModal: Input changed', { 
+                newValue, 
+                length: newValue.length,
+                lastChar: lastChar,
+                lastCharCode: lastChar ? lastChar.charCodeAt(0) : null,
+                cleanedValue: cleanTextInput(newValue)
+              });
               setInputValue(newValue);
             }}
             autoComplete="off"
