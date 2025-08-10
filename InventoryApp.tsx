@@ -880,6 +880,13 @@ const InventoryApp: React.FC = () => {
         </>
         )}
       </main>
+      
+      {/* Footer with Claude attribution */}
+      <footer className={`mt-8 py-4 border-t ${ASCII_COLORS.border} text-center`}>
+        <p className={`text-sm ${ASCII_COLORS.text} opacity-60`}>
+          Made with <span className={`${ASCII_COLORS.accent}`}>Claude</span>, with love ❤️
+        </p>
+      </footer>
     </div>
   );
 }
