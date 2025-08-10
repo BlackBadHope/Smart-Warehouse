@@ -1,7 +1,22 @@
 {
-  "name": "inventory-os-v2.6",
+  "name": "inventory-os",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.6.0",
+  "author": "BlackHope (Ilya Pikalov) <dirl2030@gmail.com>",
+  "license": "PROPRIETARY",
+  "homepage": "https://github.com/BlackBadHope/inventory-os",
+  "description": "Professional inventory management system for warehouses, rooms, and containers",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlackBadHope/inventory-os.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BlackBadHope/inventory-os/issues",
+    "email": "dirl2030@gmail.com"
+  },
+  "keywords": [
+    "inventory", "warehouse", "management", "mobile", "ukraine", "claude-ai"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -1,0 +1,31 @@
+PROPRIETARY SOFTWARE LICENSE
+
+Inventory OS
+Copyright (c) 2025 Ilya Pikalov (BlackHope)
+All rights reserved.
+
+GRANT OF LICENSE:
+This is proprietary software. No license is granted for copying, 
+distribution, modification, or commercial use without explicit 
+written permission from the copyright holder.
+
+RESTRICTIONS:
+- You may not copy, modify, or distribute this software
+- You may not reverse engineer or attempt to extract source code
+- You may not create derivative works based on this software
+- You may not use this software for commercial purposes without permission
+
+OWNERSHIP:
+All intellectual property rights in this software belong exclusively 
+to Ilya Pikalov. The software was developed with AI assistance, but 
+all rights remain with the named copyright holder.
+
+CONTACT:
+For licensing inquiries: dirl2030@gmail.com
+Developer: BlackHope (Ilya Pikalov)
+Location: Ukraine
+
+DISCLAIMER:
+This software is provided "as is" without warranty of any kind.
+The copyright holder shall not be liable for any damages arising 
+from the use of this software.
