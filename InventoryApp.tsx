@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download, Bug, Palette } from 'lucide-react';
+import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download, Bug } from 'lucide-react';
 
 import { Warehouse, Room, Shelf, Item, ItemCore, BucketItem, UserProfile } from './types';
 import { ASCII_COLORS } from './constants';
@@ -18,7 +18,6 @@ import DebugModal from './components/DebugModal';
 import CurrencySelector from './components/CurrencySelector';
 import UserSwitcher from './components/UserSwitcher';
 import QRSyncModal from './components/QRSyncModal';
-import ThemeSelector from './components/ThemeSelector';
 import localizationService from './services/localizationService';
 import debugService from './services/debugService';
 import userService from './services/userService';
@@ -81,7 +80,6 @@ const InventoryApp: React.FC = () => {
   const [showVisual, setShowVisual] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
   const [showQRSync, setShowQRSync] = useState(false);
-  const [showThemeSelector, setShowThemeSelector] = useState(false);
 
   const showNotification = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     if (type === 'success') setSuccessMessage(message);
@@ -637,7 +635,9 @@ const InventoryApp: React.FC = () => {
 
       <header className="mb-6 border-b-2 pb-4 border-dashed border-yellow-700">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <h1 className={`${ASCII_COLORS.accent} text-xl sm:text-2xl lg:text-3xl font-bold`}>[ INVENTORY OS v2.6 LOCAL ]</h1>
+          <h1 className={`${ASCII_COLORS.accent} text-xl sm:text-2xl lg:text-3xl font-bold`}>
+            📦 INVENTORY OS v2.6
+          </h1>
           
           {/* Main Action Buttons */}
           <div className="flex items-center justify-between lg:justify-end gap-2 flex-wrap">
@@ -673,14 +673,8 @@ const InventoryApp: React.FC = () => {
 
             {/* Secondary Actions Group */}
             <div className="flex items-center gap-1">
-              <button 
-                onClick={() => setShowThemeSelector(true)} 
-                className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-                title="Theme Designer"
-              >
-                <Palette size={16} className="text-pink-400"/>
-              </button>
               
+
               <button 
                 onClick={() => setShowQRSync(true)} 
                 className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
@@ -745,7 +739,6 @@ const InventoryApp: React.FC = () => {
         <VisualView show={showVisual} onClose={() => setShowVisual(false)} />
         <DebugModal show={showDebug} onClose={() => setShowDebug(false)} />
         <QRSyncModal show={showQRSync} onClose={() => setShowQRSync(false)} />
-        <ThemeSelector show={showThemeSelector} onClose={() => setShowThemeSelector(false)} />
         {containerToMove ? (
           <div className={`${ASCII_COLORS.inputBg} p-4 border-2 ${ASCII_COLORS.border} rounded-lg`}>
             <h2 className={`text-xl font-bold mb-4 ${ASCII_COLORS.accent}`}>Move Container: {containerToMove.name}</h2>

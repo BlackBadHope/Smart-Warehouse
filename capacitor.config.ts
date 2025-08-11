@@ -37,7 +37,11 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: true,
     captureInput: true,
-    webContentsDebuggingEnabled: false
+    webContentsDebuggingEnabled: true,
+    loggingBehavior: 'debug',
+    hideLogs: false,
+    backgroundColor: '#000000',
+    toolbarColor: '#000000'
   },
   ios: {
     scheme: 'Inventory OS Home',

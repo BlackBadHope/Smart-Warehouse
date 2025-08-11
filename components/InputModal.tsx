@@ -35,32 +35,40 @@ const InputModal: React.FC<InputModalProps> = ({ show, title, label, onSubmit, o
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Use advanced text cleaning for mobile/international characters
-    const cleanedValue = cleanTextInput(inputValue);
-    const charInfo = getCharInfo(inputValue);
+    // SIMPLIFIED: Only basic trim for Android compatibility
+    const trimmedValue = inputValue.trim();
     
     debugService.action('InputModal: Form submitted', { 
       title, 
       originalValue: inputValue,
-      cleanedValue, 
+      trimmedValue, 
       originalLength: inputValue.length,
-      cleanedLength: cleanedValue.length,
-      charInfo: charInfo.slice(0, 10) // Log first 10 chars for debugging
+      trimmedLength: trimmedValue.length
     });
     
-    if (!isEmptyText(cleanedValue)) {
+    // Check if input has actual content (including Cyrillic)
+    const hasContent = trimmedValue.length > 0 && /\S/.test(trimmedValue);
+    
+    debugService.action('InputModal: Validation check', { 
+      trimmedValue, 
+      length: trimmedValue.length,
+      hasContent,
+      charCodes: Array.from(trimmedValue).map(c => c.charCodeAt(0))
+    });
+    
+    if (hasContent) {
       try {
-        await onSubmit(cleanedValue);
-        debugService.info('InputModal: Successfully submitted', { submittedValue: cleanedValue });
+        await onSubmit(trimmedValue);
+        debugService.info('InputModal: Successfully submitted', { submittedValue: trimmedValue });
       } catch (error) {
         debugService.error('InputModal: Submit failed', error);
       }
     } else {
       debugService.warning('InputModal: Empty input submitted', { 
         inputValue, 
-        cleanedValue, 
+        trimmedValue, 
         inputLength: inputValue.length,
-        charCodes: charInfo.map(c => c.code)
+        hasContent
       });
     }
   };
@@ -81,13 +89,9 @@ const InputModal: React.FC<InputModalProps> = ({ show, title, label, onSubmit, o
             value={inputValue}
             onChange={(e) => {
               const newValue = e.target.value;
-              const lastChar = newValue[newValue.length - 1];
               debugService.action('InputModal: Input changed', { 
                 newValue, 
-                length: newValue.length,
-                lastChar: lastChar,
-                lastCharCode: lastChar ? lastChar.charCodeAt(0) : null,
-                cleanedValue: cleanTextInput(newValue)
+                length: newValue.length
               });
               setInputValue(newValue);
             }}
