@@ -1,0 +1,1217 @@
+{
+  "timestamp": "2025-08-12T21:56:44.610Z",
+  "testSuites": [
+    {
+      "suiteName": "Core Functionality Edge Cases",
+      "results": [
+        {
+          "testName": "Local Storage Stress Test",
+          "status": "PASS",
+          "message": "Local storage survived corruption test",
+          "timestamp": "2025-08-12T21:56:33.034Z",
+          "duration": 3.399999998509884
+        },
+        {
+          "testName": "Warehouse Names Edge Cases",
+          "status": "PASS",
+          "message": "10/10 edge case warehouses with full structure created",
+          "details": {
+            "successCount": 10,
+            "failureCount": 0,
+            "results": [
+              {
+                "name": "🏭 Склад «Спецсимволы» №1",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "6d09ae7a-2e51-4bf3-9027-bd4b89e38ca3",
+                  "name": "🏭 Склад «Спецсимволы» №1",
+                  "createdAt": "2025-08-12T21:56:33.035Z",
+                  "rooms": [
+                    {
+                      "id": "a81a0a60-ae64-4cbd-a485-f83641666d23",
+                      "name": "Комната-1 для 🏭 Склад «",
+                      "createdAt": "2025-08-12T21:56:33.086Z",
+                      "shelves": [
+                        {
+                          "id": "4e9b38f0-2ccf-4a6d-aedd-79e438b887c7",
+                          "name": "Полка-А 🏭 Ск",
+                          "createdAt": "2025-08-12T21:56:33.117Z",
+                          "items": [
+                            {
+                              "name": "Товар для 🏭 Склад «Спецс",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: 🏭 Склад «Спецсимволы» №1",
+                              "id": "271f6a2c-0b6e-4b0d-812a-466c7329d87d",
+                              "createdAt": "2025-08-12T21:56:33.148Z"
+                            },
+                            {
+                              "name": "Test Item 1755035795494",
+                              "quantity": 5,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test Category",
+                              "description": "Self-test generated item",
+                              "id": "830a2712-5ea4-4587-8f1d-9f48fa5d719d",
+                              "createdAt": "2025-08-12T21:56:35.494Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "2ed43ec7-f142-4fda-a8c0-5d9e3c6cb06c",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-12T21:56:33.117Z",
+                          "items": []
+                        },
+                        {
+                          "id": "36d7fb49-08e4-4116-86e8-e146a43a797a",
+                          "name": "Test Container 1755035795390",
+                          "createdAt": "2025-08-12T21:56:35.390Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "44d0c211-8ff7-404a-a9cd-7cc62d51f8a5",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-12T21:56:33.086Z",
+                      "shelves": [
+                        {
+                          "id": "a5ca84d2-3b3a-48e8-8f10-1ff1b695a2bd",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-12T21:56:33.117Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар 🏭 Склад «",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: 🏭 Склад «Спецсимволы» №1",
+                              "id": "4838a060-6562-4166-a2d8-e9b2c043dbb9",
+                              "createdAt": "2025-08-12T21:56:33.148Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "ПолнойДлиннойНазваниеСкладаБезПробеловДляТестированияОграниченийИнтерфейса",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "056c2a0f-5cab-4ed4-b3c9-7b4c4fa74f7b",
+                  "name": "ПолнойДлиннойНазваниеСкладаБезПробеловДляТестированияОграниченийИнтерфейса",
+                  "createdAt": "2025-08-12T21:56:33.269Z",
+                  "rooms": [
+                    {
+                      "id": "3eb44eab-15cb-42a7-bc22-b85dfcde01e9",
+                      "name": "Комната-1 для ПолнойДлин",
+                      "createdAt": "2025-08-12T21:56:33.320Z",
+                      "shelves": [
+                        {
+                          "id": "bcf717e4-8674-43e9-8472-660127e62b72",
+                          "name": "Полка-А Полно",
+                          "createdAt": "2025-08-12T21:56:33.351Z",
+                          "items": [
+                            {
+                              "name": "Товар для ПолнойДлиннойНа",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ПолнойДлиннойНазваниеСкладаБезПробеловДляТестированияОграниченийИнтерфейса",
+                              "id": "691b0072-44ef-4281-832b-87ad8df1ac83",
+                              "createdAt": "2025-08-12T21:56:33.382Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "49cd2bc0-2434-4e21-b13d-9ee9b34e7ee5",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-12T21:56:33.351Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "b74136ef-2882-4e9f-9cea-0f425cc43469",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-12T21:56:33.320Z",
+                      "shelves": [
+                        {
+                          "id": "3481db0c-5e01-4ec2-b5b7-a1cd4f48ec2e",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-12T21:56:33.351Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар ПолнойДлин",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ПолнойДлиннойНазваниеСкладаБезПробеловДляТестированияОграниченийИнтерфейса",
+                              "id": "63941c6a-2790-494d-b7f9-7f6635c9023c",
+                              "createdAt": "2025-08-12T21:56:33.382Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "7ec5799e-6e3e-4fb0-9926-66b790ad7f05",
+                  "name": "",
+                  "createdAt": "2025-08-12T21:56:33.507Z",
+                  "rooms": [
+                    {
+                      "id": "374610bf-23d8-4f53-905d-81d1819e7d06",
+                      "name": "Комната-1 для ",
+                      "createdAt": "2025-08-12T21:56:33.557Z",
+                      "shelves": [
+                        {
+                          "id": "01e3dee5-30e9-4f7b-98c6-5b4afe28ec8d",
+                          "name": "Полка-А ",
+                          "createdAt": "2025-08-12T21:56:33.588Z",
+                          "items": [
+                            {
+                              "name": "Товар для ",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ",
+                              "id": "3209f920-2e4c-4c5e-8211-e1cc62fc44ee",
+                              "createdAt": "2025-08-12T21:56:33.618Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "65ab7ede-f86c-4b82-9130-cc388106e91a",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-12T21:56:33.588Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "4b2546a4-f40b-4b4c-b027-1f2b8cf2289d",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-12T21:56:33.557Z",
+                      "shelves": [
+                        {
+                          "id": "5822ac98-a030-4491-952f-4657daae6675",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-12T21:56:33.588Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар ",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ",
+                              "id": "b226e631-c972-44e4-95ae-25363f6a47ff",
+                              "createdAt": "2025-08-12T21:56:33.618Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "   ",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "13b054cd-81a0-491e-a1da-e418028fec86",
+                  "name": "   ",
+                  "createdAt": "2025-08-12T21:56:33.740Z",
+                  "rooms": [
+                    {
+                      "id": "ab4182b8-3de6-464b-bd33-3a23af9f9c4c",
+                      "name": "Комната-1 для    ",
+                      "createdAt": "2025-08-12T21:56:33.790Z",
+                      "shelves": [
+                        {
+                          "id": "c40f6902-f78d-4e86-af35-1d92afb96b2d",
+                          "name": "Полка-А    ",
+                          "createdAt": "2025-08-12T21:56:33.822Z",
+                          "items": [
+                            {
+                              "name": "Товар для    ",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse:    ",
+                              "id": "f68695e2-6c50-49c0-b206-48c5f0afedec",
+                              "createdAt": "2025-08-12T21:56:33.854Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "4ece4a67-61e3-472c-9915-cfcb640dd319",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-12T21:56:33.822Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "9438f48e-4258-4fbe-a084-7fe8243bf3de",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-12T21:56:33.790Z",
+                      "shelves": [
+                        {
+                          "id": "6c61d11f-6021-41fd-8693-48999f2fa0a1",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-12T21:56:33.822Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар    ",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse:    ",
+                              "id": "73469136-8e1f-4345-8db6-a5a115545256",
+                              "createdAt": "2025-08-12T21:56:33.854Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "Склад\nс\tпереносами\rстрок",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "b74aacbd-eb89-458d-8477-a3f53a56ce85",
+                  "name": "Склад\nс\tпереносами\rстрок",
+                  "createdAt": "2025-08-12T21:56:33.977Z",
+                  "rooms": [
+                    {
+                      "id": "2954e2bf-4f09-4a52-bc46-7cbc22b5fe45",
+                      "name": "Комната-1 для Склад\nс\tпе",
+                      "createdAt": "2025-08-12T21:56:34.027Z",
+                      "shelves": [
+                        {
+                          "id": "394eabad-d866-459c-b3c7-b68498786758",
+                          "name": "Полка-А Склад",
+                          "createdAt": "2025-08-12T21:56:34.057Z",
+                          "items": [
+                            {
+                              "name": "Товар для Склад\nс\tперенос",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Склад\nс\tпереносами\rстрок",
+                              "id": "09354f7c-0fdf-49df-ade4-d3cd02be456d",
+                              "createdAt": "2025-08-12T21:56:34.088Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "fe3cce49-31ab-499a-affb-210a85f91264",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-12T21:56:34.057Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "69cba237-0bab-4bba-9372-6804bc2b4b9d",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-12T21:56:34.027Z",
+                      "shelves": [
+                        {
+                          "id": "be063ffc-ee7f-4aa9-b561-d49faef2e257",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-12T21:56:34.057Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар Склад\nс\tпе",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Склад\nс\tпереносами\rстрок",
+                              "id": "69caaef5-a44b-49be-a10f-057228ea1ca0",
+                              "createdAt": "2025-08-12T21:56:34.088Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "🚀 🌟 ✨ 💫 ⭐",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "73128d75-1684-410f-a2e9-a1f32af5d227",
+                  "name": "🚀 🌟 ✨ 💫 ⭐",
+                  "createdAt": "2025-08-12T21:56:34.211Z",
+                  "rooms": [
+                    {
+                      "id": "c60b7cdb-d048-472e-9130-de5043c65641",
+                      "name": "Комната-1 для 🚀 🌟 ✨ 💫",
+                      "createdAt": "2025-08-12T21:56:34.261Z",
+                      "shelves": [
+                        {
+                          "id": "84944444-0d41-415b-872c-a99b89917249",
+                          "name": "Полка-А 🚀 🌟",
+                          "createdAt": "2025-08-12T21:56:34.292Z",
+                          "items": [
+                            {
+                              "name": "Товар для 🚀 🌟 ✨ 💫 ⭐",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: 🚀 🌟 ✨ 💫 ⭐",
+                              "id": "554db603-96dd-4879-82ad-cde2c6b189b9",
+                              "createdAt": "2025-08-12T21:56:34.323Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "2552d9c6-e0aa-4042-9e9b-1ddaea428760",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-12T21:56:34.292Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "0903c4cd-59f2-4c1f-a85b-01ab47fe50b0",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-12T21:56:34.261Z",
+                      "shelves": [
+                        {
+                          "id": "6cc05b46-5096-47fc-adb5-e35055815a35",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-12T21:56:34.292Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар 🚀 🌟 ✨ 💫",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: 🚀 🌟 ✨ 💫 ⭐",
+                              "id": "c7c6788d-194b-4cc0-ae29-2fbe92534760",
+                              "createdAt": "2025-08-12T21:56:34.323Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "Тест\"'`<script>alert(1)</script>",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "db339fbb-4b93-4429-9c4d-202c0bc2b49d",
+                  "name": "Тест\"'`<script>alert(1)</script>",
+                  "createdAt": "2025-08-12T21:56:34.448Z",
+                  "rooms": [
+                    {
+                      "id": "a89d32d9-dcf1-43a4-8006-462fd1278424",
+                      "name": "Комната-1 для Тест\"'`<sc",
+                      "createdAt": "2025-08-12T21:56:34.498Z",
+                      "shelves": [
+                        {
+                          "id": "664823fe-3920-40d2-a832-3c0d843cbede",
+                          "name": "Полка-А Тест\"",
+                          "createdAt": "2025-08-12T21:56:34.529Z",
+                          "items": [
+                            {
+                              "name": "Товар для Тест\"'`<script>",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Тест\"'`<script>alert(1)</script>",
+                              "id": "a27467f1-7c91-4e84-9130-d8856b8f1ffd",
+                              "createdAt": "2025-08-12T21:56:34.560Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "c615b571-d39c-4e13-a19f-b0a070a31980",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-12T21:56:34.529Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "2dafcbdc-d640-4025-8911-4ab728960faa",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-12T21:56:34.498Z",
+                      "shelves": [
+                        {
+                          "id": "016d55f2-c90a-4741-9274-2c22dfda05e9",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-12T21:56:34.529Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар Тест\"'`<sc",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Тест\"'`<script>alert(1)</script>",
+                              "id": "3cbb95a2-2361-484a-8e29-2625ab749e6d",
+                              "createdAt": "2025-08-12T21:56:34.560Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "../../malicious/path",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "694731ad-5a8a-4a8b-9016-f6093344a6ec",
+                  "name": "../../malicious/path",
+                  "createdAt": "2025-08-12T21:56:34.682Z",
+                  "rooms": [
+                    {
+                      "id": "494c706c-f128-4c8c-b49d-5a7a6a9316f1",
+                      "name": "Комната-1 для ../../mali",
+                      "createdAt": "2025-08-12T21:56:34.736Z",
+                      "shelves": [
+                        {
+                          "id": "c3f3832d-26fa-4213-95f3-ca92975ff0ec",
+                          "name": "Полка-А ../..",
+                          "createdAt": "2025-08-12T21:56:34.767Z",
+                          "items": [
+                            {
+                              "name": "Товар для ../../malicious",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ../../malicious/path",
+                              "id": "60f7125e-4d21-4947-b485-5b50d7b87f31",
+                              "createdAt": "2025-08-12T21:56:34.798Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "65bb3f6c-9df1-430b-ba8c-f29923c2717e",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-12T21:56:34.767Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "f58fe05c-a4fb-45b3-8005-1ac999c80620",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-12T21:56:34.736Z",
+                      "shelves": [
+                        {
+                          "id": "fb84fef1-ccc2-491b-843a-3b13e8821a5c",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-12T21:56:34.767Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар ../../mali",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ../../malicious/path",
+                              "id": "185d67ac-6c2f-4c7c-9b4a-63d44f84cc9f",
+                              "createdAt": "2025-08-12T21:56:34.798Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "Склад 💀 DELETE * FROM warehouses;",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "41de4964-40cf-4f7a-be52-669150f80b7a",
+                  "name": "Склад 💀 DELETE * FROM warehouses;",
+                  "createdAt": "2025-08-12T21:56:34.923Z",
+                  "rooms": [
+                    {
+                      "id": "dfbcab52-b821-4cd2-bd81-0a14c1ad14cc",
+                      "name": "Комната-1 для Склад 💀 D",
+                      "createdAt": "2025-08-12T21:56:34.973Z",
+                      "shelves": [
+                        {
+                          "id": "8c9546f3-d435-4ae3-8b95-fe970aada298",
+                          "name": "Полка-А Склад",
+                          "createdAt": "2025-08-12T21:56:35.005Z",
+                          "items": [
+                            {
+                              "name": "Товар для Склад 💀 DELETE",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Склад 💀 DELETE * FROM warehouses;",
+                              "id": "c835490e-0b96-4970-9e67-016e35eef97e",
+                              "createdAt": "2025-08-12T21:56:35.035Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "0f5cf115-b3c0-4629-85d0-338f9eb26d91",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-12T21:56:35.005Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "1c09d13d-a256-4480-b10c-3154125c7c06",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-12T21:56:34.973Z",
+                      "shelves": [
+                        {
+                          "id": "b4701bc0-1fba-4ad3-ace2-f950509e2340",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-12T21:56:35.005Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар Склад 💀 D",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Склад 💀 DELETE * FROM warehouses;",
+                              "id": "26973ca4-f3a0-44d1-b0f1-aa22acf063be",
+                              "createdAt": "2025-08-12T21:56:35.035Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "Нормальный Склад",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "fbc11358-b486-4d6c-935e-709cb71282d7",
+                  "name": "Нормальный Склад",
+                  "createdAt": "2025-08-12T21:56:35.156Z",
+                  "rooms": [
+                    {
+                      "id": "656edfbb-0e19-4b4f-a07d-fd9f860a446a",
+                      "name": "Комната-1 для Нормальный",
+                      "createdAt": "2025-08-12T21:56:35.207Z",
+                      "shelves": [
+                        {
+                          "id": "bdeaaa49-6070-433b-aede-37f5e77d2f58",
+                          "name": "Полка-А Норма",
+                          "createdAt": "2025-08-12T21:56:35.238Z",
+                          "items": [
+                            {
+                              "name": "Товар для Нормальный Скла",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Нормальный Склад",
+                              "id": "1830cdac-18e1-417f-a929-a2a7735e7d22",
+                              "createdAt": "2025-08-12T21:56:35.269Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "779e2146-ea7d-475f-8641-146348c278c2",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-12T21:56:35.238Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "7723abbf-4c5b-44fd-9b25-7d89d27a5f78",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-12T21:56:35.207Z",
+                      "shelves": [
+                        {
+                          "id": "3a51cd62-4f1d-44d5-be18-cbf583e37927",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-12T21:56:35.238Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар Нормальный",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Нормальный Склад",
+                              "id": "b0467aa2-89ae-4ac9-b9bc-1b9d378a23c2",
+                              "createdAt": "2025-08-12T21:56:35.269Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              }
+            ],
+            "structureInfo": "Each warehouse tested with: 2+ rooms, 3+ containers, 2+ items"
+          },
+          "timestamp": "2025-08-12T21:56:35.390Z",
+          "duration": 2355
+        },
+        {
+          "testName": "Complete Warehouse Structure",
+          "status": "FAIL",
+          "message": "Warehouse not found",
+          "timestamp": "2025-08-12T21:56:35.390Z",
+          "duration": 0.20000000298023224
+        },
+        {
+          "testName": "Container Creation",
+          "status": "PASS",
+          "message": "Container created successfully",
+          "details": {
+            "shelfId": "36d7fb49-08e4-4116-86e8-e146a43a797a",
+            "name": "Test Container 1755035795390",
+            "roomId": "a81a0a60-ae64-4cbd-a485-f83641666d23"
+          },
+          "timestamp": "2025-08-12T21:56:35.494Z",
+          "duration": 104.20000000298023
+        },
+        {
+          "testName": "Item Creation",
+          "status": "PASS",
+          "message": "Item created successfully",
+          "details": {
+            "itemId": "830a2712-5ea4-4587-8f1d-9f48fa5d719d",
+            "name": "Test Item 1755035795494",
+            "quantity": 5
+          },
+          "timestamp": "2025-08-12T21:56:35.594Z",
+          "duration": 100.10000000149012
+        },
+        {
+          "testName": "Advanced Bucket & Movement Operations",
+          "status": "PASS",
+          "message": "Bucket operations: 0/0 moves successful, 2/2 edge cases passed",
+          "details": {
+            "totalMoves": 0,
+            "successfulMoves": 0,
+            "edgeCasesPassed": 2,
+            "finalBucketCount": 2,
+            "operations": []
+          },
+          "timestamp": "2025-08-12T21:56:35.646Z",
+          "duration": 51.29999999701977
+        }
+      ],
+      "startTime": "2025-08-12T21:56:33.031Z",
+      "totalDuration": 2615,
+      "passed": 5,
+      "failed": 1,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:56:35.646Z"
+    },
+    {
+      "suiteName": "UI/UX Tests",
+      "results": [
+        {
+          "testName": "Modal Components",
+          "status": "PASS",
+          "message": "All modal components defined",
+          "details": {
+            "modals": [
+              "AddItemModal",
+              "ChatModal",
+              "ConfirmModal",
+              "InputModal",
+              "InfoModal",
+              "ImportExportModal",
+              "DebugModal",
+              "QRSyncModal"
+            ]
+          },
+          "timestamp": "2025-08-12T21:56:35.646Z",
+          "duration": 0.10000000149011612
+        },
+        {
+          "testName": "Theme System",
+          "status": "PASS",
+          "message": "Theme system operational",
+          "details": {
+            "currentTheme": "terminal",
+            "availableThemes": [
+              "terminal",
+              "neon",
+              "forest",
+              "ocean",
+              "sunset",
+              "minimal",
+              "dark",
+              "candy",
+              "retro",
+              "monochrome"
+            ]
+          },
+          "timestamp": "2025-08-12T21:56:35.646Z",
+          "duration": 0
+        },
+        {
+          "testName": "User Service",
+          "status": "PASS",
+          "message": "User service operational",
+          "details": {
+            "currentUser": {
+              "id": "master-1754902438556",
+              "name": "Master",
+              "role": "master",
+              "createdAt": "2025-08-11T08:53:58.556Z",
+              "lastActive": "2025-08-11T10:22:08.763Z",
+              "personalContainers": [],
+              "hiddenContainers": []
+            },
+            "hasExportPermission": true
+          },
+          "timestamp": "2025-08-12T21:56:35.646Z",
+          "duration": 0
+        }
+      ],
+      "startTime": "2025-08-12T21:56:35.646Z",
+      "totalDuration": 0,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:56:35.646Z"
+    },
+    {
+      "suiteName": "Data Persistence",
+      "results": [
+        {
+          "testName": "Data Export",
+          "status": "PASS",
+          "message": "Data export successful",
+          "details": {
+            "warehousesCount": 11,
+            "bucketItemsCount": 2
+          },
+          "timestamp": "2025-08-12T21:56:35.646Z",
+          "duration": 0
+        },
+        {
+          "testName": "Data Backup/Restore",
+          "status": "PASS",
+          "message": "Backup/restore working correctly",
+          "timestamp": "2025-08-12T21:56:35.647Z",
+          "duration": 0.5
+        }
+      ],
+      "startTime": "2025-08-12T21:56:35.646Z",
+      "totalDuration": 1,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:56:35.647Z"
+    },
+    {
+      "suiteName": "SMARTIE AI Tests",
+      "results": [
+        {
+          "testName": "Local LLM Configuration",
+          "status": "PASS",
+          "message": "Local LLM connection successful",
+          "details": {
+            "baseUrl": "http://172.29.240.1:5174",
+            "model": "openai/gpt-oss-20b",
+            "apiKey": "test-key",
+            "availableModels": {
+              "data": [
+                {
+                  "id": "openai/gpt-oss-20b",
+                  "object": "model",
+                  "owned_by": "organization_owner"
+                },
+                {
+                  "id": "text-embedding-nomic-embed-text-v1.5",
+                  "object": "model",
+                  "owned_by": "organization_owner"
+                }
+              ],
+              "object": "list"
+            }
+          },
+          "timestamp": "2025-08-12T21:56:35.652Z",
+          "duration": 4.799999997019768
+        },
+        {
+          "testName": "SMARTIE Real Commands Test",
+          "status": "PASS",
+          "message": "SMARTIE handled 3/3 complex multilingual commands",
+          "details": {
+            "successfulCommands": 3,
+            "totalCommands": 3,
+            "responses": [
+              {
+                "command": "Current inventory: 11 warehouses, 2 bucket items.\nCреate warehouse \"Склад 🏭\"...",
+                "response": "✅ Хранилище «Склад ...",
+                "status": "SUCCESS"
+              },
+              {
+                "command": "Find expired items tomorrow...",
+                "response": "I don’t have direct access to your inventory database, but here’s a quick way...",
+                "status": "SUCCESS"
+              },
+              {
+                "command": "Generate short inventory report...",
+                "response": "**Inventory Report – [Date]**\n\n| Item ID | Description          | Category   | Quantity on Hand | Reorder...",
+                "status": "SUCCESS"
+              }
+            ]
+          },
+          "timestamp": "2025-08-12T21:56:44.608Z",
+          "duration": 8956.60000000149
+        },
+        {
+          "testName": "SMARTIE Inventory Context",
+          "status": "PASS",
+          "message": "SMARTIE inventory context generated successfully",
+          "details": {
+            "inventoryContext": {
+              "totalWarehouses": 11,
+              "totalRooms": 22,
+              "totalContainers": 31,
+              "totalItems": 21,
+              "bucketItems": 2
+            },
+            "contextMessage": "Current inventory state: {\"totalWarehouses\":11,\"totalRooms\":22,\"totalContainers\":31,\"totalItems\":21,\"bucketItems\":2}. Summarize this data."
+          },
+          "timestamp": "2025-08-12T21:56:44.609Z",
+          "duration": 0.3999999985098839
+        },
+        {
+          "testName": "SMARTIE Actions Simulation",
+          "status": "PASS",
+          "message": "SMARTIE actions simulation completed",
+          "details": {
+            "supportedActions": 3,
+            "actions": [
+              {
+                "action": "createWarehouse",
+                "params": {
+                  "name": "AI Test Warehouse"
+                },
+                "description": "Create warehouse via AI",
+                "status": "simulated",
+                "timestamp": "2025-08-12T21:56:44.609Z"
+              },
+              {
+                "action": "findItems",
+                "params": {
+                  "query": "test"
+                },
+                "description": "Search items via AI",
+                "status": "simulated",
+                "timestamp": "2025-08-12T21:56:44.609Z"
+              },
+              {
+                "action": "getInventorySummary",
+                "params": {},
+                "description": "Generate inventory summary",
+                "status": "simulated",
+                "timestamp": "2025-08-12T21:56:44.609Z"
+              }
+            ]
+          },
+          "timestamp": "2025-08-12T21:56:44.609Z",
+          "duration": 0.10000000149011612
+        },
+        {
+          "testName": "SMARTIE Provider Configuration",
+          "status": "PASS",
+          "message": "SMARTIE provider configuration ready",
+          "details": {
+            "providers": [
+              {
+                "name": "Claude",
+                "baseUrl": "https://api.anthropic.com",
+                "model": "claude-3-sonnet-20240229",
+                "requiresApiKey": true,
+                "status": "available"
+              },
+              {
+                "name": "Local LLM",
+                "baseUrl": "http://172.29.240.1:5174",
+                "model": "openai/gpt-oss-20b",
+                "requiresApiKey": false,
+                "status": "configured"
+              }
+            ]
+          },
+          "timestamp": "2025-08-12T21:56:44.609Z",
+          "duration": 0
+        }
+      ],
+      "startTime": "2025-08-12T21:56:35.647Z",
+      "totalDuration": 8962,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:56:44.609Z"
+    },
+    {
+      "suiteName": "Localization",
+      "results": [
+        {
+          "testName": "Available Locales",
+          "status": "PASS",
+          "message": "Localization system operational",
+          "details": {
+            "locales": [
+              {
+                "code": "uk",
+                "name": "Українська",
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "uk-UA",
+                "flag": "🇺🇦"
+              },
+              {
+                "code": "ru",
+                "name": "Русский",
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "ru-RU",
+                "flag": "🇷🇺"
+              },
+              {
+                "code": "en",
+                "name": "English",
+                "dateFormat": "MM/DD/YYYY",
+                "numberFormat": "en-US",
+                "flag": "🇺🇸"
+              },
+              {
+                "code": "de",
+                "name": "Deutsch",
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "de-DE",
+                "flag": "🇩🇪"
+              },
+              {
+                "code": "pl",
+                "name": "Polski",
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "pl-PL",
+                "flag": "🇵🇱"
+              }
+            ],
+            "currentLocale": "uk"
+          },
+          "timestamp": "2025-08-12T21:56:44.609Z",
+          "duration": 0.10000000149011612
+        },
+        {
+          "testName": "Locale Switching",
+          "status": "PASS",
+          "message": "Locale switching successful",
+          "details": {
+            "originalLocale": "uk",
+            "testLocale": {
+              "code": "ru",
+              "name": "Русский",
+              "dateFormat": "DD.MM.YYYY",
+              "numberFormat": "ru-RU",
+              "flag": "🇷🇺"
+            },
+            "newLocale": "ru"
+          },
+          "timestamp": "2025-08-12T21:56:44.609Z",
+          "duration": 0.09999999403953552
+        }
+      ],
+      "startTime": "2025-08-12T21:56:44.609Z",
+      "totalDuration": 0,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:56:44.609Z"
+    },
+    {
+      "suiteName": "Theme System",
+      "results": [
+        {
+          "testName": "Theme Operations",
+          "status": "PASS",
+          "message": "Theme system operational",
+          "details": {
+            "originalTheme": "terminal",
+            "availableThemes": [
+              "terminal",
+              "neon",
+              "forest",
+              "ocean",
+              "sunset",
+              "minimal",
+              "dark",
+              "candy",
+              "retro",
+              "monochrome"
+            ]
+          },
+          "timestamp": "2025-08-12T21:56:44.609Z",
+          "duration": 0
+        }
+      ],
+      "startTime": "2025-08-12T21:56:44.609Z",
+      "totalDuration": 0,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:56:44.609Z"
+    },
+    {
+      "suiteName": "Import/Export",
+      "results": [
+        {
+          "testName": "JSON Export Format",
+          "status": "PASS",
+          "message": "JSON export format valid",
+          "details": {
+            "size": 23367,
+            "warehouses": 11,
+            "bucketItems": 2
+          },
+          "timestamp": "2025-08-12T21:56:44.609Z",
+          "duration": 0.20000000298023224
+        }
+      ],
+      "startTime": "2025-08-12T21:56:44.609Z",
+      "totalDuration": 0,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:56:44.609Z"
+    },
+    {
+      "suiteName": "Performance",
+      "results": [
+        {
+          "testName": "Data Loading Performance",
+          "status": "PASS",
+          "message": "Data loading took 0.00ms",
+          "details": {
+            "duration": 0,
+            "warehousesCount": 11
+          },
+          "timestamp": "2025-08-12T21:56:44.610Z",
+          "duration": 0
+        },
+        {
+          "testName": "Large Data Handling",
+          "status": "PASS",
+          "message": "Large data processing took 0.20ms",
+          "details": {
+            "originalSize": 1000,
+            "filteredSize": 482,
+            "duration": 0.20000000298023224
+          },
+          "timestamp": "2025-08-12T21:56:44.610Z",
+          "duration": 0.20000000298023224
+        }
+      ],
+      "startTime": "2025-08-12T21:56:44.610Z",
+      "totalDuration": 0,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:56:44.610Z"
+    }
+  ],
+  "summary": {
+    "totalSuites": 8,
+    "totalTests": 22,
+    "totalPassed": 21,
+    "totalFailed": 1,
+    "totalSkipped": 0,
+    "totalDuration": 11578
+  }
+}
