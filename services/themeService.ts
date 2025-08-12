@@ -266,13 +266,13 @@ class ThemeService {
         const preferences: UserThemePreferences = JSON.parse(savedTheme);
         this.currentVibe = preferences.currentVibe;
         this.customElements = preferences.customElements || [];
-        this.designerModeEnabled = preferences.designerModeEnabled || false;
+        // Always disable designer mode on load for safety
+        this.designerModeEnabled = false;
         
         this.applyTheme();
         
-        if (this.designerModeEnabled) {
-          this.enableDesignerMode();
-        }
+        // Designer mode should only be enabled manually via UI
+        this.disableDesignerMode();
       } catch (error) {
         debugService.error('ThemeService: Failed to load user theme', error);
       }
@@ -283,6 +283,11 @@ class ThemeService {
 
   // Method to be called when user switches
   onUserChanged() {
+    // Disable designer mode by default on user change
+    if (this.designerModeEnabled) {
+      this.disableDesignerMode();
+      this.designerModeEnabled = false;
+    }
     this.loadUserTheme();
   }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download, Bug } from 'lucide-react';
+import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download, Bug, TestTube } from 'lucide-react';
 
 import { Warehouse, Room, Shelf, Item, ItemCore, BucketItem, UserProfile } from './types';
 import { ASCII_COLORS } from './constants';
@@ -18,6 +18,7 @@ import DebugModal from './components/DebugModal';
 import CurrencySelector from './components/CurrencySelector';
 import UserSwitcher from './components/UserSwitcher';
 import QRSyncModal from './components/QRSyncModal';
+import SelfTestModal from './components/SelfTestModal';
 import localizationService from './services/localizationService';
 import debugService from './services/debugService';
 import userService from './services/userService';
@@ -80,6 +81,7 @@ const InventoryApp: React.FC = () => {
   const [showVisual, setShowVisual] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
   const [showQRSync, setShowQRSync] = useState(false);
+  const [showSelfTest, setShowSelfTest] = useState(false);
 
   const showNotification = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     if (type === 'success') setSuccessMessage(message);
@@ -719,6 +721,14 @@ const InventoryApp: React.FC = () => {
                 >
                   <Bug size={16} className="text-orange-400"/>
                 </button>
+                
+                <button 
+                  onClick={() => setShowSelfTest(true)} 
+                  className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                  title="Self-Test Suite"
+                >
+                  <TestTube size={16} className="text-purple-400"/>
+                </button>
               </div>
             )}
 
@@ -739,6 +749,7 @@ const InventoryApp: React.FC = () => {
         <VisualView show={showVisual} onClose={() => setShowVisual(false)} />
         <DebugModal show={showDebug} onClose={() => setShowDebug(false)} />
         <QRSyncModal show={showQRSync} onClose={() => setShowQRSync(false)} />
+        <SelfTestModal show={showSelfTest} onClose={() => setShowSelfTest(false)} />
         {containerToMove ? (
           <div className={`${ASCII_COLORS.inputBg} p-4 border-2 ${ASCII_COLORS.border} rounded-lg`}>
             <h2 className={`text-xl font-bold mb-4 ${ASCII_COLORS.accent}`}>Move Container: {containerToMove.name}</h2>

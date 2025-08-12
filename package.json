@@ -53,6 +53,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "happy-dom": "^18.0.1",
     "prettier": "^3.6.2",
+    "puppeteer": "^24.16.1",
     "typescript": "~5.7.2",
     "vite": "^6.2.0",
     "vitest": "^2.1.9"
