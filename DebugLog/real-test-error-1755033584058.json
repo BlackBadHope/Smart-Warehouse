@@ -1,0 +1,6 @@
+{
+  "timestamp": "2025-08-12T21:19:44.058Z",
+  "error": "page.waitForTimeout is not a function",
+  "stack": "TypeError: page.waitForTimeout is not a function\n    at runRealTest (file:///C:/Users/ish50/Downloads/inventory-os-v2.6/realTest.js:38:16)",
+  "success": false
+}

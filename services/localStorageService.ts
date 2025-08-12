@@ -451,3 +451,128 @@ export const findEntityByNameAndType = (
   
   return null;
 };
+
+// Export all data for backup/sharing
+export const exportData = () => {
+  try {
+    return {
+      warehouses: localData.warehouses,
+      bucketItems: localData.bucketItems,
+      shoppingList: localData.shoppingList,
+      exportedAt: new Date().toISOString(),
+      version: '2.6.0'
+    };
+  } catch (error) {
+    console.error('Error exporting data:', error);
+    return {
+      warehouses: [],
+      bucketItems: [],
+      shoppingList: [],
+      exportedAt: new Date().toISOString(),
+      version: '2.6.0'
+    };
+  }
+};
+
+// Import data from backup
+export const importData = (importedData: any, options = { conflictResolution: 'new-ids' }) => {
+  try {
+    if (importedData.warehouses) {
+      if (options.conflictResolution === 'overwrite') {
+        localData.warehouses = importedData.warehouses;
+      } else {
+        // Generate new IDs to avoid conflicts
+        const processedWarehouses = importedData.warehouses.map((warehouse: any) => ({
+          ...warehouse,
+          id: uuidv4(),
+          rooms: warehouse.rooms?.map((room: any) => ({
+            ...room,
+            id: uuidv4(),
+            shelves: room.shelves?.map((shelf: any) => ({
+              ...shelf,
+              id: uuidv4(),
+              items: shelf.items?.map((item: any) => ({
+                ...item,
+                id: uuidv4()
+              })) || []
+            })) || []
+          })) || []
+        }));
+        localData.warehouses.push(...processedWarehouses);
+      }
+    }
+    
+    if (importedData.bucketItems && options.conflictResolution !== 'skip-bucket') {
+      const processedBucketItems = importedData.bucketItems.map((item: any) => ({
+        ...item,
+        id: uuidv4()
+      }));
+      localData.bucketItems.push(...processedBucketItems);
+    }
+    
+    saveToLocalStorage();
+    return true;
+  } catch (error) {
+    console.error('Error importing data:', error);
+    return false;
+  }
+};
+
+// Reset all data for testing purposes
+export const resetAllData = () => {
+  try {
+    localData = {
+      warehouses: [],
+      bucketItems: [],
+      shoppingList: []
+    };
+    localStorage.removeItem(STORAGE_KEY);
+    
+    // Trigger UI update events
+    window.dispatchEvent(new CustomEvent('dataReset', { detail: { timestamp: new Date().toISOString() } }));
+    window.dispatchEvent(new CustomEvent('warehouseUpdated', { detail: { action: 'reset' } }));
+    
+    return true;
+  } catch (error) {
+    console.error('Error resetting data:', error);
+    return false;
+  }
+};
+
+// Backup data before tests
+export const createTestBackup = () => {
+  try {
+    const currentData = exportData();
+    const backupKey = `test-backup-${Date.now()}`;
+    localStorage.setItem(backupKey, JSON.stringify(currentData));
+    return backupKey;
+  } catch (error) {
+    console.error('Error creating test backup:', error);
+    return null;
+  }
+};
+
+// Restore data after tests
+export const restoreTestBackup = (backupKey: string) => {
+  try {
+    const backupData = localStorage.getItem(backupKey);
+    if (backupData) {
+      const parsedData = JSON.parse(backupData);
+      localData = {
+        warehouses: parsedData.warehouses || [],
+        bucketItems: parsedData.bucketItems || [],
+        shoppingList: parsedData.shoppingList || []
+      };
+      saveToLocalStorage();
+      localStorage.removeItem(backupKey); // Clean up backup
+      
+      // Trigger UI update
+      window.dispatchEvent(new CustomEvent('warehouseUpdated', { detail: { action: 'restore' } }));
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error restoring test backup:', error);
+    return false;
+  }
+};

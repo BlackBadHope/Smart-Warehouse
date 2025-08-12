@@ -115,14 +115,24 @@ const InventoryApp: React.FC = () => {
       setCurrentCurrency(curr => curr);
     };
     
+    // Listen for warehouse changes during testing
+    const handleWarehouseUpdate = (event: CustomEvent) => {
+      debugService.info('Warehouse data changed, reloading', event.detail);
+      loadWarehouses();
+    };
+    
     document.addEventListener('themeChanged', handleThemeChange as EventListener);
     document.addEventListener('localeChanged', handleLocaleChange as EventListener);
+    document.addEventListener('warehouseCreated', handleWarehouseUpdate as EventListener);
+    document.addEventListener('warehouseUpdated', handleWarehouseUpdate as EventListener);
     
     debugService.action('App initialized successfully');
     
     return () => {
       document.removeEventListener('themeChanged', handleThemeChange as EventListener);
       document.removeEventListener('localeChanged', handleLocaleChange as EventListener);
+      document.removeEventListener('warehouseCreated', handleWarehouseUpdate as EventListener);
+      document.removeEventListener('warehouseUpdated', handleWarehouseUpdate as EventListener);
     };
   }, []);
 

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Play, Download, CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react';
+import { X, Play, Download, CheckCircle, XCircle, Clock, AlertCircle, Trash2 } from 'lucide-react';
 import { ASCII_COLORS } from '../constants';
 import selfTestService, { TestSuite, TestResult } from '../services/selfTestService';
 import debugService from '../services/debugService';
+import * as localStorageService from '../services/localStorageService';
 
 interface SelfTestModalProps {
   show: boolean;
@@ -102,6 +103,22 @@ const SelfTestModal: React.FC<SelfTestModalProps> = ({ show, onClose }) => {
     setShowResults(true);
   };
 
+  const resetData = () => {
+    if (confirm('⚠️ This will permanently delete ALL warehouses, rooms, containers, and items. Are you sure?')) {
+      try {
+        localStorageService.resetAllData();
+        debugService.info('🗑️ All data reset by user');
+        alert('✅ All data has been reset successfully.');
+        // Clear test results too since they're now irrelevant
+        setTestResults([]);
+        setShowResults(false);
+      } catch (error) {
+        debugService.error('❌ Failed to reset data', error);
+        alert('❌ Failed to reset data. Check console for details.');
+      }
+    }
+  };
+
   if (!show) return null;
 
   return (
@@ -135,6 +152,15 @@ const SelfTestModal: React.FC<SelfTestModalProps> = ({ show, onClose }) => {
                 >
                   <Play className="w-4 h-4 mr-2" />
                   {isRunning ? 'Running Tests...' : 'Run Full Test Suite'}
+                </button>
+
+                <button
+                  onClick={resetData}
+                  disabled={isRunning}
+                  className={`w-full mt-2 bg-red-600 hover:bg-red-700 p-2 rounded-md border border-red-500 disabled:opacity-50 flex items-center justify-center text-white`}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Reset All Data
                 </button>
 
                 {isRunning && (

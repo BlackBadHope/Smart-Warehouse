@@ -1,0 +1,628 @@
+{
+  "timestamp": "2025-08-12T21:25:05.689Z",
+  "testSuites": [
+    {
+      "suiteName": "Core Functionality Edge Cases",
+      "results": [
+        {
+          "testName": "Local Storage Stress Test",
+          "status": "PASS",
+          "message": "Local storage survived corruption test",
+          "timestamp": "2025-08-12T21:24:18.968Z",
+          "duration": 2.7000000029802322
+        },
+        {
+          "testName": "Warehouse Names Edge Cases",
+          "status": "FAIL",
+          "message": "0/10 edge case names handled",
+          "details": {
+            "successCount": 0,
+            "failureCount": 10,
+            "results": [
+              {
+                "name": "🏭 Склад «Спецсимволы» №1",
+                "status": "NOT_FOUND",
+                "id": {
+                  "id": "5e1125e3-cf04-4f8f-bcdf-ed42824e3c5c",
+                  "name": "🏭 Склад «Спецсимволы» №1",
+                  "createdAt": "2025-08-12T21:24:18.968Z",
+                  "rooms": []
+                }
+              },
+              {
+                "name": "ПолнойДлиннойНазваниеСкладаБезПробеловДляТестированияОграниченийИнтерфейса",
+                "status": "NOT_FOUND",
+                "id": {
+                  "id": "5789c8bd-d512-4e7a-ab95-f71e81e1e70d",
+                  "name": "ПолнойДлиннойНазваниеСкладаБезПробеловДляТестированияОграниченийИнтерфейса",
+                  "createdAt": "2025-08-12T21:24:19.019Z",
+                  "rooms": []
+                }
+              },
+              {
+                "name": "",
+                "status": "NOT_FOUND",
+                "id": {
+                  "id": "01663e14-0f31-4898-a11e-cad4742e57e1",
+                  "name": "",
+                  "createdAt": "2025-08-12T21:24:19.069Z",
+                  "rooms": []
+                }
+              },
+              {
+                "name": "   ",
+                "status": "NOT_FOUND",
+                "id": {
+                  "id": "f49128df-33d6-4d53-9809-4fa2fc28afc6",
+                  "name": "   ",
+                  "createdAt": "2025-08-12T21:24:19.123Z",
+                  "rooms": []
+                }
+              },
+              {
+                "name": "Склад\nс\tпереносами\rстрок",
+                "status": "NOT_FOUND",
+                "id": {
+                  "id": "3e7658be-9a2f-453e-8296-2082ee072504",
+                  "name": "Склад\nс\tпереносами\rстрок",
+                  "createdAt": "2025-08-12T21:24:19.173Z",
+                  "rooms": []
+                }
+              },
+              {
+                "name": "🚀 🌟 ✨ 💫 ⭐",
+                "status": "NOT_FOUND",
+                "id": {
+                  "id": "18c6f77c-b7f2-45ef-b048-c636620e7f41",
+                  "name": "🚀 🌟 ✨ 💫 ⭐",
+                  "createdAt": "2025-08-12T21:24:19.224Z",
+                  "rooms": []
+                }
+              },
+              {
+                "name": "Тест\"'`<script>alert(1)</script>",
+                "status": "NOT_FOUND",
+                "id": {
+                  "id": "8fd0fe49-47e3-489f-8d6f-9da332de930a",
+                  "name": "Тест\"'`<script>alert(1)</script>",
+                  "createdAt": "2025-08-12T21:24:19.274Z",
+                  "rooms": []
+                }
+              },
+              {
+                "name": "../../malicious/path",
+                "status": "NOT_FOUND",
+                "id": {
+                  "id": "79daf333-ad03-4e6f-ba26-9199aa17a323",
+                  "name": "../../malicious/path",
+                  "createdAt": "2025-08-12T21:24:19.327Z",
+                  "rooms": []
+                }
+              },
+              {
+                "name": "Склад 💀 DELETE * FROM warehouses;",
+                "status": "NOT_FOUND",
+                "id": {
+                  "id": "9d201ed0-22e9-4fe1-accf-ff814aed065e",
+                  "name": "Склад 💀 DELETE * FROM warehouses;",
+                  "createdAt": "2025-08-12T21:24:19.377Z",
+                  "rooms": []
+                }
+              },
+              {
+                "name": "Нормальный Склад",
+                "status": "NOT_FOUND",
+                "id": {
+                  "id": "1ac161bd-728f-41e8-b0de-00f5fb0d03d9",
+                  "name": "Нормальный Склад",
+                  "createdAt": "2025-08-12T21:24:19.431Z",
+                  "rooms": []
+                }
+              }
+            ]
+          },
+          "timestamp": "2025-08-12T21:24:19.481Z",
+          "duration": 513.3000000044703
+        },
+        {
+          "testName": "Complete Warehouse Structure",
+          "status": "FAIL",
+          "message": "Warehouse not found",
+          "timestamp": "2025-08-12T21:24:19.482Z",
+          "duration": 0.29999999701976776
+        },
+        {
+          "testName": "Container Creation",
+          "status": "FAIL",
+          "message": "Container not found after creation",
+          "timestamp": "2025-08-12T21:24:19.482Z",
+          "duration": 0.19999999552965164
+        },
+        {
+          "testName": "Item Creation",
+          "status": "FAIL",
+          "message": "Item not found after creation",
+          "timestamp": "2025-08-12T21:24:19.482Z",
+          "duration": 0.10000000149011612
+        },
+        {
+          "testName": "Advanced Bucket & Movement Operations",
+          "status": "FAIL",
+          "message": "No rooms available for bucket test",
+          "timestamp": "2025-08-12T21:24:19.482Z",
+          "duration": 0.20000000298023224
+        }
+      ],
+      "startTime": "2025-08-12T21:24:18.965Z",
+      "totalDuration": 517,
+      "passed": 1,
+      "failed": 5,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:24:19.482Z"
+    },
+    {
+      "suiteName": "UI/UX Tests",
+      "results": [
+        {
+          "testName": "Modal Components",
+          "status": "PASS",
+          "message": "All modal components defined",
+          "details": {
+            "modals": [
+              "AddItemModal",
+              "ChatModal",
+              "ConfirmModal",
+              "InputModal",
+              "InfoModal",
+              "ImportExportModal",
+              "DebugModal",
+              "QRSyncModal"
+            ]
+          },
+          "timestamp": "2025-08-12T21:24:19.483Z",
+          "duration": 0
+        },
+        {
+          "testName": "Theme System",
+          "status": "PASS",
+          "message": "Theme system operational",
+          "details": {
+            "currentTheme": "terminal",
+            "availableThemes": [
+              "terminal",
+              "neon",
+              "forest",
+              "ocean",
+              "sunset",
+              "minimal",
+              "dark",
+              "candy",
+              "retro",
+              "monochrome"
+            ]
+          },
+          "timestamp": "2025-08-12T21:24:19.483Z",
+          "duration": 0
+        },
+        {
+          "testName": "User Service",
+          "status": "PASS",
+          "message": "User service operational",
+          "details": {
+            "currentUser": {
+              "id": "master-1754902438556",
+              "name": "Master",
+              "role": "master",
+              "createdAt": "2025-08-11T08:53:58.556Z",
+              "lastActive": "2025-08-11T10:22:08.763Z",
+              "personalContainers": [],
+              "hiddenContainers": []
+            },
+            "hasExportPermission": true
+          },
+          "timestamp": "2025-08-12T21:24:19.483Z",
+          "duration": 0
+        }
+      ],
+      "startTime": "2025-08-12T21:24:19.482Z",
+      "totalDuration": 1,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:24:19.483Z"
+    },
+    {
+      "suiteName": "Data Persistence",
+      "results": [
+        {
+          "testName": "Data Export",
+          "status": "PASS",
+          "message": "Data export successful",
+          "details": {
+            "warehousesCount": 14,
+            "bucketItemsCount": 6
+          },
+          "timestamp": "2025-08-12T21:24:19.483Z",
+          "duration": 0
+        },
+        {
+          "testName": "Data Backup/Restore",
+          "status": "PASS",
+          "message": "Backup/restore working correctly",
+          "timestamp": "2025-08-12T21:24:19.483Z",
+          "duration": 0.30000000447034836
+        }
+      ],
+      "startTime": "2025-08-12T21:24:19.483Z",
+      "totalDuration": 0,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:24:19.483Z"
+    },
+    {
+      "suiteName": "SMARTIE AI Tests",
+      "results": [
+        {
+          "testName": "Local LLM Configuration",
+          "status": "PASS",
+          "message": "Local LLM connection successful",
+          "details": {
+            "baseUrl": "http://172.29.240.1:5174",
+            "model": "openai/gpt-oss-20b",
+            "apiKey": "test-key",
+            "availableModels": {
+              "data": [
+                {
+                  "id": "openai/gpt-oss-20b",
+                  "object": "model",
+                  "owned_by": "organization_owner"
+                },
+                {
+                  "id": "text-embedding-nomic-embed-text-v1.5",
+                  "object": "model",
+                  "owned_by": "organization_owner"
+                }
+              ],
+              "object": "list"
+            }
+          },
+          "timestamp": "2025-08-12T21:24:19.490Z",
+          "duration": 7
+        },
+        {
+          "testName": "SMARTIE Real Commands Test",
+          "status": "PASS",
+          "message": "SMARTIE handled 5/5 complex multilingual commands",
+          "details": {
+            "successfulCommands": 5,
+            "totalCommands": 5,
+            "responses": [
+              {
+                "command": "Current inventory: 14 warehouses, 6 bucket items.\nCреate a warehouse called \"Главный Склад 🏭\" and a...",
+                "response": "✅ **Warehouse “Главный Склад 🏭” created successfully!**  \n🧊 Added room: **“Холодильная Камера”** (Cold Storage)  \n\nCurrent inventory status:\n- **Warehouses:** 15  \n- **Rooms per warehouse:**  \n  - Г...",
+                "status": "SUCCESS"
+              },
+              {
+                "command": "Move все товары from bucket to \"Склад-🏭-Warehouse-Magazyn-Lager\" warehouse...",
+                "response": "✅ Все товары из корзины успешно перемещены в склад «Склад-🏭-Warehouse-Magazyn-Lager»....",
+                "status": "SUCCESS"
+              },
+              {
+                "command": "Find all items that expire завтра and list them...",
+                "response": "**Items expiring tomorrow**\n\n| Item | Expiration Date |\n|------|-----------------|\n| Milk 2% | 2025‑08‑14 |\n| Yogurt Greek | 2025‑08‑14 |\n| Fresh Spinach | 2025‑08‑14 |\n\n*(Dates are in YYYY‑MM‑DD form...",
+                "status": "SUCCESS"
+              },
+              {
+                "command": "Создай товар \"Молоко 🥛\" quantity 5.5 liters in холодильник...",
+                "response": "✅ Товар «Молоко 🥛» с количеством **5.5 л** успешно добавлен в категорию **холодильник**....",
+                "status": "SUCCESS"
+              },
+              {
+                "command": "Generate полный отчет по inventory in русский language...",
+                "response": "**Полный отчёт о состоянии инвентаря**\n\n| № | Наименование товара | Код/Серийный номер | Кол-во на складе | Минимальный уровень | Максимальный уровень | Описание |\n|---|---------------------|---------...",
+                "status": "SUCCESS"
+              }
+            ]
+          },
+          "timestamp": "2025-08-12T21:25:05.687Z",
+          "duration": 46196.60000000149
+        },
+        {
+          "testName": "SMARTIE Inventory Context",
+          "status": "PASS",
+          "message": "SMARTIE inventory context generated successfully",
+          "details": {
+            "inventoryContext": {
+              "totalWarehouses": 14,
+              "totalRooms": 3,
+              "totalContainers": 4,
+              "totalItems": 6,
+              "bucketItems": 6
+            },
+            "contextMessage": "Current inventory state: {\"totalWarehouses\":14,\"totalRooms\":3,\"totalContainers\":4,\"totalItems\":6,\"bucketItems\":6}. Summarize this data."
+          },
+          "timestamp": "2025-08-12T21:25:05.688Z",
+          "duration": 1
+        },
+        {
+          "testName": "SMARTIE Actions Simulation",
+          "status": "PASS",
+          "message": "SMARTIE actions simulation completed",
+          "details": {
+            "supportedActions": 3,
+            "actions": [
+              {
+                "action": "createWarehouse",
+                "params": {
+                  "name": "AI Test Warehouse"
+                },
+                "description": "Create warehouse via AI",
+                "status": "simulated",
+                "timestamp": "2025-08-12T21:25:05.688Z"
+              },
+              {
+                "action": "findItems",
+                "params": {
+                  "query": "test"
+                },
+                "description": "Search items via AI",
+                "status": "simulated",
+                "timestamp": "2025-08-12T21:25:05.688Z"
+              },
+              {
+                "action": "getInventorySummary",
+                "params": {},
+                "description": "Generate inventory summary",
+                "status": "simulated",
+                "timestamp": "2025-08-12T21:25:05.688Z"
+              }
+            ]
+          },
+          "timestamp": "2025-08-12T21:25:05.688Z",
+          "duration": 0
+        },
+        {
+          "testName": "SMARTIE Provider Configuration",
+          "status": "PASS",
+          "message": "SMARTIE provider configuration ready",
+          "details": {
+            "providers": [
+              {
+                "name": "Claude",
+                "baseUrl": "https://api.anthropic.com",
+                "model": "claude-3-sonnet-20240229",
+                "requiresApiKey": true,
+                "status": "available"
+              },
+              {
+                "name": "Local LLM",
+                "baseUrl": "http://172.29.240.1:5174",
+                "model": "openai/gpt-oss-20b",
+                "requiresApiKey": false,
+                "status": "configured"
+              }
+            ]
+          },
+          "timestamp": "2025-08-12T21:25:05.688Z",
+          "duration": 0
+        }
+      ],
+      "startTime": "2025-08-12T21:24:19.483Z",
+      "totalDuration": 46205,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:25:05.688Z"
+    },
+    {
+      "suiteName": "Localization",
+      "results": [
+        {
+          "testName": "Available Locales",
+          "status": "PASS",
+          "message": "Localization system operational",
+          "details": {
+            "locales": [
+              {
+                "code": "uk",
+                "name": "Українська",
+                "currencies": [
+                  "USD",
+                  "EUR",
+                  "UAH"
+                ],
+                "excludedCurrencies": [
+                  "RUB"
+                ],
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "uk-UA",
+                "flag": "🇺🇦"
+              },
+              {
+                "code": "ru",
+                "name": "Русский",
+                "currencies": [
+                  "RUB",
+                  "USD",
+                  "EUR"
+                ],
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "ru-RU",
+                "flag": "🇷🇺"
+              },
+              {
+                "code": "en",
+                "name": "English",
+                "currencies": [
+                  "USD",
+                  "EUR",
+                  "GBP"
+                ],
+                "dateFormat": "MM/DD/YYYY",
+                "numberFormat": "en-US",
+                "flag": "🇺🇸"
+              },
+              {
+                "code": "de",
+                "name": "Deutsch",
+                "currencies": [
+                  "EUR",
+                  "USD"
+                ],
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "de-DE",
+                "flag": "🇩🇪"
+              },
+              {
+                "code": "pl",
+                "name": "Polski",
+                "currencies": [
+                  "PLN",
+                  "EUR",
+                  "USD"
+                ],
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "pl-PL",
+                "flag": "🇵🇱"
+              }
+            ],
+            "currentLocale": "uk"
+          },
+          "timestamp": "2025-08-12T21:25:05.688Z",
+          "duration": 0
+        },
+        {
+          "testName": "Locale Switching",
+          "status": "PASS",
+          "message": "Locale switching successful",
+          "details": {
+            "originalLocale": "uk",
+            "testLocale": {
+              "code": "uk",
+              "name": "Українська",
+              "currencies": [
+                "USD",
+                "EUR",
+                "UAH"
+              ],
+              "excludedCurrencies": [
+                "RUB"
+              ],
+              "dateFormat": "DD.MM.YYYY",
+              "numberFormat": "uk-UA",
+              "flag": "🇺🇦"
+            },
+            "newLocale": "uk"
+          },
+          "timestamp": "2025-08-12T21:25:05.688Z",
+          "duration": 0.20000000298023224
+        }
+      ],
+      "startTime": "2025-08-12T21:25:05.688Z",
+      "totalDuration": 0,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:25:05.688Z"
+    },
+    {
+      "suiteName": "Theme System",
+      "results": [
+        {
+          "testName": "Theme Operations",
+          "status": "PASS",
+          "message": "Theme system operational",
+          "details": {
+            "originalTheme": "terminal",
+            "availableThemes": [
+              "terminal",
+              "neon",
+              "forest",
+              "ocean",
+              "sunset",
+              "minimal",
+              "dark",
+              "candy",
+              "retro",
+              "monochrome"
+            ]
+          },
+          "timestamp": "2025-08-12T21:25:05.688Z",
+          "duration": 0
+        }
+      ],
+      "startTime": "2025-08-12T21:25:05.688Z",
+      "totalDuration": 0,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:25:05.688Z"
+    },
+    {
+      "suiteName": "Import/Export",
+      "results": [
+        {
+          "testName": "JSON Export Format",
+          "status": "PASS",
+          "message": "JSON export format valid",
+          "details": {
+            "size": 9705,
+            "warehouses": 14,
+            "bucketItems": 6
+          },
+          "timestamp": "2025-08-12T21:25:05.688Z",
+          "duration": 0.10000000149011612
+        }
+      ],
+      "startTime": "2025-08-12T21:25:05.688Z",
+      "totalDuration": 0,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:25:05.688Z"
+    },
+    {
+      "suiteName": "Performance",
+      "results": [
+        {
+          "testName": "Data Loading Performance",
+          "status": "PASS",
+          "message": "Data loading took 0.00ms",
+          "details": {
+            "duration": 0,
+            "warehousesCount": 14
+          },
+          "timestamp": "2025-08-12T21:25:05.689Z",
+          "duration": 0
+        },
+        {
+          "testName": "Large Data Handling",
+          "status": "PASS",
+          "message": "Large data processing took 0.20ms",
+          "details": {
+            "originalSize": 1000,
+            "filteredSize": 472,
+            "duration": 0.20000000298023224
+          },
+          "timestamp": "2025-08-12T21:25:05.689Z",
+          "duration": 0.20000000298023224
+        }
+      ],
+      "startTime": "2025-08-12T21:25:05.689Z",
+      "totalDuration": 0,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-12T21:25:05.689Z"
+    }
+  ],
+  "summary": {
+    "totalSuites": 8,
+    "totalTests": 22,
+    "totalPassed": 17,
+    "totalFailed": 5,
+    "totalSkipped": 0,
+    "totalDuration": 46723
+  }
+}

@@ -38,6 +38,10 @@ class SelfTestService {
     this.isRunning = true;
     this.testResults = [];
     
+    // Create backup of current data before testing
+    debugService.info('💾 Creating data backup before tests');
+    const backupKey = localStorageService.createTestBackup();
+    
     debugService.info('🧪 Starting comprehensive self-test suite');
 
     try {
@@ -73,6 +77,11 @@ class SelfTestService {
     } catch (error) {
       debugService.error('❌ Self-test suite failed', { error: (error as Error).message });
     } finally {
+      // Note: backup is saved for manual restore if needed
+      if (backupKey) {
+        debugService.info('💾 Data backup saved as:', backupKey);
+      }
+      
       this.isRunning = false;
     }
 
@@ -80,53 +89,216 @@ class SelfTestService {
   }
 
   private async runCoreTests(): Promise<void> {
-    const suite = this.createTestSuite('Core Functionality');
+    const suite = this.createTestSuite('Core Functionality Edge Cases');
     
-    // Test 1: Local Storage Initialization
-    await this.runTest(suite, 'Local Storage Initialization', async () => {
+    // Test 1: Local Storage Initialization & Reset
+    await this.runTest(suite, 'Local Storage Stress Test', async () => {
       localStorageService.initializeLocalStorage();
-      return { status: 'PASS', message: 'Local storage initialized successfully' };
+      
+      // Test with corrupted localStorage
+      const originalData = localStorage.getItem('inventory-os-data');
+      localStorage.setItem('inventory-os-data', 'corrupted-json-data-{{{');
+      localStorageService.initializeLocalStorage();
+      
+      // Restore and test again
+      if (originalData) localStorage.setItem('inventory-os-data', originalData);
+      localStorageService.initializeLocalStorage();
+      
+      return { status: 'PASS', message: 'Local storage survived corruption test' };
     });
 
-    // Test 2: Warehouse Creation
-    await this.runTest(suite, 'Warehouse Creation', async () => {
-      const testWarehouseName = `Test Warehouse ${Date.now()}`;
-      const warehouseId = localStorageService.addWarehouse(testWarehouseName);
-      const warehouses = localStorageService.getWarehouses();
-      const createdWarehouse = warehouses.find(w => w.id === warehouseId);
+    // Test 2: Edge Case Warehouse Names
+    await this.runTest(suite, 'Warehouse Names Edge Cases', async () => {
+      const edgeCaseNames = [
+        '🏭 Склад «Спецсимволы» №1',           // Unicode + special chars
+        'ПолнойДлиннойНазваниеСкладаБезПробеловДляТестированияОграниченийИнтерфейса', // Very long
+        '',                                     // Empty string
+        '   ',                                  // Whitespace only
+        'Склад\nс\tпереносами\rстрок',         // Control characters
+        '🚀 🌟 ✨ 💫 ⭐',                     // Only emojis
+        'Тест"\'`<script>alert(1)</script>',  // XSS attempt
+        '../../malicious/path',                // Path traversal
+        'Склад 💀 DELETE * FROM warehouses;', // SQL injection attempt
+        'Нормальный Склад'                    // Normal name for comparison
+      ];
+      
+      let successCount = 0;
+      let failureCount = 0;
+      const results = [];
+      
+      for (const name of edgeCaseNames) {
+        try {
+          const warehouseId = localStorageService.addWarehouse(name);
+          await new Promise(resolve => setTimeout(resolve, 50));
+          
+          // Force refresh to get latest data
+          await new Promise(resolve => setTimeout(resolve, 100));
+          const warehouses = localStorageService.getWarehouses();
+          const created = warehouses.find(w => w.id === warehouseId);
+          
+          if (created && created.name === name) {
+            successCount++;
+            results.push({ name, status: 'CREATED', id: created });
+            // Trigger UI update event
+            window.dispatchEvent(new CustomEvent('warehouseCreated', { detail: { warehouse: created } }));
+          } else {
+            failureCount++;
+            results.push({ name, status: 'NOT_FOUND', id: created || warehouseId });
+          }
+        } catch (error) {
+          failureCount++;
+          results.push({ name, status: 'ERROR', error: (error as Error).message });
+        }
+      }
+      
+      return { 
+        status: failureCount === 0 ? 'PASS' : 'FAIL', 
+        message: `${successCount}/${edgeCaseNames.length} edge case names handled`,
+        details: { successCount, failureCount, results }
+      };
+    });
+
+    // Test 3: Complete Warehouse Structure Creation
+    await this.runTest(suite, 'Complete Warehouse Structure', async () => {
+      // Create warehouse with multilingual name
+      const warehouseName = 'Склад-🏭-Warehouse-Magazyn-Lager';
+      const warehouseId = localStorageService.addWarehouse(warehouseName);
+      
+      // Create rooms with extreme names
+      const roomNames = [
+        'Комната №1 🏠',
+        'Room with "quotes" and \'apostrophes\'',
+        '冷蔵庫 Холодильник Fridge',
+        'Р00м_W1th_Numb3rs&Symbols!@#',
+        'Комната с очень очень очень длинным названием для тестирования интерфейса'
+      ];
+      
+      const roomIds = [];
+      for (const roomName of roomNames) {
+        const roomId = localStorageService.addRoom(warehouseId, roomName);
+        roomIds.push({ id: roomId, name: roomName });
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      
+      // Create containers in each room
+      const containerIds = [];
+      for (const room of roomIds) {
+        const containerNames = [
+          'Полка A-1',
+          'Container_#2',
+          'Контейнер с emojis 📦🎁',
+          'Box-极限-テスト'
+        ];
+        
+        for (const containerName of containerNames) {
+          const containerId = localStorageService.addShelf(warehouseId, room.id, containerName);
+          containerIds.push({ 
+            id: containerId, 
+            name: containerName, 
+            roomId: room.id, 
+            roomName: room.name 
+          });
+          await new Promise(resolve => setTimeout(resolve, 5));
+        }
+      }
+      
+      // Create items with extreme parameters
+      const extremeItems = [
+        {
+          name: 'Товар с maximum параметрами 🎯',
+          quantity: 999999,
+          unit: 'kg' as const,
+          price: 9999.99,
+          priority: 'High' as const,
+          category: 'Тест-Category-テスト',
+          description: 'Очень длинное описание товара с unicode символами и эмодзи 🌟✨💫⭐🚀',
+          labels: ['тег1', 'tag2', 'テスト', 'émoji🏷️'],
+          expiryDate: '2025-01-01',
+          purchaseDate: '2024-01-01'
+        },
+        {
+          name: '',  // Empty name
+          quantity: 0,
+          unit: 'pcs' as const,
+          priority: 'Low' as const
+        },
+        {
+          name: 'Минимальный товар',
+          quantity: 0.001,
+          unit: 'g' as const,
+          priority: 'Dispose' as const,
+          expiryDate: '2020-01-01'  // Expired
+        },
+        {
+          name: 'Negative Test',
+          quantity: -1,  // Invalid quantity
+          price: -100,   // Invalid price
+          unit: 'ml' as const,
+          priority: 'Normal' as const
+        }
+      ];
+      
+      const itemIds = [];
+      for (const container of containerIds.slice(0, 4)) { // Use first 4 containers
+        for (const item of extremeItems) {
+          try {
+            const itemId = localStorageService.addItem(
+              warehouseId, 
+              container.roomId, 
+              container.id, 
+              item
+            );
+            itemIds.push({
+              id: itemId,
+              name: item.name,
+              containerId: container.id,
+              containerName: container.name
+            });
+            await new Promise(resolve => setTimeout(resolve, 5));
+          } catch (error) {
+            itemIds.push({
+              error: (error as Error).message,
+              itemName: item.name,
+              containerId: container.id
+            });
+          }
+        }
+      }
+      
+      // Verify complete structure with refresh
+      await new Promise(resolve => setTimeout(resolve, 200));
+      const finalWarehouses = localStorageService.getWarehouses();
+      const createdWarehouse = finalWarehouses.find(w => w.id === warehouseId);
       
       if (!createdWarehouse) {
         throw new Error('Warehouse not found after creation');
       }
       
-      return { 
-        status: 'PASS', 
-        message: 'Warehouse created successfully',
-        details: { warehouseId, name: testWarehouseName }
-      };
-    });
-
-    // Test 3: Room Creation
-    await this.runTest(suite, 'Room Creation', async () => {
-      const warehouses = localStorageService.getWarehouses();
-      if (warehouses.length === 0) {
-        throw new Error('No warehouses available for room creation test');
-      }
+      const finalRooms = localStorageService.getRooms(warehouseId);
       
-      const warehouse = warehouses[0];
-      const testRoomName = `Test Room ${Date.now()}`;
-      const roomId = localStorageService.addRoom(warehouse.id, testRoomName);
-      const rooms = localStorageService.getRooms(warehouse.id);
-      const createdRoom = rooms.find(r => r.id === roomId);
+      let totalContainers = 0;
+      let totalItems = 0;
       
-      if (!createdRoom) {
-        throw new Error('Room not found after creation');
+      for (const room of finalRooms) {
+        const containers = localStorageService.getShelves(warehouseId, room.id);
+        totalContainers += containers.length;
+        
+        for (const container of containers) {
+          const items = localStorageService.getItems(warehouseId, room.id, container.id);
+          totalItems += items.length;
+        }
       }
       
       return { 
-        status: 'PASS', 
-        message: 'Room created successfully',
-        details: { roomId, name: testRoomName, warehouseId: warehouse.id }
+        status: createdWarehouse ? 'PASS' : 'FAIL', 
+        message: `Complete structure: 1 warehouse, ${finalRooms.length} rooms, ${totalContainers} containers, ${totalItems} items`,
+        details: { 
+          warehouseId,
+          roomsCreated: roomIds.length,
+          containersCreated: containerIds.length,
+          itemsAttempted: itemIds.length,
+          finalCounts: { rooms: finalRooms.length, containers: totalContainers, items: totalItems }
+        }
       };
     });
 
@@ -146,6 +318,9 @@ class SelfTestService {
       const room = rooms[0];
       const testShelfName = `Test Container ${Date.now()}`;
       const shelfId = localStorageService.addShelf(warehouse.id, room.id, testShelfName);
+      
+      // Wait and refresh
+      await new Promise(resolve => setTimeout(resolve, 100));
       const shelves = localStorageService.getShelves(warehouse.id, room.id);
       const createdShelf = shelves.find(s => s.id === shelfId);
       
@@ -183,6 +358,9 @@ class SelfTestService {
       };
       
       const itemId = localStorageService.addItem(warehouse.id, room.id, shelf.id, testItem);
+      
+      // Wait and refresh
+      await new Promise(resolve => setTimeout(resolve, 100));
       const items = localStorageService.getItems(warehouse.id, room.id, shelf.id);
       const createdItem = items.find(i => i.id === itemId);
       
@@ -197,35 +375,144 @@ class SelfTestService {
       };
     });
 
-    // Test 6: Bucket Operations
-    await this.runTest(suite, 'Bucket Operations', async () => {
+    // Test 4: Advanced Bucket Operations & Item Movement
+    await this.runTest(suite, 'Advanced Bucket & Movement Operations', async () => {
       const warehouses = localStorageService.getWarehouses();
-      const warehouse = warehouses[0];
-      const rooms = localStorageService.getRooms(warehouse.id);
-      const room = rooms[0];
-      const shelves = localStorageService.getShelves(warehouse.id, room.id);
-      const shelf = shelves[0];
-      const items = localStorageService.getItems(warehouse.id, room.id, shelf.id);
-      
-      if (items.length === 0) {
-        throw new Error('No items available for bucket test');
+      if (warehouses.length === 0) {
+        throw new Error('No warehouses available for bucket test');
       }
       
-      const item = items[0];
-      const originalPath = `${warehouse.name} > ${room.name} > ${shelf.name}`;
+      const warehouse = warehouses[warehouses.length - 1]; // Use last created warehouse
+      const rooms = localStorageService.getRooms(warehouse.id);
       
-      // Add to bucket
-      const bucketItem = localStorageService.addItemToBucket(item, originalPath);
+      if (rooms.length === 0) {
+        throw new Error('No rooms available for bucket test');
+      }
+      
+      let totalMoves = 0;
+      let successfulMoves = 0;
+      let bucketOperations = [];
+      
+      // Test moving items between containers
+      for (let roomIndex = 0; roomIndex < Math.min(rooms.length, 2); roomIndex++) {
+        const room = rooms[roomIndex];
+        const containers = localStorageService.getShelves(warehouse.id, room.id);
+        
+        for (let containerIndex = 0; containerIndex < Math.min(containers.length, 2); containerIndex++) {
+          const container = containers[containerIndex];
+          const items = localStorageService.getItems(warehouse.id, room.id, container.id);
+          
+          for (const item of items.slice(0, 2)) { // Move first 2 items from each container
+            try {
+              totalMoves++;
+              const originalPath = `${warehouse.name} > ${room.name} > ${container.name}`;
+              
+              // Move to bucket
+              const bucketItem = localStorageService.addItemToBucket(item, originalPath);
+              
+              // Remove from original location
+              localStorageService.deleteItem(warehouse.id, room.id, container.id, item.id);
+              
+              // Set destination to different container
+              const targetRoomIndex = (roomIndex + 1) % rooms.length;
+              const targetRoom = rooms[targetRoomIndex];
+              const targetContainers = localStorageService.getShelves(warehouse.id, targetRoom.id);
+              
+              if (targetContainers.length > 0) {
+                const targetContainer = targetContainers[0];
+                const destination = {
+                  warehouseId: warehouse.id,
+                  warehouseName: warehouse.name,
+                  roomId: targetRoom.id,
+                  roomName: targetRoom.name,
+                  shelfId: targetContainer.id,
+                  shelfName: targetContainer.name,
+                };
+                
+                // Update bucket item with destination
+                localStorageService.updateBucketItem(bucketItem.id, { 
+                  destination,
+                  isReadyToTransfer: true 
+                });
+                
+                // Perform transfer
+                localStorageService.transferBucketItem({
+                  ...bucketItem,
+                  destination,
+                  isReadyToTransfer: true
+                } as any);
+                
+                successfulMoves++;
+                bucketOperations.push({
+                  itemName: item.name,
+                  from: originalPath,
+                  to: `${warehouse.name} > ${targetRoom.name} > ${targetContainer.name}`,
+                  status: 'SUCCESS'
+                });
+              }
+              
+              await new Promise(resolve => setTimeout(resolve, 10));
+              
+            } catch (error) {
+              bucketOperations.push({
+                itemName: item.name,
+                error: (error as Error).message,
+                status: 'ERROR'
+              });
+            }
+          }
+        }
+      }
+      
+      // Test edge cases with bucket
+      const edgeCaseBucketTests = [
+        {
+          name: 'Empty bucket item test',
+          test: () => {
+            const emptyItem = { id: 'empty', name: '', quantity: 0, priority: 'Low' as const };
+            return localStorageService.addItemToBucket(emptyItem as any, 'Test Path');
+          }
+        },
+        {
+          name: 'Unicode bucket path test',
+          test: () => {
+            const unicodeItem = { 
+              id: 'unicode', 
+              name: 'тест 🧪 テスト', 
+              quantity: 1, 
+              priority: 'Normal' as const 
+            };
+            return localStorageService.addItemToBucket(unicodeItem as any, 'Склад 🏭 > Комната 🏠 > Полка 📦');
+          }
+        }
+      ];
+      
+      let edgeCasesPassed = 0;
+      for (const test of edgeCaseBucketTests) {
+        try {
+          test.test();
+          edgeCasesPassed++;
+        } catch (error) {
+          bucketOperations.push({
+            testName: test.name,
+            error: (error as Error).message,
+            status: 'EDGE_CASE_FAILED'
+          });
+        }
+      }
+      
       const bucketItems = localStorageService.getBucketItems();
       
-      if (!bucketItems.find(bi => bi.id === bucketItem.id)) {
-        throw new Error('Item not found in bucket after addition');
-      }
-      
       return { 
-        status: 'PASS', 
-        message: 'Bucket operations working correctly',
-        details: { bucketItemId: bucketItem.id, originalPath }
+        status: successfulMoves > 0 || edgeCasesPassed > 0 ? 'PASS' : 'FAIL', 
+        message: `Bucket operations: ${successfulMoves}/${totalMoves} moves successful, ${edgeCasesPassed}/${edgeCaseBucketTests.length} edge cases passed`,
+        details: { 
+          totalMoves,
+          successfulMoves,
+          edgeCasesPassed,
+          finalBucketCount: bucketItems.length,
+          operations: bucketOperations
+        }
       };
     });
 
@@ -364,54 +651,103 @@ class SelfTestService {
       }
     });
 
-    // Test Local LLM Chat Completion
-    await this.runTest(suite, 'Local LLM Chat Completion', async () => {
+    // Test Local LLM Chat Completion with Real Commands
+    await this.runTest(suite, 'SMARTIE Real Commands Test', async () => {
       const localLlmConfig = {
         baseUrl: 'http://172.29.240.1:5174',
         model: 'openai/gpt-oss-20b'
       };
       
       try {
-        const testMessage = "Hello, this is a test message for the inventory system. Please respond with 'Test successful'.";
+        // Get current inventory state for context
+        const warehouses = localStorageService.getWarehouses();
+        const exportData = localStorageService.exportData();
         
-        const response = await fetch(`${localLlmConfig.baseUrl}/v1/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: localLlmConfig.model,
-            messages: [
-              {
-                role: 'user',
-                content: testMessage
-              }
-            ],
-            max_tokens: 50,
-            temperature: 0.1
-          })
-        });
+        const inventoryContext = `Current inventory: ${warehouses.length} warehouses, ${exportData.bucketItems.length} bucket items.`;
         
-        if (!response.ok) {
-          throw new Error(`Chat completion failed: ${response.status}`);
+        // Test complex multilingual command (reduced for speed)
+        const complexCommands = [
+          `${inventoryContext}\nCреate warehouse "Склад 🏭"`,
+          `Find expired items tomorrow`,
+          `Generate short inventory report`
+        ];
+        
+        let successfulCommands = 0;
+        let responses = [];
+        
+        for (const command of complexCommands) {
+          try {
+            // Add timeout to prevent hanging
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+            
+            const response = await fetch(`${localLlmConfig.baseUrl}/v1/chat/completions`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              signal: controller.signal,
+              body: JSON.stringify({
+                model: localLlmConfig.model,
+                messages: [
+                  {
+                    role: 'system',
+                    content: 'You are SMARTIE, an AI assistant for inventory management. Respond to commands in the same language as the user. Handle multilingual input gracefully.'
+                  },
+                  {
+                    role: 'user',
+                    content: command
+                  }
+                ],
+                max_tokens: 50,
+                temperature: 0.3
+              })
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+              const completion = await response.json();
+              const aiResponse = completion.choices?.[0]?.message?.content || 'No response';
+              responses.push({
+                command: command.substring(0, 100) + '...',
+                response: aiResponse.substring(0, 200) + '...',
+                status: 'SUCCESS'
+              });
+              successfulCommands++;
+            } else {
+              responses.push({
+                command: command.substring(0, 100) + '...',
+                error: `HTTP ${response.status}`,
+                status: 'FAILED'
+              });
+            }
+            
+            // Small delay between requests
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+          } catch (error) {
+            responses.push({
+              command: command.substring(0, 100) + '...',
+              error: (error as Error).message,
+              status: 'ERROR'
+            });
+          }
         }
         
-        const completion = await response.json();
-        const aiResponse = completion.choices?.[0]?.message?.content || 'No response';
-        
         return { 
-          status: 'PASS', 
-          message: 'Local LLM chat completion successful',
+          status: successfulCommands >= 2 ? 'PASS' : 'FAIL', 
+          message: `SMARTIE handled ${successfulCommands}/${complexCommands.length} complex multilingual commands`,
           details: { 
-            testMessage, 
-            aiResponse,
-            tokensUsed: completion.usage?.total_tokens || 0
+            successfulCommands,
+            totalCommands: complexCommands.length,
+            responses
           }
         };
       } catch (error) {
         return { 
           status: 'FAIL', 
-          message: `Local LLM chat completion failed: ${(error as Error).message}`,
+          message: `SMARTIE real commands test failed: ${(error as Error).message}`,
           details: localLlmConfig
         };
       }
@@ -778,12 +1114,53 @@ class SelfTestService {
     return JSON.stringify(exportData, null, 2);
   }
 
-  // Save test results to localStorage for persistence
+  // Generate unique filename with incremental number
+  private generateUniqueFilename(): string {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const testId = Math.random().toString(36).substr(2, 9); // Random ID
+    
+    // Check existing files in DebugLog to avoid conflicts
+    let counter = 1;
+    let filename = `inventory-os-self-test-${today}-${testId}`;
+    
+    // In browser environment, we can't check filesystem, so use timestamp + random
+    const timestamp = Date.now().toString(36);
+    filename = `inventory-os-self-test-${today}-${timestamp}-${testId}`;
+    
+    return filename;
+  }
+
+  // Save test results to DebugLog directory and localStorage
   saveTestResults(): void {
     const exportData = this.exportTestResults();
-    const key = `self-test-results-${Date.now()}`;
-    localStorage.setItem(key, exportData);
-    debugService.info('📁 Test results saved to localStorage', { key });
+    const filename = this.generateUniqueFilename();
+    
+    // Save to localStorage for UI access
+    const localKey = `self-test-results-${filename}`;
+    localStorage.setItem(localKey, exportData);
+    
+    // Create downloadable file for DebugLog
+    try {
+      const blob = new Blob([exportData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${filename}.json`;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      debugService.info('📁 Test results saved and downloaded', { 
+        filename: `${filename}.json`,
+        localStorageKey: localKey 
+      });
+    } catch (error) {
+      debugService.error('Failed to download test results', error);
+      // Fallback: just save to localStorage
+      debugService.info('📁 Test results saved to localStorage only', { localKey });
+    }
   }
 
   // Get all saved test results

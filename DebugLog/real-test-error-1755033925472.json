@@ -1,0 +1,6 @@
+{
+  "timestamp": "2025-08-12T21:25:25.471Z",
+  "error": "Self-Test modal did not appear",
+  "stack": "Error: Self-Test modal did not appear\n    at runRealTest (file:///C:/Users/ish50/Downloads/inventory-os-v2.6/realTest.js:74:13)",
+  "success": false
+}

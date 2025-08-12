@@ -48,6 +48,14 @@ class ThemeService {
     return this.designerModeEnabled;
   }
 
+  getCurrentTheme(): string {
+    return this.currentVibe;
+  }
+
+  getAvailableThemes(): string[] {
+    return Object.keys(VIBES);
+  }
+
   toggleDesignerMode() {
     const newMode = !this.designerModeEnabled;
     this.designerModeEnabled = newMode;
