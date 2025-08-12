@@ -227,6 +227,45 @@ class LocalizationService {
       'en': 'RUB currency not available in this region',
       'de': 'RUB Währung in dieser Region nicht verfügbar',
       'pl': 'RUB waluta niedostępna w tym regionie'
+    },
+
+    // User
+    'user.name': {
+      'uk': 'Користувач',
+      'ru': 'Пользователь',
+      'en': 'User',
+      'de': 'Benutzer',
+      'pl': 'Użytkownik'
+    },
+
+    // UI Text
+    'ui.select_warehouse': {
+      'uk': 'Виберіть склад',
+      'ru': 'Выберите склад',
+      'en': 'Select a Warehouse',
+      'de': 'Lager auswählen',
+      'pl': 'Wybierz magazyn'
+    },
+    'ui.select_room': {
+      'uk': 'Виберіть кімнату',
+      'ru': 'Выберите комнату',
+      'en': 'Select Room',
+      'de': 'Raum auswählen',
+      'pl': 'Wybierz pokój'
+    },
+    'ui.select_container': {
+      'uk': 'Виберіть контейнер',
+      'ru': 'Выберите контейнер',
+      'en': 'Select Container',
+      'de': 'Behälter auswählen',
+      'pl': 'Wybierz kontener'
+    },
+    'ui.staging_area': {
+      'uk': 'Область підготовки',
+      'ru': 'Область подготовки',
+      'en': 'Staging Area',
+      'de': 'Bereitstellungsbereich',
+      'pl': 'Obszar przygotowania'
     }
   };
 

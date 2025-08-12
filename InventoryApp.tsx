@@ -28,12 +28,10 @@ const InventoryApp: React.FC = () => {
   const [currentCurrency, setCurrentCurrency] = useState<string>(
     localStorage.getItem('inventory-os-currency') || localizationService.getAvailableCurrencies()[0] || 'USD'
   );
+  const [currentLocale, setCurrentLocale] = useState<string>(localizationService.getCurrentLocale());
   
   const userProfile: UserProfile = {
-    username: localizationService.getCurrentLocale() === 'uk' ? 'Користувач' : 
-              localizationService.getCurrentLocale() === 'en' ? 'User' : 
-              localizationService.getCurrentLocale() === 'de' ? 'Benutzer' :
-              localizationService.getCurrentLocale() === 'pl' ? 'Użytkownik' : 'Пользователь',
+    username: localizationService.translate('user.name', {}),
     currency: currentCurrency
   };
   
@@ -111,8 +109,8 @@ const InventoryApp: React.FC = () => {
     // Listen for locale changes
     const handleLocaleChange = (event: CustomEvent) => {
       debugService.info('Locale changed, updating interface', event.detail);
-      // Force component re-render to update all text
-      setCurrentCurrency(curr => curr);
+      // Update locale state to trigger re-render
+      setCurrentLocale(event.detail.locale);
     };
     
     // Listen for warehouse changes during testing
@@ -526,8 +524,8 @@ const InventoryApp: React.FC = () => {
   const itemsToDisplay = showBucketView ? bucketItems : shelfItems;
   const currentDisplayContext = showBucketView ? 'bucket' : 'storage';
   const displayTitle = showBucketView 
-    ? "BUCKET - Staging Area" 
-    : (selectedShelfName || (selectedRoomName ? `Room: ${selectedRoomName} (Select Container)` : (selectedWarehouseName ? `Warehouse: ${selectedWarehouseName} (Select Room)` : 'Select a Warehouse')));
+    ? localizationService.translate('nav.bucket') + " - " + localizationService.translate('ui.staging_area')
+    : (selectedShelfName || (selectedRoomName ? `Room: ${selectedRoomName} (${localizationService.translate('ui.select_container')})` : (selectedWarehouseName ? `Warehouse: ${selectedWarehouseName} (${localizationService.translate('ui.select_room')})` : localizationService.translate('ui.select_warehouse'))));
 
   const DestinationSelectorModal: React.FC<{
     show: boolean;
@@ -791,7 +789,7 @@ const InventoryApp: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xl font-bold">WAREHOUSES</h2>
+                <h2 className="text-xl font-bold">{localizationService.translate('nav.warehouses')}</h2>
                 {userService.hasPermission('canCreateWarehouses') && (
                   <button 
                     onClick={() => createEntity('warehouse')} 
@@ -838,7 +836,7 @@ const InventoryApp: React.FC = () => {
             
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-2">
-                <h2 className={`text-xl font-bold ${!selectedWarehouseId ? 'opacity-50' : ''}`}>ROOMS</h2>
+                <h2 className={`text-xl font-bold ${!selectedWarehouseId ? 'opacity-50' : ''}`}>{localizationService.translate('nav.rooms')}</h2>
                 {userService.hasPermission('canCreateRooms') && (
                   <button 
                     onClick={() => createEntity('room')} 
@@ -882,7 +880,7 @@ const InventoryApp: React.FC = () => {
             
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-2">
-                <h2 className={`text-xl font-bold ${!selectedRoomId ? 'opacity-50' : ''}`}>CONTAINERS</h2>
+                <h2 className={`text-xl font-bold ${!selectedRoomId ? 'opacity-50' : ''}`}>{localizationService.translate('nav.containers')}</h2>
                 {userService.hasPermission('canCreateContainers') && (
                   <button 
                     onClick={() => createEntity('shelf')} 

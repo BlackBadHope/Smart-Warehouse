@@ -984,10 +984,19 @@ class SelfTestService {
         throw new Error('No locales available');
       }
       
+      // Filter out currency information - currencies are separate from localization
+      const localizationOnlyLocales = locales.map(locale => ({
+        code: locale.code,
+        name: locale.name,
+        dateFormat: locale.dateFormat,
+        numberFormat: locale.numberFormat,
+        flag: locale.flag
+      }));
+      
       return { 
         status: 'PASS', 
         message: 'Localization system operational',
-        details: { locales, currentLocale }
+        details: { locales: localizationOnlyLocales, currentLocale }
       };
     });
 
@@ -997,18 +1006,27 @@ class SelfTestService {
       const availableLocales = localizationService.getAvailableLocales();
       
       // Try switching to different locale
-      const testLocale = availableLocales.find(l => l !== originalLocale) || availableLocales[0];
-      localizationService.setLocale(testLocale);
+      const testLocale = availableLocales.find(l => l.code !== originalLocale) || availableLocales[0];
+      localizationService.setLocale(testLocale.code);
       
       const newLocale = localizationService.getCurrentLocale();
       
       // Switch back
       localizationService.setLocale(originalLocale);
       
+      // Filter out currency information from test locale data
+      const testLocaleInfo = {
+        code: testLocale.code,
+        name: testLocale.name,
+        dateFormat: testLocale.dateFormat,
+        numberFormat: testLocale.numberFormat,
+        flag: testLocale.flag
+      };
+      
       return { 
         status: 'PASS', 
         message: 'Locale switching successful',
-        details: { originalLocale, testLocale, newLocale }
+        details: { originalLocale, testLocale: testLocaleInfo, newLocale }
       };
     });
 
