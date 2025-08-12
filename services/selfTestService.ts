@@ -129,7 +129,8 @@ class SelfTestService {
       for (const name of edgeCaseNames) {
         try {
           // 1. Create warehouse
-          const warehouseId = localStorageService.addWarehouse(name);
+          const warehouse = localStorageService.addWarehouse(name);
+          const warehouseId = warehouse.id;
           await new Promise(resolve => setTimeout(resolve, 50));
           
           // 2. Create rooms in warehouse
@@ -772,7 +773,7 @@ class SelfTestService {
           try {
             // Add timeout to prevent hanging
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
             
             const response = await fetch(`${localLlmConfig.baseUrl}/v1/chat/completions`, {
               method: 'POST',
