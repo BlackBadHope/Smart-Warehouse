@@ -134,14 +134,19 @@ class SelfTestService {
           await new Promise(resolve => setTimeout(resolve, 50));
           
           // 2. Create rooms in warehouse
-          const roomId1 = localStorageService.addRoom(warehouseId, `Комната-1 для ${name.substring(0, 10)}`);
-          const roomId2 = localStorageService.addRoom(warehouseId, 'Тестовая комната 🏠');
+          const room1 = localStorageService.addRoom(warehouseId, `Комната-1 для ${name.substring(0, 10)}`);
+          const room2 = localStorageService.addRoom(warehouseId, 'Тестовая комната 🏠');
+          const roomId1 = room1.id;
+          const roomId2 = room2.id;
           await new Promise(resolve => setTimeout(resolve, 30));
           
           // 3. Create containers in rooms
-          const containerId1 = localStorageService.addShelf(warehouseId, roomId1, `Полка-А ${name.substring(0, 5)}`);
-          const containerId2 = localStorageService.addShelf(warehouseId, roomId1, 'Контейнер-Б 📦');
-          const containerId3 = localStorageService.addShelf(warehouseId, roomId2, 'Ящик-В');
+          const container1 = localStorageService.addShelf(warehouseId, roomId1, `Полка-А ${name.substring(0, 5)}`);
+          const container2 = localStorageService.addShelf(warehouseId, roomId1, 'Контейнер-Б 📦');
+          const container3 = localStorageService.addShelf(warehouseId, roomId2, 'Ящик-В');
+          const containerId1 = container1.id;
+          const containerId2 = container2.id;
+          const containerId3 = container3.id;
           await new Promise(resolve => setTimeout(resolve, 30));
           
           // 4. Create items in containers
@@ -154,12 +159,14 @@ class SelfTestService {
             description: `Test item for edge case warehouse: ${name}`
           };
           
-          const itemId1 = localStorageService.addItem(warehouseId, roomId1, containerId1, testItem);
-          const itemId2 = localStorageService.addItem(warehouseId, roomId2, containerId3, {
+          const item1 = localStorageService.addItem(warehouseId, roomId1, containerId1, testItem);
+          const item2 = localStorageService.addItem(warehouseId, roomId2, containerId3, {
             ...testItem, 
             name: `Дублирующий товар ${name.substring(0, 10)}`,
             quantity: 1
           });
+          const itemId1 = item1.id;
+          const itemId2 = item2.id;
           await new Promise(resolve => setTimeout(resolve, 20));
           
           // 5. Verify complete structure
@@ -385,14 +392,15 @@ class SelfTestService {
       
       // If no rooms, create one for testing
       if (rooms.length === 0) {
-        const roomId = localStorageService.addRoom(warehouse.id, 'Test Room for Container Creation');
+        const room = localStorageService.addRoom(warehouse.id, 'Test Room for Container Creation');
         await new Promise(resolve => setTimeout(resolve, 100));
         rooms = localStorageService.getRooms(warehouse.id);
       }
       
       const room = rooms[0];
       const testShelfName = `Test Container ${Date.now()}`;
-      const shelfId = localStorageService.addShelf(warehouse.id, room.id, testShelfName);
+      const shelf = localStorageService.addShelf(warehouse.id, room.id, testShelfName);
+      const shelfId = shelf.id;
       
       // Wait and refresh
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -422,7 +430,7 @@ class SelfTestService {
       
       // Ensure room exists
       if (rooms.length === 0) {
-        const roomId = localStorageService.addRoom(warehouse.id, 'Test Room for Item Creation');
+        const room = localStorageService.addRoom(warehouse.id, 'Test Room for Item Creation');
         await new Promise(resolve => setTimeout(resolve, 50));
         rooms = localStorageService.getRooms(warehouse.id);
       }
@@ -432,7 +440,7 @@ class SelfTestService {
       
       // Ensure shelf exists
       if (shelves.length === 0) {
-        const shelfId = localStorageService.addShelf(warehouse.id, room.id, 'Test Shelf for Item Creation');
+        const shelf = localStorageService.addShelf(warehouse.id, room.id, 'Test Shelf for Item Creation');
         await new Promise(resolve => setTimeout(resolve, 50));
         shelves = localStorageService.getShelves(warehouse.id, room.id);
       }
@@ -447,7 +455,8 @@ class SelfTestService {
         description: 'Self-test generated item'
       };
       
-      const itemId = localStorageService.addItem(warehouse.id, room.id, shelf.id, testItem);
+      const item = localStorageService.addItem(warehouse.id, room.id, shelf.id, testItem);
+      const itemId = item.id;
       
       // Wait and refresh
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -477,8 +486,8 @@ class SelfTestService {
       
       // Ensure rooms exist for bucket test
       if (rooms.length === 0) {
-        const roomId1 = localStorageService.addRoom(warehouse.id, 'Bucket Test Room 1');
-        const roomId2 = localStorageService.addRoom(warehouse.id, 'Bucket Test Room 2');
+        const room1 = localStorageService.addRoom(warehouse.id, 'Bucket Test Room 1');
+        const room2 = localStorageService.addRoom(warehouse.id, 'Bucket Test Room 2');
         await new Promise(resolve => setTimeout(resolve, 50));
         rooms = localStorageService.getRooms(warehouse.id);
       }
