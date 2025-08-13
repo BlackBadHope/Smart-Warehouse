@@ -8,7 +8,11 @@ export type VibeType =
   | 'dark'          // Pure dark mode
   | 'candy'         // Playful bright colors
   | 'retro'         // 80s vintage colors
-  | 'monochrome';   // Black/white only
+  | 'monochrome'    // Black/white only
+  | 'kids'          // Child-friendly colorful interface
+  | 'manager'       // Professional efficient interface
+  | 'developer'     // Code editor inspired theme
+  | 'highContrast'; // High contrast for accessibility
 
 export interface VibeConfig {
   id: VibeType;

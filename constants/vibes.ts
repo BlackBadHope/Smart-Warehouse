@@ -489,5 +489,255 @@ export const VIBES: Record<VibeType, VibeConfig> = {
       md: '0 2px 4px rgba(0, 0, 0, 0.3)',
       lg: '0 4px 8px rgba(0, 0, 0, 0.4)'
     }
+  },
+
+  // Theme for children with minimal UI elements
+  kids: {
+    id: 'kids',
+    name: 'Kids Friendly',
+    description: 'Simple, colorful interface for children',
+    colors: {
+      primary: '#ff6b6b',
+      secondary: '#4ecdc4',
+      accent: '#45b7d1',
+      background: '#fff9e6',
+      surface: '#ffffff',
+      text: '#2c3e50',
+      textSecondary: '#7f8c8d',
+      border: '#bdc3c7',
+      success: '#2ecc71',
+      warning: '#f39c12',
+      error: '#e74c3c',
+      info: '#3498db'
+    },
+    typography: {
+      fontFamily: 'Comic Sans MS, cursive',
+      fontSize: {
+        xs: '14px',
+        sm: '16px',
+        base: '18px',
+        lg: '22px',
+        xl: '26px'
+      }
+    },
+    spacing: {
+      xs: '6px',
+      sm: '12px',
+      md: '20px',
+      lg: '28px',
+      xl: '36px'
+    },
+    borderRadius: {
+      none: '0px',
+      sm: '12px',
+      md: '16px',
+      lg: '20px',
+      full: '9999px'
+    },
+    shadows: {
+      sm: '0 2px 4px rgba(255, 107, 107, 0.2)',
+      md: '0 4px 8px rgba(255, 107, 107, 0.3)',
+      lg: '0 8px 16px rgba(255, 107, 107, 0.4)'
+    }
+  },
+
+  // Theme for managers with efficiency focus
+  manager: {
+    id: 'manager',
+    name: 'Manager Pro',
+    description: 'Professional, efficient interface for managers',
+    colors: {
+      primary: '#2c3e50',
+      secondary: '#34495e',
+      accent: '#3498db',
+      background: '#ecf0f1',
+      surface: '#ffffff',
+      text: '#2c3e50',
+      textSecondary: '#7f8c8d',
+      border: '#bdc3c7',
+      success: '#27ae60',
+      warning: '#f39c12',
+      error: '#e74c3c',
+      info: '#2980b9'
+    },
+    typography: {
+      fontFamily: 'Segoe UI, system-ui, sans-serif',
+      fontSize: {
+        xs: '11px',
+        sm: '13px',
+        base: '15px',
+        lg: '17px',
+        xl: '19px'
+      }
+    },
+    spacing: {
+      xs: '3px',
+      sm: '6px',
+      md: '12px',
+      lg: '18px',
+      xl: '24px'
+    },
+    borderRadius: {
+      none: '0px',
+      sm: '2px',
+      md: '4px',
+      lg: '6px',
+      full: '9999px'
+    },
+    shadows: {
+      sm: '0 1px 3px rgba(52, 73, 94, 0.1)',
+      md: '0 2px 6px rgba(52, 73, 94, 0.15)',
+      lg: '0 4px 12px rgba(52, 73, 94, 0.2)'
+    }
+  },
+
+  // Theme for developers with code-like aesthetics
+  developer: {
+    id: 'developer',
+    name: 'Developer Mode',
+    description: 'Code editor inspired dark theme',
+    colors: {
+      primary: '#1e1e1e',
+      secondary: '#2d2d30',
+      accent: '#569cd6',
+      background: '#0d1117',
+      surface: '#161b22',
+      text: '#f0f6fc',
+      textSecondary: '#7d8590',
+      border: '#30363d',
+      success: '#238636',
+      warning: '#d29922',
+      error: '#da3633',
+      info: '#0969da'
+    },
+    typography: {
+      fontFamily: 'Fira Code, Consolas, Monaco, monospace',
+      fontSize: {
+        xs: '12px',
+        sm: '14px',
+        base: '16px',
+        lg: '18px',
+        xl: '20px'
+      }
+    },
+    spacing: {
+      xs: '4px',
+      sm: '8px',
+      md: '16px',
+      lg: '24px',
+      xl: '32px'
+    },
+    borderRadius: {
+      none: '0px',
+      sm: '3px',
+      md: '6px',
+      lg: '8px',
+      full: '9999px'
+    },
+    shadows: {
+      sm: '0 1px 2px rgba(0, 0, 0, 0.3)',
+      md: '0 2px 4px rgba(0, 0, 0, 0.4)',
+      lg: '0 4px 8px rgba(0, 0, 0, 0.5)'
+    }
+  },
+
+  // High contrast theme for accessibility
+  highContrast: {
+    id: 'highContrast',
+    name: 'High Contrast',
+    description: 'Maximum readability with high contrast',
+    colors: {
+      primary: '#000000',
+      secondary: '#1a1a1a',
+      accent: '#ffff00',
+      background: '#ffffff',
+      surface: '#f8f8f8',
+      text: '#000000',
+      textSecondary: '#333333',
+      border: '#000000',
+      success: '#008000',
+      warning: '#ff8000',
+      error: '#ff0000',
+      info: '#0000ff'
+    },
+    typography: {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: {
+        xs: '14px',
+        sm: '16px',
+        base: '18px',
+        lg: '20px',
+        xl: '24px'
+      }
+    },
+    spacing: {
+      xs: '6px',
+      sm: '12px',
+      md: '18px',
+      lg: '24px',
+      xl: '30px'
+    },
+    borderRadius: {
+      none: '0px',
+      sm: '2px',
+      md: '4px',
+      lg: '6px',
+      full: '9999px'
+    },
+    shadows: {
+      sm: '0 2px 4px rgba(0, 0, 0, 0.8)',
+      md: '0 4px 8px rgba(0, 0, 0, 0.8)',
+      lg: '0 8px 16px rgba(0, 0, 0, 0.8)'
+    }
+  },
+
+  // Retro gaming theme
+  retro: {
+    id: 'retro',
+    name: 'Retro Gaming',
+    description: '8-bit pixel art inspired theme',
+    colors: {
+      primary: '#2a2a2a',
+      secondary: '#4a4a4a',
+      accent: '#00ff41',
+      background: '#0f0f23',
+      surface: '#1a1a1a',
+      text: '#00ff41',
+      textSecondary: '#00aa2a',
+      border: '#006622',
+      success: '#00ff00',
+      warning: '#ffff00',
+      error: '#ff0040',
+      info: '#00aaff'
+    },
+    typography: {
+      fontFamily: 'Courier New, monospace',
+      fontSize: {
+        xs: '12px',
+        sm: '14px',
+        base: '16px',
+        lg: '18px',
+        xl: '20px'
+      }
+    },
+    spacing: {
+      xs: '4px',
+      sm: '8px',
+      md: '16px',
+      lg: '24px',
+      xl: '32px'
+    },
+    borderRadius: {
+      none: '0px',
+      sm: '1px',
+      md: '2px',
+      lg: '3px',
+      full: '4px'
+    },
+    shadows: {
+      sm: '2px 2px 0px #006622',
+      md: '4px 4px 0px #006622',
+      lg: '6px 6px 0px #006622'
+    }
   }
 };

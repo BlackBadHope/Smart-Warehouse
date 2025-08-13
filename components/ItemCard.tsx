@@ -39,8 +39,8 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
   return (
     <div
-      className={`${ASCII_COLORS.inputBg} border-2 ${itemIsExpired && safeItem.priority !== 'Dispose' ? 'border-red-600 animate-pulse' : ASCII_COLORS.border} 
-      rounded-lg flex flex-col justify-between ${safeItem.priority === 'Dispose' ? 'opacity-60 grayscale' : ''} transition-all duration-300 hover:shadow-xl hover:border-yellow-300`}
+      className={`item-card animate-fade-in ${ASCII_COLORS.inputBg} border-2 ${itemIsExpired && safeItem.priority !== 'Dispose' ? 'border-red-600 animate-pulse' : ASCII_COLORS.border} 
+      rounded-lg flex flex-col justify-between ${safeItem.priority === 'Dispose' ? 'opacity-60 grayscale' : ''} transition-all hover:shadow-xl hover:border-yellow-300`}
     >
       <div className="p-3">
         <h3 className={`font-semibold text-lg mb-2 truncate flex items-center ${ASCII_COLORS.accent}`}>
@@ -78,17 +78,17 @@ const ItemCard: React.FC<ItemCardProps> = ({
       </div>
       <div className={`flex space-x-1 mt-auto p-2 border-t ${ASCII_COLORS.border} border-opacity-50`}>
         {context === 'bucket' && 'destination' in safeItem && safeItem.destination && onToggleTransfer && (
-          <button onClick={() => onToggleTransfer(safeItem as BucketItem)} className="p-2 text-green-400 hover:text-green-300 transition-colors" title="Mark for transfer">
+          <button onClick={() => onToggleTransfer(safeItem as BucketItem)} className="btn-animated micro-bounce p-2 text-green-400 hover:text-green-300 transition-colors" title="Mark for transfer">
             {safeItem.isReadyToTransfer ? <CheckSquare /> : <Square />}
           </button>
         )}
-        <button onClick={() => onMoveClick(safeItem)} className={`flex-1 ${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} flex items-center justify-center text-xs border ${ASCII_COLORS.border} transition-colors`}>
+        <button onClick={() => onMoveClick(safeItem)} className={`btn-animated micro-bounce flex-1 ${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} flex items-center justify-center text-xs border ${ASCII_COLORS.border} transition-colors`}>
           <Move className="w-3 h-3 mr-1" />{context === 'bucket' ? 'EDIT PATH' : 'TO BUCKET'}
         </button>
-        <button onClick={() => onEditClick(safeItem)} className={`flex-1 ${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} flex items-center justify-center text-xs border ${ASCII_COLORS.border} transition-colors`}>
+        <button onClick={() => onEditClick(safeItem)} className={`btn-animated micro-bounce flex-1 ${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} flex items-center justify-center text-xs border ${ASCII_COLORS.border} transition-colors`}>
           <Edit className="w-3 h-3 mr-1" />EDIT
         </button>
-        <button onClick={() => onDeleteClick(safeItem)} className={`flex-1 ${ASCII_COLORS.buttonBg} text-red-400 p-2 rounded-md hover:bg-red-900 flex items-center justify-center text-xs border ${ASCII_COLORS.border} transition-colors`}>
+        <button onClick={() => onDeleteClick(safeItem)} className={`btn-animated micro-bounce flex-1 ${ASCII_COLORS.buttonBg} text-red-400 p-2 rounded-md hover:bg-red-900 flex items-center justify-center text-xs border ${ASCII_COLORS.border} transition-colors`}>
           <Trash2 className="w-3 h-3 mr-1" />DELETE
         </button>
       </div>

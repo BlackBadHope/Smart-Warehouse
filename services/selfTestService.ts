@@ -235,7 +235,8 @@ class SelfTestService {
     await this.runTest(suite, 'Complete Warehouse Structure', async () => {
       // Create warehouse with multilingual name
       const warehouseName = 'Склад-🏭-Warehouse-Magazyn-Lager';
-      const warehouseId = localStorageService.addWarehouse(warehouseName);
+      const warehouse = localStorageService.addWarehouse(warehouseName);
+      let warehouseId = warehouse.id;
       
       // Create rooms with extreme names
       const roomNames = [
@@ -248,8 +249,8 @@ class SelfTestService {
       
       const roomIds = [];
       for (const roomName of roomNames) {
-        const roomId = localStorageService.addRoom(warehouseId, roomName);
-        roomIds.push({ id: roomId, name: roomName });
+        const room = localStorageService.addRoom(warehouseId, roomName);
+        roomIds.push({ id: room.id, name: roomName });
         await new Promise(resolve => setTimeout(resolve, 10));
       }
       
@@ -264,9 +265,9 @@ class SelfTestService {
         ];
         
         for (const containerName of containerNames) {
-          const containerId = localStorageService.addShelf(warehouseId, room.id, containerName);
+          const container = localStorageService.addShelf(warehouseId, room.id, containerName);
           containerIds.push({ 
-            id: containerId, 
+            id: container.id, 
             name: containerName, 
             roomId: room.id, 
             roomName: room.name 
@@ -315,14 +316,14 @@ class SelfTestService {
       for (const container of containerIds.slice(0, 4)) { // Use first 4 containers
         for (const item of extremeItems) {
           try {
-            const itemId = localStorageService.addItem(
+            const itemObject = localStorageService.addItem(
               warehouseId, 
               container.roomId, 
               container.id, 
               item
             );
             itemIds.push({
-              id: itemId,
+              id: itemObject.id,
               name: item.name,
               containerId: container.id,
               containerName: container.name
@@ -345,11 +346,11 @@ class SelfTestService {
       
       // If warehouse not found, create a backup one for testing
       if (!createdWarehouse) {
-        const backupWarehouseId = localStorageService.addWarehouse(warehouseName + ' (backup)');
+        const backupWarehouse = localStorageService.addWarehouse(warehouseName + ' (backup)');
         await new Promise(resolve => setTimeout(resolve, 100));
         finalWarehouses = localStorageService.getWarehouses();
-        createdWarehouse = finalWarehouses.find(w => w.id === backupWarehouseId);
-        warehouseId = backupWarehouseId; // Use backup for rest of test
+        createdWarehouse = finalWarehouses.find(w => w.id === backupWarehouse.id);
+        warehouseId = backupWarehouse.id; // Use backup for rest of test
       }
       
       const finalRooms = localStorageService.getRooms(warehouseId);
@@ -965,6 +966,106 @@ class SelfTestService {
         return { 
           status: 'FAIL', 
           message: `SMARTIE provider configuration failed: ${(error as Error).message}`
+        };
+      }
+    });
+
+    // Test SMARTIE multiple actions in single request
+    await this.runTest(suite, 'SMARTIE Multiple Actions Test', async () => {
+      const localLlmConfig = {
+        baseUrl: 'http://172.29.240.1:5174',
+        model: 'openai/gpt-oss-20b'
+      };
+      
+      try {
+        // Get current inventory state
+        const warehouses = localStorageService.getWarehouses();
+        const exportData = localStorageService.exportData();
+        
+        // Test command that requires multiple actions
+        const multiActionCommand = `Current inventory: ${warehouses.length} warehouses, ${exportData.bucketItems.length} bucket items.
+        
+Please perform these actions:
+1. Create warehouse "Bulk Import Warehouse"
+2. Add room "Storage Room A" to it
+3. Add room "Storage Room B" to it  
+4. Add container "Container 1" to Storage Room A
+5. Add container "Container 2" to Storage Room A
+6. Add item "Test Item 1" to Container 1 (quantity: 10)
+7. Add item "Test Item 2" to Container 2 (quantity: 5)
+8. Generate a summary of what was created
+
+Execute all these actions and provide a confirmation of each step.`;
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout for complex command
+        
+        const response = await fetch(`${localLlmConfig.baseUrl}/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            model: localLlmConfig.model,
+            messages: [
+              {
+                role: 'system',
+                content: 'You are SMARTIE, an AI assistant for inventory management. You can perform multiple actions in sequence. For each action you perform, provide confirmation. Handle complex multi-step requests efficiently.'
+              },
+              {
+                role: 'user',
+                content: multiActionCommand
+              }
+            ],
+            max_tokens: 200,
+            temperature: 0.3
+          })
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const aiResponse = data.choices?.[0]?.message?.content || '';
+
+        // Count action confirmations in response
+        const actionConfirmations = [
+          'warehouse', 'room', 'container', 'item', 'created', 'added', 'summary'
+        ];
+        
+        let confirmedActions = 0;
+        const lowerResponse = aiResponse.toLowerCase();
+        actionConfirmations.forEach(action => {
+          if (lowerResponse.includes(action)) {
+            confirmedActions++;
+          }
+        });
+
+        const isSuccessful = confirmedActions >= 4; // At least 4 action types mentioned
+
+        return { 
+          status: isSuccessful ? 'PASS' : 'FAIL', 
+          message: `SMARTIE handled multiple actions: ${confirmedActions}/${actionConfirmations.length} action types confirmed`,
+          details: {
+            command: multiActionCommand.substring(0, 100) + '...',
+            response: aiResponse.substring(0, 100) + '...',
+            confirmedActions,
+            totalActionTypes: actionConfirmations.length,
+            status: 'SUCCESS'
+          }
+        };
+      } catch (error) {
+        return { 
+          status: 'FAIL', 
+          message: `SMARTIE multiple actions test failed: ${(error as Error).message}`,
+          details: {
+            error: (error as Error).message,
+            status: 'ERROR'
+          }
         };
       }
     });

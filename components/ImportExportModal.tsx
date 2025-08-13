@@ -64,8 +64,8 @@ const ImportExportModal: React.FC<Props> = ({ show, onClose, onDataChange }) => 
   };
 
   return (
-    <div className={`fixed inset-0 ${ASCII_COLORS.bg} bg-opacity-90 flex items-center justify-center z-50 p-4`}>
-      <div className={`${ASCII_COLORS.modalBg} p-6 rounded-lg shadow-xl w-full max-w-2xl border-2 ${ASCII_COLORS.border} max-h-[90vh] overflow-y-auto`}>
+    <div className={`modal-backdrop fixed inset-0 ${ASCII_COLORS.bg} bg-opacity-90 flex items-center justify-center z-50 p-4`}>
+      <div className={`modal-content ${ASCII_COLORS.modalBg} p-6 rounded-lg shadow-xl w-full max-w-2xl border-2 ${ASCII_COLORS.border} max-h-[90vh] overflow-y-auto`}>
         <h3 className={`${ASCII_COLORS.accent} text-lg font-bold mb-3`}>Import / Export</h3>
         <div className="flex gap-2 mb-4">
           <button onClick={handleExport} className={`${ASCII_COLORS.buttonBg} ${ASCII_COLORS.text} p-2 px-3 rounded ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`}>[EXPORT JSON]</button>

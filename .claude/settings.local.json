@@ -14,7 +14,9 @@
       "Bash(git add:*)",
       "Bash(npm run dev:*)",
       "Bash(node:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(dir:*)",
+      "Bash(powershell:*)"
     ]
   },
   "dangerouslySkipPermissions": true

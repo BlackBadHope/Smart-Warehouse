@@ -715,7 +715,7 @@ const InventoryApp: React.FC = () => {
       />
 
       {(successMessage || errorMessage) && (
-        <div className={`fixed top-5 right-5 p-3 rounded-md shadow-lg z-[200] text-sm ${successMessage ? ASCII_COLORS.success : ASCII_COLORS.error} border ${successMessage ? 'border-green-600' : 'border-red-600'}`}>
+        <div className={`fixed top-5 right-5 p-3 rounded-md shadow-lg z-[200] text-sm ${successMessage ? 'feedback-success animate-bounce-in' : 'feedback-error animate-shake'} ${successMessage ? ASCII_COLORS.success : ASCII_COLORS.error} border ${successMessage ? 'border-green-600' : 'border-red-600'}`}>
           {successMessage || errorMessage}
         </div>
       )}
