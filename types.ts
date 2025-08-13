@@ -52,8 +52,42 @@ export interface FirebaseEntity {
   createdAt?: FirestoreTimestamp | Date; // Changed Timestamp to FirestoreTimestamp
 }
 
+// Network and Privacy Types
+export type AccessLevel = 'public' | 'private';
+export type UserRole = 'master' | 'editor' | 'viewer' | 'guest';
+
+export interface NetworkDevice {
+  id: string;
+  name: string;
+  ipAddress: string;
+  port: number;
+  lastSeen: Date;
+  publicKey?: string; // For encryption
+  capabilities: string[]; // ['sync', 'discovery', 'encryption']
+}
+
+export interface UserPermission {
+  userId: string;
+  role: UserRole;
+  grantedAt: Date;
+  grantedBy: string; // userId who granted access
+}
+
+export interface WarehouseAccessControl {
+  accessLevel: AccessLevel;
+  permissions: UserPermission[];
+  inviteCode?: string; // For private warehouses
+  encryptionEnabled: boolean;
+}
+
 export interface Warehouse extends FirebaseEntity {
   rooms?: Room[];
+  // New privacy fields
+  ownerId: string;
+  accessControl: WarehouseAccessControl;
+  networkVisible: boolean; // Show in network discovery
+  lastSync?: Date;
+  syncVersion: number; // For conflict resolution
 }
 export interface Room extends FirebaseEntity {
   shelves?: Shelf[];
@@ -87,6 +121,123 @@ export interface ShoppingListItem {
   id: string;
   name: string;
   addedAt: FirestoreTimestamp | Date;
+}
+
+// P2P Network Messages
+export type MessageType = 
+  | 'discover' 
+  | 'announce' 
+  | 'sync_request' 
+  | 'sync_response' 
+  | 'warehouse_update'
+  | 'invite'
+  | 'join_request'
+  | 'permission_grant'
+  | 'ping'
+  | 'pong';
+
+export interface NetworkMessage {
+  id: string;
+  type: MessageType;
+  senderId: string;
+  receiverId?: string; // undefined for broadcast
+  timestamp: Date;
+  payload: any;
+  encrypted?: boolean;
+  signature?: string; // For verification
+}
+
+export interface SyncData {
+  warehouses: Warehouse[];
+  version: number;
+  checksum: string;
+}
+
+export interface NetworkState {
+  isOnline: boolean;
+  discoveredDevices: NetworkDevice[];
+  connections: Map<string, RTCPeerConnection>;
+  localDevice: NetworkDevice;
+}
+
+// Social Chat System
+export type ChatMessageType = 
+  | 'text'           // Regular text message
+  | 'photo'          // Image attachment  
+  | 'item_share'     // Share item from inventory
+  | 'action'         // System action (added item, etc)
+  | 'request'        // Request for item location
+  | 'command'        // Chat command (/find, /add, etc)
+  | 'qr_share'       // QR code sharing
+  | 'invite';        // Invitation to warehouse
+
+export interface ChatMessage {
+  id: string;
+  warehouseId: string;
+  senderId: string;
+  senderName: string;
+  type: ChatMessageType;
+  content: string;
+  timestamp: Date;
+  
+  // Extended data based on type
+  attachment?: {
+    type: 'image' | 'qr' | 'item';
+    data: string; // base64 for images, item JSON for items
+    thumbnail?: string;
+  };
+  
+  // For item sharing
+  sharedItem?: {
+    itemId: string;
+    itemName: string;
+    location: string;
+    quantity: number;
+    photo?: string;
+  };
+  
+  // For actions  
+  action?: {
+    type: 'item_added' | 'item_moved' | 'item_deleted' | 'user_joined';
+    details: string;
+    targetId?: string;
+  };
+  
+  // Message status
+  isRead: boolean;
+  reactions?: { [emoji: string]: string[] }; // emoji -> user IDs
+}
+
+export interface ChatParticipant {
+  userId: string;
+  userName: string;
+  role: UserRole;
+  joinedAt: Date;
+  lastSeen: Date;
+  avatar?: string;
+  isOnline: boolean;
+}
+
+export interface WarehouseChat {
+  warehouseId: string;
+  participants: ChatParticipant[];
+  messages: ChatMessage[];
+  lastActivity: Date;
+  settings: {
+    allowPhotos: boolean;
+    allowCommands: boolean;
+    allowItemSharing: boolean;
+    autoActions: boolean; // Show system actions
+  };
+}
+
+// Chat Commands
+export interface ChatCommand {
+  command: string;
+  description: string;
+  usage: string;
+  requiredRole: UserRole;
+  handler: (args: string[], senderId: string, warehouseId: string) => Promise<ChatMessage | null>;
 }
 
 // --- AI Tool Argument Types ---

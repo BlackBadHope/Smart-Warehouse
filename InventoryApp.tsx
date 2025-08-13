@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download, Bug, TestTube } from 'lucide-react';
+import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download, Bug, TestTube, Wifi, MessageCircle } from 'lucide-react';
 
 import { Warehouse, Room, Shelf, Item, ItemCore, BucketItem, UserProfile } from './types';
 import { ASCII_COLORS } from './constants';
@@ -18,6 +18,8 @@ import DebugModal from './components/DebugModal';
 import CurrencySelector from './components/CurrencySelector';
 import UserSwitcher from './components/UserSwitcher';
 import QRSyncModal from './components/QRSyncModal';
+import NetworkManager from './components/NetworkManager';
+import SocialChat from './components/SocialChat';
 import SelfTestModal from './components/SelfTestModal';
 import localizationService from './services/localizationService';
 import debugService from './services/debugService';
@@ -80,6 +82,8 @@ const InventoryApp: React.FC = () => {
   const [showDebug, setShowDebug] = useState(false);
   const [showQRSync, setShowQRSync] = useState(false);
   const [showSelfTest, setShowSelfTest] = useState(false);
+  const [showNetworkManager, setShowNetworkManager] = useState(false);
+  const [showSocialChat, setShowSocialChat] = useState(false);
 
   // Filtering and sorting states
   const [searchQuery, setSearchQuery] = useState('');
@@ -777,6 +781,25 @@ const InventoryApp: React.FC = () => {
               >
                 <ImageIcon size={16}/>
               </button>
+
+              <button 
+                onClick={() => setShowNetworkManager(true)} 
+                className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                title="Network Manager"
+              >
+                <Wifi size={16} className="text-blue-400"/>
+              </button>
+
+              {selectedWarehouseId && (
+                <button 
+                  onClick={() => setShowSocialChat(true)} 
+                  className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} relative`} 
+                  title="Warehouse Chat"
+                >
+                  <MessageCircle size={16} className="text-green-400"/>
+                  {/* TODO: Add unread message indicator */}
+                </button>
+              )}
             </div>
 
             {/* Utility Group */}
@@ -838,6 +861,15 @@ const InventoryApp: React.FC = () => {
         <VisualView show={showVisual} onClose={() => setShowVisual(false)} />
         <DebugModal show={showDebug} onClose={() => setShowDebug(false)} />
         <QRSyncModal show={showQRSync} onClose={() => setShowQRSync(false)} />
+        <NetworkManager show={showNetworkManager} onClose={() => setShowNetworkManager(false)} />
+        {selectedWarehouseId && selectedWarehouseName && (
+          <SocialChat 
+            warehouseId={selectedWarehouseId} 
+            warehouseName={selectedWarehouseName}
+            show={showSocialChat} 
+            onClose={() => setShowSocialChat(false)} 
+          />
+        )}
         <SelfTestModal show={showSelfTest} onClose={() => setShowSelfTest(false)} />
         {containerToMove ? (
           <div className={`${ASCII_COLORS.inputBg} p-4 border-2 ${ASCII_COLORS.border} rounded-lg`}>
