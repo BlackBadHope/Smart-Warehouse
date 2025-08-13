@@ -17,10 +17,8 @@ import LanguageSwitcher from './components/LanguageSwitcher';
 import CurrencySelector from './components/CurrencySelector';
 import UserSwitcher from './components/UserSwitcher';
 import localizationService from './services/localizationService';
-import debugService from './services/debugService';
 import userService from './services/userService';
 import themeService from './services/themeService';
-import uiUpdateService from './services/uiUpdateService';
 
 const InventoryApp: React.FC = () => {
   const [currentCurrency, setCurrentCurrency] = useState<string>(
@@ -36,7 +34,6 @@ const InventoryApp: React.FC = () => {
   const handleCurrencyChange = (newCurrency: string) => {
     setCurrentCurrency(newCurrency);
     localStorage.setItem('inventory-os-currency', newCurrency);
-    debugService.info('Currency changed globally', { newCurrency });
   };
 
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -93,164 +90,22 @@ const InventoryApp: React.FC = () => {
 
   // Initialize and load data
   useEffect(() => {
-    debugService.info('Initializing Inventory OS');
     localStorageService.initializeLocalStorage();
     loadWarehouses();
     loadBucketItems();
     // Initialize theme service
     themeService.onUserChanged();
     
-    // Set up UIUpdateService listeners for reactive UI updates
-    const unsubscribers: (() => void)[] = [];
-    
-    // Listen for theme changes
-    unsubscribers.push(uiUpdateService.on('theme-changed', (payload) => {
-      debugService.info('Theme changed, forcing re-render', payload);
-      setCurrentCurrency(curr => curr); // Force re-render
-    }));
-    
-    // Listen for language changes
-    unsubscribers.push(uiUpdateService.on('language-changed', (payload) => {
-      debugService.info('Language changed, updating interface', payload);
-      setCurrentLocale(payload.data?.locale || localizationService.getCurrentLocale());
-    }));
-    
-    // Listen for warehouse changes
-    unsubscribers.push(uiUpdateService.on('warehouse-added', () => {
-      debugService.info('Warehouse added, reloading list');
-      loadWarehouses();
-    }));
-    
-    unsubscribers.push(uiUpdateService.on('warehouse-updated', () => {
-      debugService.info('Warehouse updated, reloading data');
-      loadWarehouses();
-    }));
-    
-    unsubscribers.push(uiUpdateService.on('warehouse-deleted', () => {
-      debugService.info('Warehouse deleted, reloading list');
-      loadWarehouses();
-    }));
-    
-    // Listen for room changes
-    unsubscribers.push(uiUpdateService.on('room-added', () => {
-      debugService.info('Room added, reloading rooms');
-      if (selectedWarehouseId) loadRooms(selectedWarehouseId);
-    }));
-    
-    unsubscribers.push(uiUpdateService.on('room-updated', () => {
-      debugService.info('Room updated, reloading rooms');
-      if (selectedWarehouseId) loadRooms(selectedWarehouseId);
-    }));
-    
-    unsubscribers.push(uiUpdateService.on('room-deleted', () => {
-      debugService.info('Room deleted, reloading rooms');
-      if (selectedWarehouseId) loadRooms(selectedWarehouseId);
-    }));
-    
-    // Listen for shelf/container changes
-    unsubscribers.push(uiUpdateService.on('shelf-added', () => {
-      debugService.info('Shelf added, reloading shelves');
-      if (selectedWarehouseId && selectedRoomId) loadShelves(selectedWarehouseId, selectedRoomId);
-    }));
-    
-    unsubscribers.push(uiUpdateService.on('shelf-updated', () => {
-      debugService.info('Shelf updated, reloading shelves');
-      if (selectedWarehouseId && selectedRoomId) loadShelves(selectedWarehouseId, selectedRoomId);
-    }));
-    
-    unsubscribers.push(uiUpdateService.on('shelf-deleted', () => {
-      debugService.info('Shelf deleted, reloading shelves');
-      if (selectedWarehouseId && selectedRoomId) loadShelves(selectedWarehouseId, selectedRoomId);
-    }));
-    
-    // Listen for item changes
-    unsubscribers.push(uiUpdateService.on('item-added', () => {
-      debugService.info('Item added, reloading items');
-      if (selectedWarehouseId && selectedRoomId && selectedShelfId) {
-        loadItems(selectedWarehouseId, selectedRoomId, selectedShelfId);
-      }
-    }));
-    
-    unsubscribers.push(uiUpdateService.on('item-updated', () => {
-      debugService.info('Item updated, reloading items');
-      if (selectedWarehouseId && selectedRoomId && selectedShelfId) {
-        loadItems(selectedWarehouseId, selectedRoomId, selectedShelfId);
-      }
-    }));
-    
-    unsubscribers.push(uiUpdateService.on('item-deleted', () => {
-      debugService.info('Item deleted, reloading items');
-      if (selectedWarehouseId && selectedRoomId && selectedShelfId) {
-        loadItems(selectedWarehouseId, selectedRoomId, selectedShelfId);
-      }
-    }));
-    
-    unsubscribers.push(uiUpdateService.on('item-moved', () => {
-      debugService.info('Item moved, reloading data');
-      loadBucketItems();
-      if (selectedWarehouseId && selectedRoomId && selectedShelfId) {
-        loadItems(selectedWarehouseId, selectedRoomId, selectedShelfId);
-      }
-    }));
-    
-    // Listen for bucket changes
-    unsubscribers.push(uiUpdateService.on('bucket-updated', () => {
-      debugService.info('Bucket updated, reloading bucket');
-      loadBucketItems();
-    }));
-    
-    // Listen for test events
-    unsubscribers.push(uiUpdateService.on('test-progress', (payload) => {
-      debugService.info('Test progress update', payload);
-      // Test modal will handle this internally
-    }));
-    
-    unsubscribers.push(uiUpdateService.on('test-completed', () => {
-      debugService.info('Test completed, refreshing all data');
-      loadWarehouses();
-      loadBucketItems();
-    }));
-    
-    // Listen for data import/export
-    unsubscribers.push(uiUpdateService.on('data-imported', (payload) => {
-      debugService.info('Data imported, refreshing all data', payload);
-      
-      // Force full refresh
-      loadWarehouses();
-      loadBucketItems();
-      
-      // Clear selections when data is reset
-      if (payload.data?.action === 'reset-all') {
-        setSelectedWarehouseId(null);
-        setSelectedRoomId(null);
-        setSelectedShelfId(null);
-        setRooms([]);
-        setShelves([]);
-        setShelfItems([]);
-        showNotification('All data has been reset');
-      } else {
-        showNotification('Data imported successfully');
-      }
-    }));
-    
-    unsubscribers.push(uiUpdateService.on('data-exported', () => {
-      debugService.info('Data exported successfully');
-      showNotification('Data exported successfully');
-    }));
-    
-    // Keep old event listeners for backward compatibility
+    // Basic event listeners for theme and locale changes
     const handleThemeChange = (event: CustomEvent) => {
-      debugService.info('Legacy theme change event', event.detail);
-      setCurrentCurrency(curr => curr);
+      setCurrentCurrency(curr => curr); // Force re-render
     };
     
     const handleLocaleChange = (event: CustomEvent) => {
-      debugService.info('Legacy locale change event', event.detail);
       setCurrentLocale(event.detail.locale);
     };
     
     const handleWarehouseUpdate = (event: CustomEvent) => {
-      debugService.info('Legacy warehouse event', event.detail);
       loadWarehouses();
     };
     
@@ -259,19 +114,12 @@ const InventoryApp: React.FC = () => {
     document.addEventListener('warehouseCreated', handleWarehouseUpdate as EventListener);
     document.addEventListener('warehouseUpdated', handleWarehouseUpdate as EventListener);
     
-    debugService.action('App initialized successfully');
-    
     return () => {
-      // Cleanup UIUpdateService listeners
-      unsubscribers.forEach(unsubscribe => unsubscribe());
-      
-      // Cleanup legacy DOM event listeners
+      // Cleanup DOM event listeners
       document.removeEventListener('themeChanged', handleThemeChange as EventListener);
       document.removeEventListener('localeChanged', handleLocaleChange as EventListener);
       document.removeEventListener('warehouseCreated', handleWarehouseUpdate as EventListener);
       document.removeEventListener('warehouseUpdated', handleWarehouseUpdate as EventListener);
-      
-      debugService.info('InventoryApp: Cleanup completed');
     };
   }, []);
 
@@ -358,7 +206,6 @@ const InventoryApp: React.FC = () => {
   };
 
   const createEntity = (type: 'warehouse' | 'room' | 'shelf') => {
-    debugService.action(`Creating ${type}`, { selectedWarehouseId, selectedRoomId, selectedShelfId });
     
     let title = '', label = '';
     
@@ -372,7 +219,6 @@ const InventoryApp: React.FC = () => {
       title = `CREATE NEW CONTAINER (in ${selectedRoomName || 'Selected Room'})`;
       label = 'Container Name:';
     } else {
-      debugService.error(`Cannot create ${type}: missing parent selection`, { selectedWarehouseId, selectedRoomId });
       showNotification("Please select the parent location first.", "error");
       return;
     }
@@ -381,17 +227,12 @@ const InventoryApp: React.FC = () => {
       title, label, initialValue: '',
       onSubmit: async (name) => {
         try {
-          debugService.action(`Attempting to create ${type} with name: ${name}`);
-          
           if (type === 'warehouse') {
             localStorageService.addWarehouse(name);
-            debugService.info(`Warehouse "${name}" created successfully`);
           } else if (type === 'room' && selectedWarehouseId) {
             localStorageService.addRoom(selectedWarehouseId, name);
-            debugService.info(`Room "${name}" created successfully in warehouse ${selectedWarehouseId}`);
           } else if (type === 'shelf' && selectedWarehouseId && selectedRoomId) {
             localStorageService.addShelf(selectedWarehouseId, selectedRoomId, name);
-            debugService.info(`Container "${name}" created successfully in room ${selectedRoomId}`);
           }
           
           showNotification(`${type} "${name}" created!`);
@@ -400,7 +241,6 @@ const InventoryApp: React.FC = () => {
           if (selectedWarehouseId) loadRooms(selectedWarehouseId);
           if (selectedWarehouseId && selectedRoomId) loadShelves(selectedWarehouseId, selectedRoomId);
         } catch (e) {
-          debugService.error(`Error creating ${type}`, { error: (e as Error).message, name, selectedWarehouseId, selectedRoomId });
           showNotification(`Error creating ${type}: ${(e as Error).message}`, 'error');
         }
       }
