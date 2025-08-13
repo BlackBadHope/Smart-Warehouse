@@ -155,10 +155,26 @@ class ChatService {
     const warehouse = localStorageService.getWarehouses().find(w => w.id === warehouseId);
     if (warehouse) {
       const userRole = accessControlService.getUserRole(warehouse, senderId);
-      if (!userRole || !this.hasCommandPermission(userRole, command.requiredRole)) {
+      debugService.info('ChatService: Checking command permissions', {
+        warehouseId,
+        senderId,
+        userRole,
+        commandName,
+        requiredRole: command.requiredRole
+      });
+      
+      if (!userRole) {
         return this.createSystemMessage(
           warehouseId,
-          `Permission denied. Required role: ${command.requiredRole}`,
+          `Permission denied. Required role: ${command.requiredRole}, you have: none`,
+          'command'
+        );
+      }
+      
+      if (!this.hasCommandPermission(userRole, command.requiredRole)) {
+        return this.createSystemMessage(
+          warehouseId,
+          `Permission denied. Required role: ${command.requiredRole}, you have: ${userRole}`,
           'command'
         );
       }
@@ -179,6 +195,13 @@ class ChatService {
 
   private hasCommandPermission(userRole: UserRole, requiredRole: UserRole): boolean {
     const roleHierarchy = { guest: 0, viewer: 1, editor: 2, master: 3 };
+    
+    // Check if userRole and requiredRole are valid keys
+    if (!(userRole in roleHierarchy) || !(requiredRole in roleHierarchy)) {
+      debugService.warn('ChatService: Invalid role in permission check', { userRole, requiredRole });
+      return false;
+    }
+    
     return roleHierarchy[userRole] >= roleHierarchy[requiredRole];
   }
 
@@ -309,7 +332,10 @@ class ChatService {
     const userRole = warehouse ? accessControlService.getUserRole(warehouse, senderId) : 'guest';
 
     const availableCommands = Array.from(this.commands.values())
-      .filter(cmd => userRole && this.hasCommandPermission(userRole, cmd.requiredRole))
+      .filter(cmd => {
+        if (!userRole) return false;
+        return this.hasCommandPermission(userRole, cmd.requiredRole);
+      })
       .map(cmd => `${cmd.usage} - ${cmd.description}`)
       .join('\n');
 

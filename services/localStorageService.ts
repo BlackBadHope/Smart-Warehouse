@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Warehouse, Room, Shelf, ItemCore, Item, BucketItem, ShoppingListItem, InventorySummary, ItemLocationSummary, EntityType } from '../types';
+import uiUpdateService from './uiUpdateService';
+import userService from './userService';
 
 const STORAGE_KEY = 'inventory-os-data';
 
@@ -86,14 +88,29 @@ export const getWarehouses = (): Warehouse[] => {
 };
 
 export const addWarehouse = (name: string): Warehouse => {
+  const currentUserId = userService.getCurrentUser()?.id || 'default-user';
+  
   const warehouse: Warehouse = {
     id: uuidv4(),
     name,
     createdAt: new Date(),
-    rooms: []
+    rooms: [],
+    // Required fields for chat/permissions
+    ownerId: currentUserId,
+    accessControl: {
+      accessLevel: 'public' as const,
+      permissions: [],
+      encryptionEnabled: false
+    },
+    networkVisible: true,
+    syncVersion: 1
   };
   localData.warehouses.push(warehouse);
   saveToLocalStorage();
+  
+  // Emit UI update event
+  uiUpdateService.emit('warehouse-added', { warehouse }, 'localStorageService');
+  
   return warehouse;
 };
 
@@ -102,12 +119,19 @@ export const updateWarehouseName = (id: string, name: string): void => {
   if (warehouse) {
     warehouse.name = name;
     saveToLocalStorage();
+    
+    // Emit UI update event
+    uiUpdateService.emit('warehouse-updated', { warehouse }, 'localStorageService');
   }
 };
 
 export const deleteWarehouse = (id: string): void => {
+  const warehouse = findWarehouseById(id);
   localData.warehouses = localData.warehouses.filter(w => w.id !== id);
   saveToLocalStorage();
+  
+  // Emit UI update event
+  uiUpdateService.emit('warehouse-deleted', { warehouseId: id, warehouse }, 'localStorageService');
 };
 
 // Room operations
@@ -130,6 +154,10 @@ export const addRoom = (warehouseId: string, name: string): Room => {
   if (!warehouse.rooms) warehouse.rooms = [];
   warehouse.rooms.push(room);
   saveToLocalStorage();
+  
+  // Emit UI update event
+  uiUpdateService.emit('room-added', { room, warehouseId }, 'localStorageService');
+  
   return room;
 };
 
@@ -169,6 +197,10 @@ export const addShelf = (warehouseId: string, roomId: string, name: string): She
   if (!room.shelves) room.shelves = [];
   room.shelves.push(shelf);
   saveToLocalStorage();
+  
+  // Emit UI update event
+  uiUpdateService.emit('shelf-added', { shelf, warehouseId, roomId }, 'localStorageService');
+  
   return shelf;
 };
 
@@ -225,6 +257,10 @@ export const addItem = (warehouseId: string, roomId: string, shelfId: string, it
   if (!shelf.items) shelf.items = [];
   shelf.items.push(item);
   saveToLocalStorage();
+  
+  // Emit UI update event
+  uiUpdateService.emit('item-added', { item, warehouseId, roomId, shelfId }, 'localStorageService');
+  
   return item;
 };
 
@@ -233,14 +269,21 @@ export const updateItem = (warehouseId: string, roomId: string, shelfId: string,
   if (item) {
     Object.assign(item, itemData);
     saveToLocalStorage();
+    
+    // Emit UI update event
+    uiUpdateService.emit('item-updated', { item, warehouseId, roomId, shelfId, itemId }, 'localStorageService');
   }
 };
 
 export const deleteItem = (warehouseId: string, roomId: string, shelfId: string, itemId: string): void => {
   const shelf = findShelfById(warehouseId, roomId, shelfId);
   if (shelf?.items) {
+    const item = shelf.items.find(i => i.id === itemId);
     shelf.items = shelf.items.filter(i => i.id !== itemId);
     saveToLocalStorage();
+    
+    // Emit UI update event
+    uiUpdateService.emit('item-deleted', { item, warehouseId, roomId, shelfId, itemId }, 'localStorageService');
   }
 };
 
@@ -266,6 +309,10 @@ export const addItemToBucket = (item: Item, originalPath: string): BucketItem =>
   
   localData.bucketItems.push(bucketItem);
   saveToLocalStorage();
+  
+  // Emit UI update event
+  uiUpdateService.emit('bucket-updated', { action: 'item-added', bucketItem }, 'localStorageService');
+  
   return bucketItem;
 };
 
@@ -274,6 +321,9 @@ export const updateBucketItem = (itemId: string, data: Partial<BucketItem>): voi
   if (item) {
     Object.assign(item, data);
     saveToLocalStorage();
+    
+    // Emit UI update event
+    uiUpdateService.emit('bucket-updated', { action: 'item-updated', bucketItem: item }, 'localStorageService');
   }
 };
 
@@ -297,6 +347,9 @@ export const removeBucketItem = (itemId: string): void => {
   
   if (itemsBefore === itemsAfter) {
     console.warn('⚠️ No items were removed - ID not found:', itemId);
+  } else {
+    // Emit UI update event only if item was actually removed
+    uiUpdateService.emit('bucket-updated', { action: 'item-removed', itemId }, 'localStorageService');
   }
   
   saveToLocalStorage();
@@ -308,8 +361,16 @@ export const transferBucketItem = (bucketItem: BucketItem): void => {
   const { warehouseId, roomId, shelfId } = bucketItem.destination;
   const { id, originalPath, destination, isReadyToTransfer, ...itemData } = bucketItem;
   
+  // These functions will emit their own events
   addItem(warehouseId, roomId, shelfId, itemData as ItemCore);
   removeBucketItem(bucketItem.id);
+  
+  // Emit specific transfer event
+  uiUpdateService.emit('item-moved', { 
+    bucketItem, 
+    destination: bucketItem.destination,
+    action: 'transfer-completed' 
+  }, 'localStorageService');
 };
 
 // Shopping list operations
@@ -528,7 +589,14 @@ export const resetAllData = () => {
     };
     localStorage.removeItem(STORAGE_KEY);
     
-    // Trigger UI update events
+    // Emit UI update events through new system
+    uiUpdateService.emitBatch([
+      { type: 'warehouse-deleted', data: { action: 'reset-all' } },
+      { type: 'bucket-updated', data: { action: 'reset-all' } },
+      { type: 'data-imported', data: { action: 'reset-all', timestamp: new Date().toISOString() } }
+    ], 'resetAllData');
+    
+    // Keep legacy events for backward compatibility
     window.dispatchEvent(new CustomEvent('dataReset', { detail: { timestamp: new Date().toISOString() } }));
     window.dispatchEvent(new CustomEvent('warehouseUpdated', { detail: { action: 'reset' } }));
     

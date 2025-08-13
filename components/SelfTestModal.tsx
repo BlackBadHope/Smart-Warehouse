@@ -17,6 +17,9 @@ const SelfTestModal: React.FC<SelfTestModalProps> = ({ show, onClose }) => {
   const [progress, setProgress] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [savedResults, setSavedResults] = useState<Array<{ key: string; timestamp: string; data: any }>>([]);
+  const [selectedModule, setSelectedModule] = useState<string | null>(null);
+  const [availableModules] = useState(selfTestService.getAvailableTestModules());
+  const [keepTestData, setKeepTestData] = useState(false);
 
   useEffect(() => {
     if (show) {
@@ -44,7 +47,7 @@ const SelfTestModal: React.FC<SelfTestModalProps> = ({ show, onClose }) => {
         setProgress(prev => Math.min(prev + Math.random() * 10, 95));
       }, 500);
 
-      const results = await selfTestService.runFullTestSuite();
+      const results = await selfTestService.runFullTestSuite(keepTestData);
       
       clearInterval(progressInterval);
       setProgress(100);
@@ -66,6 +69,48 @@ const SelfTestModal: React.FC<SelfTestModalProps> = ({ show, onClose }) => {
     } finally {
       setIsRunning(false);
       setCurrentTest('');
+    }
+  };
+
+  const runModuleTest = async (moduleId: string) => {
+    setIsRunning(true);
+    setTestResults([]);
+    setCurrentTest(`Running ${availableModules.find(m => m.id === moduleId)?.name} tests...`);
+    setProgress(0);
+    setShowResults(false);
+    setSelectedModule(moduleId);
+
+    try {
+      debugService.info(`🧪 Starting ${moduleId} module test from UI`);
+      
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setProgress(prev => Math.min(prev + Math.random() * 15, 95));
+      }, 300);
+
+      const results = await selfTestService.runTestModule(moduleId);
+      
+      clearInterval(progressInterval);
+      setProgress(100);
+      setTestResults(results);
+      setShowResults(true);
+      
+      // Auto-save results
+      selfTestService.saveTestResults(`module-${moduleId}-${Date.now()}`);
+      loadSavedResults();
+      
+      debugService.info(`✅ ${moduleId} module test completed from UI`, {
+        totalSuites: results.length,
+        totalTests: results.reduce((sum, suite) => sum + suite.results.length, 0)
+      });
+
+    } catch (error) {
+      debugService.error(`❌ ${moduleId} module test failed from UI`, { error: (error as Error).message });
+      setCurrentTest(`Error: ${(error as Error).message}`);
+    } finally {
+      setIsRunning(false);
+      setCurrentTest('');
+      setSelectedModule(null);
     }
   };
 
@@ -145,14 +190,42 @@ const SelfTestModal: React.FC<SelfTestModalProps> = ({ show, onClose }) => {
               <div>
                 <h3 className={`${ASCII_COLORS.accent} text-lg font-bold mb-3`}>Test Controls</h3>
                 
+                <div className="mb-3">
+                  <label className={`flex items-center ${ASCII_COLORS.text} text-sm`}>
+                    <input
+                      type="checkbox"
+                      checked={keepTestData}
+                      onChange={(e) => setKeepTestData(e.target.checked)}
+                      className="mr-2"
+                    />
+                    Keep test data after completion
+                  </label>
+                </div>
+
                 <button
                   onClick={runTests}
                   disabled={isRunning}
-                  className={`w-full ${ASCII_COLORS.buttonBg} p-3 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} disabled:opacity-50 flex items-center justify-center`}
+                  className={`w-full ${ASCII_COLORS.buttonBg} p-3 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} disabled:opacity-50 flex items-center justify-center mb-4`}
                 >
                   <Play className="w-4 h-4 mr-2" />
                   {isRunning ? 'Running Tests...' : 'Run Full Test Suite'}
                 </button>
+
+                <div className="space-y-2">
+                  <h4 className={`${ASCII_COLORS.accent} text-sm font-bold`}>Individual Modules</h4>
+                  {availableModules.map((module) => (
+                    <button
+                      key={module.id}
+                      onClick={() => runModuleTest(module.id)}
+                      disabled={isRunning}
+                      className={`w-full text-left ${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} disabled:opacity-50 text-xs`}
+                    >
+                      <div className="font-semibold">{module.name}</div>
+                      <div className={`${ASCII_COLORS.textMuted} text-xs`}>{module.description}</div>
+                      <div className={`${ASCII_COLORS.textMuted} text-xs`}>{module.estimatedDuration}</div>
+                    </button>
+                  ))}
+                </div>
 
                 <button
                   onClick={resetData}

@@ -8,6 +8,8 @@ class NetworkService {
   private discoveryInterval?: number;
   private heartbeatInterval?: number;
   private isInitialized = false;
+  private websocket?: WebSocket;
+  private reconnectInterval?: number;
 
   constructor() {
     this.state = {
@@ -40,6 +42,9 @@ class NetworkService {
       
       // Try to get local IP address
       await this.detectLocalIP();
+      
+      // Connect to WebSocket server for real-time sync
+      await this.connectToWebSocketServer();
       
       // Start network discovery
       this.startDiscovery();
@@ -96,15 +101,112 @@ class NetworkService {
       });
     } catch (error) {
       this.state.localDevice.ipAddress = '127.0.0.1';
-      debugService.warn('NetworkService: Could not detect local IP, using fallback');
+      debugService.warning('NetworkService: Could not detect local IP, using fallback');
+    }
+  }
+
+  private async connectToWebSocketServer(): Promise<void> {
+    try {
+      // Try connecting to localhost server first
+      const wsUrl = `ws://localhost:8080`;
+      this.websocket = new WebSocket(wsUrl);
+      
+      this.websocket.onopen = () => {
+        debugService.info('NetworkService: Connected to WebSocket server');
+        this.clearReconnectInterval();
+        
+        // Send initial device announcement
+        this.websocket?.send(JSON.stringify({
+          type: 'device_announce',
+          device: this.state.localDevice
+        }));
+      };
+      
+      this.websocket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          this.handleWebSocketMessage(data);
+        } catch (error) {
+          debugService.error('NetworkService: Error parsing WebSocket message', error);
+        }
+      };
+      
+      this.websocket.onclose = () => {
+        debugService.warning('NetworkService: WebSocket connection closed, attempting reconnect');
+        this.scheduleReconnect();
+      };
+      
+      this.websocket.onerror = (error) => {
+        debugService.error('NetworkService: WebSocket error', error);
+      };
+      
+      // Wait for connection or timeout
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('WebSocket connection timeout'));
+        }, 5000);
+        
+        this.websocket!.onopen = () => {
+          clearTimeout(timeout);
+          debugService.info('NetworkService: Connected to WebSocket server');
+          this.clearReconnectInterval();
+          resolve(void 0);
+        };
+        
+        this.websocket!.onerror = () => {
+          clearTimeout(timeout);
+          reject(new Error('WebSocket connection failed'));
+        };
+      });
+      
+    } catch (error) {
+      debugService.warning('NetworkService: Could not connect to WebSocket server, continuing with P2P only mode');
+    }
+  }
+
+  private handleWebSocketMessage(data: any): void {
+    switch (data.type) {
+      case 'device_announce':
+        if (data.device && data.device.id !== this.state.localDevice.id) {
+          this.addDiscoveredDevice(data.device);
+        }
+        break;
+      case 'broadcast':
+        if (data.message) {
+          this.handleIncomingMessage(data.message);
+        }
+        break;
+      case 'sync_data':
+        // Handle data synchronization from server
+        this.dispatchNetworkEvent('sync_received', data.payload);
+        break;
+      default:
+        debugService.info('NetworkService: Unknown WebSocket message type', data.type);
+    }
+  }
+
+  private scheduleReconnect(): void {
+    this.clearReconnectInterval();
+    this.reconnectInterval = window.setTimeout(() => {
+      if (!this.websocket || this.websocket.readyState === WebSocket.CLOSED) {
+        debugService.info('NetworkService: Attempting WebSocket reconnection');
+        this.connectToWebSocketServer();
+      }
+    }, 5000);
+  }
+
+  private clearReconnectInterval(): void {
+    if (this.reconnectInterval) {
+      clearTimeout(this.reconnectInterval);
+      this.reconnectInterval = undefined;
     }
   }
 
   private startDiscovery(): void {
-    // Simulate network discovery - in real implementation this would use mDNS/Bonjour
+    // Real network discovery using server probing and WebSocket
     this.discoveryInterval = window.setInterval(() => {
       this.broadcastDiscovery();
-    }, 5000); // Every 5 seconds
+    }, 15000); // Every 15 seconds (less frequent than simulation)
   }
 
   private startHeartbeat(): void {
@@ -161,7 +263,7 @@ class NetworkService {
   async connectToDevice(deviceId: string): Promise<boolean> {
     const device = this.state.discoveredDevices.find(d => d.id === deviceId);
     if (!device) {
-      debugService.warn('NetworkService: Device not found for connection', deviceId);
+      debugService.warning('NetworkService: Device not found for connection', deviceId);
       return false;
     }
 
@@ -196,6 +298,9 @@ class NetworkService {
         debugService.info('NetworkService: Data channel opened', deviceId);
       };
 
+      // Store channel reference for later use
+      (connection as any).inventoryDataChannel = channel;
+      
       this.state.connections.set(deviceId, connection);
       
       debugService.info('NetworkService: Connected to device', deviceId);
@@ -218,15 +323,16 @@ class NetworkService {
   sendMessage(deviceId: string, message: NetworkMessage): boolean {
     const connection = this.state.connections.get(deviceId);
     if (!connection) {
-      debugService.warn('NetworkService: No connection to device', deviceId);
+      debugService.warning('NetworkService: No connection to device', deviceId);
       return false;
     }
 
     try {
-      // Get the data channel
-      const channels = connection.getDataChannels();
-      if (channels.length > 0) {
-        channels[0].send(JSON.stringify(message));
+      // For WebRTC, we need to track the data channel ourselves
+      // This is a simplified approach - in production we'd maintain channel references
+      const channel = (connection as any).inventoryDataChannel;
+      if (channel && channel.readyState === 'open') {
+        channel.send(JSON.stringify(message));
         return true;
       }
     } catch (error) {
@@ -241,36 +347,89 @@ class NetworkService {
       this.sendMessage(deviceId, message);
     });
     
-    // Also simulate network broadcast for discovery
-    this.simulateNetworkBroadcast(message);
+    // Also broadcast via real network discovery
+    this.realNetworkBroadcast(message);
   }
 
-  private simulateNetworkBroadcast(message: NetworkMessage): void {
-    // In real implementation, this would use UDP broadcast or mDNS
-    // For now, we'll simulate finding devices on the network
+  private realNetworkBroadcast(message: NetworkMessage): void {
+    // Real network broadcasting via WebSocket to server
+    if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+      this.websocket.send(JSON.stringify({
+        type: 'broadcast',
+        message: message
+      }));
+    }
+    
+    // Also broadcast via local mDNS for direct P2P discovery
     if (message.type === 'discover') {
-      setTimeout(() => {
-        // Simulate discovering a device
-        this.simulateDeviceDiscovery();
-      }, 1000);
+      this.performRealDeviceDiscovery();
     }
   }
 
-  private simulateDeviceDiscovery(): void {
-    // Simulate finding another device (for testing)
-    const simulatedDevice: NetworkDevice = {
-      id: 'simulated-device-' + Math.random().toString(36).substr(2, 9),
-      name: 'Simulated Device',
-      ipAddress: '192.168.1.' + Math.floor(Math.random() * 255),
-      port: 8080,
-      lastSeen: new Date(),
-      capabilities: ['sync', 'discovery']
-    };
-
-    // Only add if we don't have too many simulated devices
-    if (this.state.discoveredDevices.length < 2) {
-      this.addDiscoveredDevice(simulatedDevice);
+  private async performRealDeviceDiscovery(): Promise<void> {
+    try {
+      // Check for local network servers on common ports
+      const localNetworkRanges = this.generateLocalNetworkIPs();
+      const discoveryPromises = localNetworkRanges.map(ip => this.probeNetworkDevice(ip));
+      
+      const results = await Promise.allSettled(discoveryPromises);
+      
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled' && result.value) {
+          this.addDiscoveredDevice(result.value);
+        }
+      });
+    } catch (error) {
+      debugService.error('NetworkService: Real device discovery failed', error);
     }
+  }
+
+  private generateLocalNetworkIPs(): string[] {
+    const baseIP = this.state.localDevice.ipAddress.split('.').slice(0, 3).join('.');
+    const ips: string[] = [];
+    
+    // Probe common IP ranges in the same subnet
+    for (let i = 1; i <= 254; i++) {
+      if (i !== parseInt(this.state.localDevice.ipAddress.split('.')[3])) {
+        ips.push(`${baseIP}.${i}`);
+      }
+    }
+    
+    return ips;
+  }
+
+  private async probeNetworkDevice(ip: string): Promise<NetworkDevice | null> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      
+      const response = await fetch(`http://${ip}:3001/api/health`, {
+        method: 'GET',
+        signal: controller.signal,
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.type === 'home-server') {
+          return {
+            id: `server-${ip}`,
+            name: `Home Server (${ip})`,
+            ipAddress: ip,
+            port: 3001,
+            lastSeen: new Date(),
+            capabilities: ['sync', 'discovery', 'server', 'websocket']
+          };
+        }
+      }
+    } catch (error) {
+      // Ignore connection errors for unreachable IPs
+    }
+    
+    return null;
   }
 
   private addDiscoveredDevice(device: NetworkDevice): void {
@@ -311,7 +470,7 @@ class NetworkService {
         this.handleDeviceAnnouncement(message);
         break;
       default:
-        debugService.warn('NetworkService: Unhandled message type', message.type);
+        debugService.warning('NetworkService: Unhandled message type', message.type);
     }
   }
 
@@ -374,7 +533,15 @@ class NetworkService {
       clearInterval(this.heartbeatInterval);
     }
     
-    // Close all connections
+    this.clearReconnectInterval();
+    
+    // Close WebSocket connection
+    if (this.websocket) {
+      this.websocket.close();
+      this.websocket = undefined;
+    }
+    
+    // Close all P2P connections
     this.state.connections.forEach((connection, deviceId) => {
       this.disconnectFromDevice(deviceId);
     });
@@ -391,6 +558,70 @@ class NetworkService {
 
   getLocalDevice(): NetworkDevice {
     return { ...this.state.localDevice };
+  }
+
+  // WebSocket connection status
+  isWebSocketConnected(): boolean {
+    return this.websocket?.readyState === WebSocket.OPEN;
+  }
+
+  // Sync data with server
+  async syncWithServer(data: any): Promise<void> {
+    if (this.isWebSocketConnected()) {
+      this.websocket?.send(JSON.stringify({
+        type: 'sync_data',
+        payload: data,
+        deviceId: this.state.localDevice.id
+      }));
+    }
+  }
+
+  // Connect directly to a discovered server
+  async connectToServer(serverDevice: NetworkDevice): Promise<boolean> {
+    try {
+      const response = await fetch(`http://${serverDevice.ipAddress}:${serverDevice.port}/api/health`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        debugService.info('NetworkService: Successfully connected to server', {
+          server: serverDevice.name,
+          ip: serverDevice.ipAddress,
+          clients: data.clients
+        });
+        
+        // Try to establish WebSocket connection to this specific server
+        if (serverDevice.capabilities.includes('websocket')) {
+          try {
+            const wsUrl = `ws://${serverDevice.ipAddress}:8080`;
+            const serverWs = new WebSocket(wsUrl);
+            
+            serverWs.onopen = () => {
+              debugService.info('NetworkService: Connected to remote server WebSocket', serverDevice.name);
+              // Add this as an additional WebSocket connection
+              serverWs.send(JSON.stringify({
+                type: 'device_announce',
+                device: this.state.localDevice
+              }));
+            };
+            
+            return true;
+          } catch (wsError) {
+            debugService.warning('NetworkService: Could not establish WebSocket to remote server', wsError);
+            return true; // HTTP connection still successful
+          }
+        }
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      debugService.error('NetworkService: Failed to connect to server', error);
+      return false;
+    }
   }
 }
 

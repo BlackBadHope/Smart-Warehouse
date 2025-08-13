@@ -1,0 +1,2075 @@
+{
+  "timestamp": "2025-08-13T17:11:07.573Z",
+  "appVersion": "2.6.0",
+  "testResults": [
+    {
+      "suiteName": "Core Functionality Edge Cases",
+      "results": [
+        {
+          "testName": "Local Storage Stress Test",
+          "status": "PASS",
+          "message": "Local storage survived corruption test",
+          "timestamp": "2025-08-13T17:11:01.571Z",
+          "duration": 4.399999998509884
+        },
+        {
+          "testName": "Warehouse Names Edge Cases",
+          "status": "PASS",
+          "message": "10/10 edge case warehouses with full structure created",
+          "details": {
+            "successCount": 10,
+            "failureCount": 0,
+            "results": [
+              {
+                "name": "🏭 Склад «Спецсимволы» №1",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "5c93f495-8a2b-483b-9c06-99a858af0583",
+                  "name": "🏭 Склад «Спецсимволы» №1",
+                  "createdAt": "2025-08-13T17:11:01.574Z",
+                  "rooms": [
+                    {
+                      "id": "b056cbf2-18a0-4ce4-9dce-e737080c2232",
+                      "name": "Комната-1 для 🏭 Склад «Спецс",
+                      "createdAt": "2025-08-13T17:11:01.574Z",
+                      "shelves": [
+                        {
+                          "id": "578cc7c5-5fbb-4eb0-b4bb-9f4121efac49",
+                          "name": "Полка-А 🏭 Склад «",
+                          "createdAt": "2025-08-13T17:11:01.574Z",
+                          "items": [
+                            {
+                              "name": "Товар для 🏭 Склад «Спецсимволы» №1",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: 🏭 Склад «Спецсимволы» №1",
+                              "id": "84d5ce31-1ef8-43cb-9d7a-bf0ac009d8a5",
+                              "createdAt": "2025-08-13T17:11:01.574Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "a61b4534-9893-4e56-89d0-42dad9d854a4",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-13T17:11:01.574Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "ce361393-bded-4bcd-8931-e96b2ee9ad26",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-13T17:11:01.574Z",
+                      "shelves": [
+                        {
+                          "id": "2bbf2fbb-5ed5-4c94-9bf8-1068ccf9a504",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-13T17:11:01.574Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар 🏭 Склад «Спецс",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: 🏭 Склад «Спецсимволы» №1",
+                              "id": "3ae0e1ee-013f-46ee-a67a-3037027d3b7c",
+                              "createdAt": "2025-08-13T17:11:01.574Z"
+                            },
+                            {
+                              "name": "Товар для 🏭 Склад «Спецсимволы» №1",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: 🏭 Склад «Спецсимволы» №1",
+                              "createdAt": "2025-08-13T17:11:01.581Z",
+                              "id": "25747886-835d-4233-9573-8b2c1557ad26"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "ПолнойДлиннойНазваниеСкладаБезПробеловДляТестированияОграниченийИнтерфейса",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "8a166bfb-2cae-4bac-af4a-277b55106e06",
+                  "name": "ПолнойДлиннойНазваниеСкладаБезПробеловДляТестированияОграниченийИнтерфейса",
+                  "createdAt": "2025-08-13T17:11:01.574Z",
+                  "rooms": [
+                    {
+                      "id": "8084d497-1bc5-46c1-b97a-2803d56c2298",
+                      "name": "Комната-1 для ПолнойДлиннойНа",
+                      "createdAt": "2025-08-13T17:11:01.574Z",
+                      "shelves": [
+                        {
+                          "id": "bd7a8b52-a8c2-444e-828a-47598790c8d2",
+                          "name": "Полка-А ПолнойДлин",
+                          "createdAt": "2025-08-13T17:11:01.574Z",
+                          "items": [
+                            {
+                              "name": "Товар для ПолнойДлиннойНазваниеСкла",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ПолнойДлиннойНазваниеСкладаБезПробеловДляТестированияОграниченийИнтерфейса",
+                              "id": "38e117c2-a3b7-45b5-aa7c-0a3727f53b19",
+                              "createdAt": "2025-08-13T17:11:01.574Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "bc8b52fd-cb12-4b5a-bee4-ec138cfc31c4",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-13T17:11:01.574Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "4cdb5c3d-f773-4dcc-8870-51aa6a631512",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-13T17:11:01.574Z",
+                      "shelves": [
+                        {
+                          "id": "01e6c2a7-0140-4164-b272-8755c1f15389",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-13T17:11:01.574Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар ПолнойДлиннойНа",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ПолнойДлиннойНазваниеСкладаБезПробеловДляТестированияОграниченийИнтерфейса",
+                              "id": "f091e04a-e4a5-4a71-8950-1cb7bc908456",
+                              "createdAt": "2025-08-13T17:11:01.574Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "0cc87a59-d5e3-47f2-a307-21e8f86ef73b",
+                  "name": "",
+                  "createdAt": "2025-08-13T17:11:01.574Z",
+                  "rooms": [
+                    {
+                      "id": "412f2cd6-f5d7-4685-82f9-d49c539b4763",
+                      "name": "Комната-1 для ",
+                      "createdAt": "2025-08-13T17:11:01.574Z",
+                      "shelves": [
+                        {
+                          "id": "1ce11c5b-709c-4052-a5d9-90b88a315ef6",
+                          "name": "Полка-А ",
+                          "createdAt": "2025-08-13T17:11:01.574Z",
+                          "items": [
+                            {
+                              "name": "Товар для ",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ",
+                              "id": "d41b2206-372c-4be1-93d8-9aa036d4c51e",
+                              "createdAt": "2025-08-13T17:11:01.574Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "4613eb12-ae45-45d7-87bd-b3a606a64181",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-13T17:11:01.574Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "12727d26-edbb-45cf-acd8-c560a3947cd2",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-13T17:11:01.574Z",
+                      "shelves": [
+                        {
+                          "id": "c5193283-8548-4496-9be6-1357fd27ee01",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-13T17:11:01.574Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар ",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ",
+                              "id": "37f8f1ab-bf75-43b2-97e6-9e5581347dec",
+                              "createdAt": "2025-08-13T17:11:01.574Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "   ",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "95719c85-1920-4e3a-8796-ad0b3dbb18f8",
+                  "name": "   ",
+                  "createdAt": "2025-08-13T17:11:01.574Z",
+                  "rooms": [
+                    {
+                      "id": "b09d15c1-eab8-451b-b1f9-558fd52964cf",
+                      "name": "Комната-1 для    ",
+                      "createdAt": "2025-08-13T17:11:01.574Z",
+                      "shelves": [
+                        {
+                          "id": "ce5e36e0-6060-4339-93d2-9609d277b144",
+                          "name": "Полка-А    ",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Товар для    ",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse:    ",
+                              "id": "ea4dd915-9159-43dd-856a-485090357a75",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "d343e8d4-020d-425d-9b4a-21bde5a9a30a",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "b35b869f-a486-413d-9c03-30fb9a3c13ab",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "5c80087b-7086-4b9f-9ed9-da65a62c10ae",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар    ",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse:    ",
+                              "id": "c7ee13ff-776c-4f58-98b4-c3f47af3a45c",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "Склад\nс\tпереносами\rстрок",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "4cf918f7-c5e2-4a83-a4b8-b9bf2c23d1de",
+                  "name": "Склад\nс\tпереносами\rстрок",
+                  "createdAt": "2025-08-13T17:11:01.575Z",
+                  "rooms": [
+                    {
+                      "id": "e63842a8-6b25-49f6-93ff-a5d291e75c91",
+                      "name": "Комната-1 для Склад\nс\tперенос",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "c1b74de5-192d-4180-a055-183097dd7dac",
+                          "name": "Полка-А Склад\nс\tпе",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Товар для Склад\nс\tпереносами\rстрок",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Склад\nс\tпереносами\rстрок",
+                              "id": "cd803600-cd8d-46e3-8e8f-920bdae92f11",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "b0c8b47c-d0b4-4122-93dd-b10307a1b33c",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "6bf726a8-f57d-4b81-a3ce-a339ec12a05a",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "f9c8da45-cef3-4504-bfa5-4ccd5bf7d3d7",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар Склад\nс\tперенос",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Склад\nс\tпереносами\rстрок",
+                              "id": "018453dd-43a6-43e5-a9e5-c8fe55ef8f86",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "🚀 🌟 ✨ 💫 ⭐",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "62929e2e-08c5-41ed-9675-a81d6c086994",
+                  "name": "🚀 🌟 ✨ 💫 ⭐",
+                  "createdAt": "2025-08-13T17:11:01.575Z",
+                  "rooms": [
+                    {
+                      "id": "9389640f-dd05-4ba7-aabf-38625db7768a",
+                      "name": "Комната-1 для 🚀 🌟 ✨ 💫 ⭐",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "7e0d3ef4-e869-4fcf-93a9-d299e1376125",
+                          "name": "Полка-А 🚀 🌟 ✨ 💫",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Товар для 🚀 🌟 ✨ 💫 ⭐",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: 🚀 🌟 ✨ 💫 ⭐",
+                              "id": "e715f21f-e9b4-45ef-a5ad-1099e25fbdeb",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "fd75caeb-07f8-4f4e-a708-86f02d6a0308",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "115b298d-4be6-4532-8367-e73a78bd3260",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "5c2fb499-6817-445e-9c56-ef29a34b773d",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар 🚀 🌟 ✨ 💫 ⭐",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: 🚀 🌟 ✨ 💫 ⭐",
+                              "id": "e8e0d404-b10f-42c4-83f8-0671527f6a82",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "Тест\"'`<script>alert(1)</script>",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "db802627-e90b-4375-8b05-ad21d7dc5295",
+                  "name": "Тест\"'`<script>alert(1)</script>",
+                  "createdAt": "2025-08-13T17:11:01.575Z",
+                  "rooms": [
+                    {
+                      "id": "57778514-deb3-4560-bf58-99a5ea88717e",
+                      "name": "Комната-1 для Тест\"'`<script>",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "f3ee5be0-5eea-4f36-9617-b1f21e13a30f",
+                          "name": "Полка-А Тест\"'`<sc",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Товар для Тест\"'`<script>alert(1)</",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Тест\"'`<script>alert(1)</script>",
+                              "id": "ab908eec-1dd6-491a-ae79-d6960254678b",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "a121eb4b-5188-4a80-947a-49e2b0f50822",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "dc5f27f1-77ca-4700-b71b-37c1cc8dc001",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "1a0c56c1-b580-469d-a1ec-3fbd244ad7f5",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар Тест\"'`<script>",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Тест\"'`<script>alert(1)</script>",
+                              "id": "7294c26b-b1db-44e3-ab2d-a1c3cb498c4f",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "../../malicious/path",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "7345f5f0-e9df-431c-9577-54244e0c0dcb",
+                  "name": "../../malicious/path",
+                  "createdAt": "2025-08-13T17:11:01.575Z",
+                  "rooms": [
+                    {
+                      "id": "691699ce-e880-4171-ad7b-a35e3fc47ba1",
+                      "name": "Комната-1 для ../../malicious",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "53bf458b-7377-4776-81c0-d9d4b0b84fc1",
+                          "name": "Полка-А ../../mali",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Товар для ../../malicious/path",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ../../malicious/path",
+                              "id": "247b08db-4544-43b1-9cf1-e8b197c95092",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "9a295a83-00e8-4b13-b392-367441db8f3c",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "0a7d09e6-3154-4124-a4cc-8944a2db7135",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "c0e90281-e9e9-4dbf-afc2-bd53a3e4e1eb",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар ../../malicious",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: ../../malicious/path",
+                              "id": "5e2231eb-de14-41ee-b1de-0d9f46c8f25b",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "Склад 💀 DELETE * FROM warehouses;",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "954e4146-7229-4202-ad27-5a56db0fb51c",
+                  "name": "Склад 💀 DELETE * FROM warehouses;",
+                  "createdAt": "2025-08-13T17:11:01.575Z",
+                  "rooms": [
+                    {
+                      "id": "1f8b9ed3-4d0e-4409-a3a8-e2085bb0bd4e",
+                      "name": "Комната-1 для Склад 💀 DELETE",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "b491428b-0b8d-493d-8c42-db2d0c9621de",
+                          "name": "Полка-А Склад 💀 D",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Товар для Склад 💀 DELETE * FROM wa",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Склад 💀 DELETE * FROM warehouses;",
+                              "id": "30785ff8-7c2c-468c-acf2-f7e29dac5736",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "22951f25-581f-43f2-8d49-187bd0d4a6c5",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "000d8b15-ed70-43a9-b823-bf6b82fc5a16",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "8d8906ea-8833-45b3-89dc-293d06794355",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар Склад 💀 DELETE",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Склад 💀 DELETE * FROM warehouses;",
+                              "id": "4681b3fd-2628-47df-825f-bd3f17065c33",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              },
+              {
+                "name": "Нормальный Склад",
+                "status": "CREATED_FULL_STRUCTURE",
+                "id": {
+                  "id": "7a093775-7692-45ee-beb0-6e51605d06ca",
+                  "name": "Нормальный Склад",
+                  "createdAt": "2025-08-13T17:11:01.575Z",
+                  "rooms": [
+                    {
+                      "id": "195b54b9-096a-4afa-9bb4-eb30b37e4f8d",
+                      "name": "Комната-1 для Нормальный Скла",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "09a06685-0cd4-43d9-999b-5b047cc5f9c4",
+                          "name": "Полка-А Нормальный",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Товар для Нормальный Склад",
+                              "quantity": 3,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Нормальный Склад",
+                              "id": "65172edf-2e9e-4757-a051-bf383da384c1",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "83c5ac3b-bdfd-46e5-953c-76b6461e7f2c",
+                          "name": "Контейнер-Б 📦",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "id": "3a49ea6e-d2b0-4915-9565-dc3ee16b17e4",
+                      "name": "Тестовая комната 🏠",
+                      "createdAt": "2025-08-13T17:11:01.575Z",
+                      "shelves": [
+                        {
+                          "id": "62bcb6d0-1aaf-4911-aedf-d397bfe90dfa",
+                          "name": "Ящик-В",
+                          "createdAt": "2025-08-13T17:11:01.575Z",
+                          "items": [
+                            {
+                              "name": "Дублирующий товар Нормальный Скла",
+                              "quantity": 1,
+                              "unit": "pcs",
+                              "priority": "Normal",
+                              "category": "Test-Edge-Case",
+                              "description": "Test item for edge case warehouse: Нормальный Склад",
+                              "id": "c2724837-ca9b-4683-bb20-98276207d12a",
+                              "createdAt": "2025-08-13T17:11:01.575Z"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "structure": {
+                  "rooms": 2,
+                  "containers": 3,
+                  "items": 2
+                }
+              }
+            ],
+            "structureInfo": "Each warehouse tested with: 2+ rooms, 3+ containers, 2+ items"
+          },
+          "timestamp": "2025-08-13T17:11:01.575Z",
+          "duration": 1.5
+        },
+        {
+          "testName": "Complete Warehouse Structure",
+          "status": "PASS",
+          "message": "Complete structure: 1 warehouse, 5 rooms, 20 containers, 10 items",
+          "details": {
+            "warehouseId": "358e27d9-ef70-4e50-9a0e-bd01c8faa066",
+            "roomsCreated": 5,
+            "containersCreated": 20,
+            "itemsAttempted": 10,
+            "finalCounts": {
+              "rooms": 5,
+              "containers": 20,
+              "items": 10
+            }
+          },
+          "timestamp": "2025-08-13T17:11:01.579Z",
+          "duration": 1.8000000044703484
+        },
+        {
+          "testName": "Advanced Bucket & Movement Operations",
+          "status": "PASS",
+          "message": "Bucket operations: 1/1 moves successful, 2/2 edge cases passed",
+          "details": {
+            "totalMoves": 1,
+            "successfulMoves": 1,
+            "edgeCasesPassed": 2,
+            "finalBucketCount": 0,
+            "operations": [
+              {
+                "itemName": "Товар для 🏭 Склад «Спецсимволы» №1",
+                "from": "🏭 Склад «Спецсимволы» №1 > Комната-1 для 🏭 Склад «Спецс > Полка-А 🏭 Склад «",
+                "to": "🏭 Склад «Спецсимволы» №1 > Тестовая комната 🏠 > Ящик-В",
+                "status": "SUCCESS"
+              }
+            ]
+          },
+          "timestamp": "2025-08-13T17:11:01.581Z",
+          "duration": 0.8000000044703484
+        }
+      ],
+      "startTime": "2025-08-13T17:11:01.566Z",
+      "totalDuration": 5,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:01.571Z"
+    },
+    {
+      "suiteName": "P2P Network System",
+      "results": [
+        {
+          "testName": "Network Service Initialization",
+          "status": "PASS",
+          "message": "Network service initialized successfully",
+          "details": {
+            "isInitialized": true,
+            "localDevice": {
+              "id": "fd43511d-fcbe-4b3e-a41e-5faef0cb3d5d",
+              "name": "Inventory-fd43511d",
+              "capabilities": [
+                "sync",
+                "discovery",
+                "encryption"
+              ]
+            },
+            "networkState": {
+              "isOnline": true,
+              "discoveredDevicesCount": 0
+            }
+          },
+          "timestamp": "2025-08-13T17:11:03.972Z",
+          "duration": 2390.10000000149
+        },
+        {
+          "testName": "Local Network Discovery",
+          "status": "PASS",
+          "message": "Network discovery completed, found 0 devices",
+          "details": {
+            "devicesFound": 0,
+            "devices": [],
+            "discoverySteps": [
+              {
+                "step": 1,
+                "action": "Initializing discovery",
+                "timestamp": 1755105063973,
+                "status": "completed",
+                "details": {
+                  "networkServiceInitialized": true
+                }
+              },
+              {
+                "step": 2,
+                "action": "Checking network interface",
+                "timestamp": 1755105063973,
+                "status": "completed",
+                "details": {
+                  "localDeviceId": "fd43511d-fcbe-4b3e-a41e-5faef0cb3d5d",
+                  "ipAddress": "127.0.0.1"
+                }
+              },
+              {
+                "step": 3,
+                "action": "Validating network configuration",
+                "timestamp": 1755105063973,
+                "status": "completed",
+                "details": {
+                  "port": 8080,
+                  "capabilities": [
+                    "sync",
+                    "discovery",
+                    "encryption"
+                  ]
+                }
+              },
+              {
+                "step": 4,
+                "action": "Starting discovery process",
+                "timestamp": 1755105063973,
+                "status": "completed",
+                "details": {
+                  "discoveryMethod": "mDNS simulation"
+                }
+              },
+              {
+                "step": 5,
+                "action": "Broadcasting discovery packets",
+                "timestamp": 1755105063973,
+                "status": "completed",
+                "details": {
+                  "packetType": "discovery_announce"
+                }
+              },
+              {
+                "step": 6,
+                "action": "Monitoring network responses",
+                "timestamp": 1755105063973,
+                "status": "completed",
+                "details": {
+                  "timeout": "1000ms"
+                }
+              },
+              {
+                "step": 7,
+                "action": "Waiting for device responses",
+                "timestamp": 1755105063973,
+                "status": "completed",
+                "details": {}
+              },
+              {
+                "step": 8,
+                "action": "Collecting discovered devices",
+                "timestamp": 1755105063973,
+                "status": "completed",
+                "details": {}
+              },
+              {
+                "step": 9,
+                "action": "Stopping discovery process",
+                "timestamp": 1755105063973,
+                "status": "completed",
+                "details": {}
+              }
+            ],
+            "totalSteps": 9,
+            "completedSteps": 9
+          },
+          "timestamp": "2025-08-13T17:11:04.976Z",
+          "duration": 1003.2999999970198
+        },
+        {
+          "testName": "Network Message Broadcasting",
+          "status": "PASS",
+          "message": "Network message broadcast successful",
+          "details": {
+            "messageType": "ping",
+            "broadcastResult": true
+          },
+          "timestamp": "2025-08-13T17:11:04.976Z",
+          "duration": 0.20000000298023224
+        },
+        {
+          "testName": "Network Connection Management",
+          "status": "PASS",
+          "message": "Network connection management operational",
+          "details": {
+            "activeConnections": 0,
+            "networkOnline": true,
+            "mockConnectionAttempt": "success"
+          },
+          "timestamp": "2025-08-13T17:11:04.976Z",
+          "duration": 0
+        },
+        {
+          "testName": "Network Security Setup",
+          "status": "PASS",
+          "message": "Network security features operational",
+          "details": {
+            "encryptionSupported": true,
+            "secureChannelReady": true,
+            "keyExchangeSupported": false
+          },
+          "timestamp": "2025-08-13T17:11:04.976Z",
+          "duration": 0.20000000298023224
+        }
+      ],
+      "startTime": "2025-08-13T17:11:01.582Z",
+      "totalDuration": 3394,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.976Z"
+    },
+    {
+      "suiteName": "Social Chat System",
+      "results": [
+        {
+          "testName": "Chat Service Operations",
+          "status": "PASS",
+          "message": "Chat service operations successful",
+          "details": {
+            "chatCreated": true,
+            "messageId": "d3fabd9c-81b3-44db-8867-0dedae1e13d3",
+            "messagesCount": 1,
+            "participantsCount": 1
+          },
+          "timestamp": "2025-08-13T17:11:04.977Z",
+          "duration": 0.3999999985098839
+        },
+        {
+          "testName": "Chat Commands System",
+          "status": "FAIL",
+          "message": "Chat commands: 0/4 successful",
+          "details": {
+            "commandResults": [
+              {
+                "command": "/help",
+                "error": "Cannot read properties of undefined (reading 'permissions')",
+                "status": "failed",
+                "executionSteps": [
+                  {
+                    "step": 1,
+                    "action": "Parsing command: /help",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "command": "/help",
+                      "length": 5
+                    }
+                  },
+                  {
+                    "step": 2,
+                    "action": "Validating command format",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "isCommand": true
+                    }
+                  },
+                  {
+                    "step": 3,
+                    "action": "Loading warehouse data",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "warehouseId": "b201ab94-6f36-4aac-acc8-67783cd0a7d6"
+                    }
+                  },
+                  {
+                    "step": 4,
+                    "action": "Checking user permissions",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "senderId": "test-user"
+                    }
+                  },
+                  {
+                    "step": 5,
+                    "action": "Resolving command handler",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "commandName": "/help"
+                    }
+                  },
+                  {
+                    "step": 6,
+                    "action": "Executing command handler",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 7,
+                    "action": "Processing command result",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 8,
+                    "action": "Command completed successfully",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 9,
+                    "action": "Command failed",
+                    "timestamp": 1755105064977,
+                    "status": "failed",
+                    "error": "Cannot read properties of undefined (reading 'permissions')"
+                  }
+                ],
+                "failedAtStep": 9
+              },
+              {
+                "command": "/status",
+                "error": "Cannot read properties of undefined (reading 'permissions')",
+                "status": "failed",
+                "executionSteps": [
+                  {
+                    "step": 1,
+                    "action": "Parsing command: /status",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "command": "/status",
+                      "length": 7
+                    }
+                  },
+                  {
+                    "step": 2,
+                    "action": "Validating command format",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "isCommand": true
+                    }
+                  },
+                  {
+                    "step": 3,
+                    "action": "Loading warehouse data",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "warehouseId": "b201ab94-6f36-4aac-acc8-67783cd0a7d6"
+                    }
+                  },
+                  {
+                    "step": 4,
+                    "action": "Checking user permissions",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "senderId": "test-user"
+                    }
+                  },
+                  {
+                    "step": 5,
+                    "action": "Resolving command handler",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "commandName": "/status"
+                    }
+                  },
+                  {
+                    "step": 6,
+                    "action": "Executing command handler",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 7,
+                    "action": "Processing command result",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 8,
+                    "action": "Command completed successfully",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 9,
+                    "action": "Command failed",
+                    "timestamp": 1755105064977,
+                    "status": "failed",
+                    "error": "Cannot read properties of undefined (reading 'permissions')"
+                  }
+                ],
+                "failedAtStep": 9
+              },
+              {
+                "command": "/find test",
+                "error": "Cannot read properties of undefined (reading 'permissions')",
+                "status": "failed",
+                "executionSteps": [
+                  {
+                    "step": 1,
+                    "action": "Parsing command: /find test",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "command": "/find test",
+                      "length": 10
+                    }
+                  },
+                  {
+                    "step": 2,
+                    "action": "Validating command format",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "isCommand": true
+                    }
+                  },
+                  {
+                    "step": 3,
+                    "action": "Loading warehouse data",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "warehouseId": "b201ab94-6f36-4aac-acc8-67783cd0a7d6"
+                    }
+                  },
+                  {
+                    "step": 4,
+                    "action": "Checking user permissions",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "senderId": "test-user"
+                    }
+                  },
+                  {
+                    "step": 5,
+                    "action": "Resolving command handler",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "commandName": "/find"
+                    }
+                  },
+                  {
+                    "step": 6,
+                    "action": "Executing command handler",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 7,
+                    "action": "Processing command result",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 8,
+                    "action": "Command completed successfully",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 9,
+                    "action": "Command failed",
+                    "timestamp": 1755105064977,
+                    "status": "failed",
+                    "error": "Cannot read properties of undefined (reading 'permissions')"
+                  }
+                ],
+                "failedAtStep": 9
+              },
+              {
+                "command": "/add \"Test Item\" 5",
+                "error": "Cannot read properties of undefined (reading 'permissions')",
+                "status": "failed",
+                "executionSteps": [
+                  {
+                    "step": 1,
+                    "action": "Parsing command: /add \"Test Item\" 5",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "command": "/add \"Test Item\" 5",
+                      "length": 18
+                    }
+                  },
+                  {
+                    "step": 2,
+                    "action": "Validating command format",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "isCommand": true
+                    }
+                  },
+                  {
+                    "step": 3,
+                    "action": "Loading warehouse data",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "warehouseId": "b201ab94-6f36-4aac-acc8-67783cd0a7d6"
+                    }
+                  },
+                  {
+                    "step": 4,
+                    "action": "Checking user permissions",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "senderId": "test-user"
+                    }
+                  },
+                  {
+                    "step": 5,
+                    "action": "Resolving command handler",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {
+                      "commandName": "/add"
+                    }
+                  },
+                  {
+                    "step": 6,
+                    "action": "Executing command handler",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 7,
+                    "action": "Processing command result",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 8,
+                    "action": "Command completed successfully",
+                    "timestamp": 1755105064977,
+                    "status": "completed",
+                    "details": {}
+                  },
+                  {
+                    "step": 9,
+                    "action": "Command failed",
+                    "timestamp": 1755105064977,
+                    "status": "failed",
+                    "error": "Cannot read properties of undefined (reading 'permissions')"
+                  }
+                ],
+                "failedAtStep": 9
+              }
+            ],
+            "successfulCommands": 0,
+            "failedCommands": 4,
+            "totalSteps": 32,
+            "completedSteps": 0
+          },
+          "timestamp": "2025-08-13T17:11:04.977Z",
+          "duration": 0.6000000014901161
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.976Z",
+      "totalDuration": 1,
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.977Z"
+    },
+    {
+      "suiteName": "Social Integration & P2P Features",
+      "results": [
+        {
+          "testName": "Social Chat Integration",
+          "status": "FAIL",
+          "message": "Social chat integration failed: Cannot read properties of undefined (reading 'permissions')",
+          "timestamp": "2025-08-13T17:11:04.978Z",
+          "duration": 0.20000000298023224
+        },
+        {
+          "testName": "P2P Network Chat Integration",
+          "status": "PASS",
+          "message": "P2P network chat integration operational",
+          "details": {
+            "networkMessage": "sync_request",
+            "broadcastResult": true,
+            "chatParticipants": 0
+          },
+          "timestamp": "2025-08-13T17:11:04.978Z",
+          "duration": 0.10000000149011612
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.977Z",
+      "totalDuration": 1,
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.978Z"
+    },
+    {
+      "suiteName": "Detailed Validation & Edge Cases",
+      "results": [
+        {
+          "testName": "Input Validation Edge Cases",
+          "status": "PASS",
+          "message": "Input validation: 8/8 cases handled correctly",
+          "details": {
+            "totalTests": 8,
+            "passedTests": 8,
+            "results": [
+              {
+                "input": "",
+                "expected": "empty",
+                "description": "Empty string handling",
+                "warehouseCreated": true,
+                "nameStored": "",
+                "status": "HANDLED"
+              },
+              {
+                "input": "   ",
+                "expected": "whitespace",
+                "description": "Whitespace-only strings",
+                "warehouseCreated": true,
+                "nameStored": "   ",
+                "status": "HANDLED"
+              },
+              {
+                "input": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                "expected": "long",
+                "description": "Very long strings",
+                "warehouseCreated": true,
+                "nameStored": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                "status": "HANDLED"
+              },
+              {
+                "input": "🚀🌟✨💫⭐",
+                "expected": "emoji",
+                "description": "Unicode/emoji handling",
+                "warehouseCreated": true,
+                "nameStored": "🚀🌟✨💫⭐",
+                "status": "HANDLED"
+              },
+              {
+                "input": "Test\nWith\nNewlines",
+                "expected": "multiline",
+                "description": "Multiline input",
+                "warehouseCreated": true,
+                "nameStored": "Test\nWith\nNewlines",
+                "status": "HANDLED"
+              },
+              {
+                "input": "<script>alert(\"xss\")</script>",
+                "expected": "script",
+                "description": "Script injection attempt",
+                "warehouseCreated": true,
+                "nameStored": "<script>alert(\"xss\")</script>",
+                "status": "HANDLED"
+              },
+              {
+                "input": "../../etc/passwd",
+                "expected": "path",
+                "description": "Path traversal attempt",
+                "warehouseCreated": true,
+                "nameStored": "../../etc/passwd",
+                "status": "HANDLED"
+              },
+              {
+                "input": "DROP TABLE warehouses;",
+                "expected": "sql",
+                "description": "SQL injection attempt",
+                "warehouseCreated": true,
+                "nameStored": "DROP TABLE warehouses;",
+                "status": "HANDLED"
+              }
+            ]
+          },
+          "timestamp": "2025-08-13T17:11:04.978Z",
+          "duration": 0.3999999985098839
+        },
+        {
+          "testName": "Data Type Boundary Testing",
+          "status": "PASS",
+          "message": "Boundary testing: 11 values handled correctly",
+          "details": {
+            "totalValues": 15,
+            "successfulTests": 11,
+            "results": [
+              {
+                "type": "quantity",
+                "inputValue": 0,
+                "storedValue": 0,
+                "status": "STORED",
+                "description": "Quantity boundary test: 0"
+              },
+              {
+                "type": "quantity",
+                "inputValue": -1,
+                "storedValue": -1,
+                "status": "STORED",
+                "description": "Quantity boundary test: -1"
+              },
+              {
+                "type": "quantity",
+                "inputValue": 0.5,
+                "storedValue": 0.5,
+                "status": "STORED",
+                "description": "Quantity boundary test: 0.5"
+              },
+              {
+                "type": "quantity",
+                "inputValue": 999999,
+                "storedValue": 999999,
+                "status": "STORED",
+                "description": "Quantity boundary test: 999999"
+              },
+              {
+                "type": "quantity",
+                "inputValue": null,
+                "storedValue": null,
+                "status": "STORED",
+                "description": "Quantity boundary test: Infinity"
+              },
+              {
+                "type": "quantity",
+                "inputValue": null,
+                "storedValue": null,
+                "status": "STORED",
+                "description": "Quantity boundary test: NaN"
+              },
+              {
+                "type": "dates",
+                "inputValue": "2025-01-01",
+                "storedValue": "2025-01-01",
+                "status": "STORED",
+                "description": "Date boundary test: 2025-01-01"
+              },
+              {
+                "type": "dates",
+                "inputValue": "1900-01-01",
+                "storedValue": "1900-01-01",
+                "status": "STORED",
+                "description": "Date boundary test: 1900-01-01"
+              },
+              {
+                "type": "dates",
+                "inputValue": "2100-12-31",
+                "storedValue": "2100-12-31",
+                "status": "STORED",
+                "description": "Date boundary test: 2100-12-31"
+              },
+              {
+                "type": "dates",
+                "inputValue": "invalid-date",
+                "storedValue": "invalid-date",
+                "status": "STORED",
+                "description": "Date boundary test: invalid-date"
+              },
+              {
+                "type": "dates",
+                "inputValue": "",
+                "storedValue": "",
+                "status": "STORED",
+                "description": "Date boundary test: "
+              }
+            ]
+          },
+          "timestamp": "2025-08-13T17:11:04.979Z",
+          "duration": 0.5
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.978Z",
+      "totalDuration": 1,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.979Z"
+    },
+    {
+      "suiteName": "Deep Edge Case Analysis",
+      "results": [
+        {
+          "testName": "Concurrent Operations Simulation",
+          "status": "PASS",
+          "message": "Concurrent operations: 10/10 completed correctly",
+          "details": {
+            "totalOperations": 10,
+            "successfulOperations": 10,
+            "operations": [
+              {
+                "operation": "create_and_update",
+                "itemId": "a0f2d2f0-6f24-4f26-a77a-a03f2a995c65",
+                "initialQuantity": 1,
+                "finalQuantity": 2,
+                "status": "completed"
+              },
+              {
+                "operation": "create_and_update",
+                "itemId": "628423c5-4027-442a-acd7-11e256f31f1b",
+                "initialQuantity": 2,
+                "finalQuantity": 4,
+                "status": "completed"
+              },
+              {
+                "operation": "create_and_update",
+                "itemId": "85de2a63-2f83-4abd-ae51-3c707ec6fee3",
+                "initialQuantity": 3,
+                "finalQuantity": 6,
+                "status": "completed"
+              },
+              {
+                "operation": "create_and_update",
+                "itemId": "e81e8d69-1039-4b7d-90c9-7f1d621d24f0",
+                "initialQuantity": 4,
+                "finalQuantity": 8,
+                "status": "completed"
+              },
+              {
+                "operation": "create_and_update",
+                "itemId": "15368eed-73a5-418d-8969-6614772150f0",
+                "initialQuantity": 5,
+                "finalQuantity": 10,
+                "status": "completed"
+              },
+              {
+                "operation": "create_and_update",
+                "itemId": "787bdf85-1595-4329-b133-144899b7c52b",
+                "initialQuantity": 6,
+                "finalQuantity": 12,
+                "status": "completed"
+              },
+              {
+                "operation": "create_and_update",
+                "itemId": "f612adc1-2055-4736-bfa5-230df5909ca1",
+                "initialQuantity": 7,
+                "finalQuantity": 14,
+                "status": "completed"
+              },
+              {
+                "operation": "create_and_update",
+                "itemId": "7fa3c9d2-c9b1-4f1c-b51c-e781a0f5827b",
+                "initialQuantity": 8,
+                "finalQuantity": 16,
+                "status": "completed"
+              },
+              {
+                "operation": "create_and_update",
+                "itemId": "8b9dbcae-fa99-4c97-9704-5a9ebfaa4ed8",
+                "initialQuantity": 9,
+                "finalQuantity": 18,
+                "status": "completed"
+              },
+              {
+                "operation": "create_and_update",
+                "itemId": "e2a56e2c-fce9-4837-a2ee-6bd12251e4d8",
+                "initialQuantity": 10,
+                "finalQuantity": 20,
+                "status": "completed"
+              }
+            ]
+          },
+          "timestamp": "2025-08-13T17:11:04.980Z",
+          "duration": 1.2000000029802322
+        },
+        {
+          "testName": "Large Dataset Memory Usage",
+          "status": "PASS",
+          "message": "Large dataset: 300 items created, 0.00ms retrieval",
+          "details": {
+            "totalItemsCreated": 300,
+            "retrievalTimeMs": 0,
+            "memoryGrowth": 0,
+            "itemCounts": [
+              {
+                "batch": 1,
+                "itemsInBatch": 20,
+                "totalItems": 20,
+                "memoryUsed": 0,
+                "memoryPerItem": 0
+              },
+              {
+                "batch": 2,
+                "itemsInBatch": 40,
+                "totalItems": 60,
+                "memoryUsed": 0,
+                "memoryPerItem": 0
+              },
+              {
+                "batch": 3,
+                "itemsInBatch": 60,
+                "totalItems": 120,
+                "memoryUsed": 0,
+                "memoryPerItem": 0
+              },
+              {
+                "batch": 4,
+                "itemsInBatch": 80,
+                "totalItems": 200,
+                "memoryUsed": 0,
+                "memoryPerItem": 0
+              },
+              {
+                "batch": 5,
+                "itemsInBatch": 100,
+                "totalItems": 300,
+                "memoryUsed": 0,
+                "memoryPerItem": 0
+              }
+            ],
+            "warehousesRetrieved": 14
+          },
+          "timestamp": "2025-08-13T17:11:04.988Z",
+          "duration": 8
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.979Z",
+      "totalDuration": 9,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.988Z"
+    },
+    {
+      "suiteName": "System Boundary Tests",
+      "results": [
+        {
+          "testName": "Storage Limits and Overflow",
+          "status": "PASS",
+          "message": "Boundary limits: 2/2 tests passed",
+          "details": {
+            "testData": {
+              "maxNameLength": 1000,
+              "maxDescriptionLength": 5000,
+              "maxQuantity": 9007199254740991,
+              "specialCharacters": "!@#$%^&*()_+-=[]{}|;:,.<>?~`"
+            },
+            "results": [
+              {
+                "test": "max_name_length",
+                "input": 1000,
+                "stored": 1000,
+                "status": "HANDLED"
+              },
+              {
+                "test": "special_characters",
+                "input": "!@#$%^&*()_+-=[]{}|;:,.<>?~`",
+                "stored": "Special !@#$%^&*()_+-=[]{}|;:,.<>?~` Characters",
+                "status": "STORED"
+              }
+            ],
+            "successfulTests": 2
+          },
+          "timestamp": "2025-08-13T17:11:04.989Z",
+          "duration": 0.3999999985098839
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.988Z",
+      "totalDuration": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.989Z"
+    },
+    {
+      "suiteName": "Data Integrity & Consistency",
+      "results": [
+        {
+          "testName": "Reference Integrity Verification",
+          "status": "PASS",
+          "message": "Reference integrity: 5/5 checks passed",
+          "details": {
+            "integrityChecks": [
+              {
+                "check": "warehouse_exists",
+                "result": true,
+                "expected": true
+              },
+              {
+                "check": "room_in_warehouse",
+                "result": true,
+                "expected": true
+              },
+              {
+                "check": "shelf_in_room",
+                "result": true,
+                "expected": true
+              },
+              {
+                "check": "item_in_shelf",
+                "result": true,
+                "expected": true
+              },
+              {
+                "check": "room_deleted_cascade",
+                "result": true,
+                "expected": true
+              }
+            ],
+            "passedChecks": 5,
+            "totalChecks": 5
+          },
+          "timestamp": "2025-08-13T17:11:04.989Z",
+          "duration": 0.20000000298023224
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.989Z",
+      "totalDuration": 0,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.989Z"
+    },
+    {
+      "suiteName": "UI/UX Tests",
+      "results": [
+        {
+          "testName": "Theme System",
+          "status": "PASS",
+          "message": "Theme system operational",
+          "details": {
+            "currentTheme": "terminal",
+            "availableThemes": [
+              "terminal",
+              "neon",
+              "forest",
+              "ocean",
+              "sunset",
+              "minimal",
+              "dark",
+              "candy",
+              "retro",
+              "monochrome",
+              "kids",
+              "manager",
+              "developer",
+              "highContrast"
+            ]
+          },
+          "timestamp": "2025-08-13T17:11:04.989Z",
+          "duration": 0
+        },
+        {
+          "testName": "User Service",
+          "status": "PASS",
+          "message": "User service operational",
+          "details": {
+            "currentUser": {
+              "id": "master-1755105058104",
+              "name": "Master",
+              "role": "master",
+              "createdAt": "2025-08-13T17:10:58.104Z",
+              "lastActive": "2025-08-13T17:10:58.104Z",
+              "personalContainers": [],
+              "hiddenContainers": []
+            }
+          },
+          "timestamp": "2025-08-13T17:11:04.989Z",
+          "duration": 0.20000000298023224
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.989Z",
+      "totalDuration": 0,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.989Z"
+    },
+    {
+      "suiteName": "Data Persistence",
+      "results": [
+        {
+          "testName": "Data Export",
+          "status": "PASS",
+          "message": "Data export successful",
+          "details": {
+            "warehousesCount": 13,
+            "bucketItemsCount": 0
+          },
+          "timestamp": "2025-08-13T17:11:04.989Z",
+          "duration": 0.10000000149011612
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.989Z",
+      "totalDuration": 0,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.989Z"
+    },
+    {
+      "suiteName": "SMARTIE AI Tests",
+      "results": [
+        {
+          "testName": "Local LLM Configuration",
+          "status": "PASS",
+          "message": "Local LLM connection successful",
+          "details": {
+            "baseUrl": "http://192.168.222.135:5174",
+            "model": "openai/gpt-oss-20b",
+            "apiKey": "test-key"
+          },
+          "timestamp": "2025-08-13T17:11:04.998Z",
+          "duration": 8.799999997019768
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.990Z",
+      "totalDuration": 8,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.998Z"
+    },
+    {
+      "suiteName": "Localization",
+      "results": [
+        {
+          "testName": "Available Locales",
+          "status": "PASS",
+          "message": "Localization system operational",
+          "details": {
+            "locales": [
+              {
+                "code": "uk",
+                "name": "Українська",
+                "currencies": [
+                  "USD",
+                  "EUR",
+                  "UAH"
+                ],
+                "excludedCurrencies": [
+                  "RUB"
+                ],
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "uk-UA",
+                "flag": "🇺🇦"
+              },
+              {
+                "code": "ru",
+                "name": "Русский",
+                "currencies": [
+                  "RUB",
+                  "USD",
+                  "EUR"
+                ],
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "ru-RU",
+                "flag": "🇷🇺"
+              },
+              {
+                "code": "en",
+                "name": "English",
+                "currencies": [
+                  "USD",
+                  "EUR",
+                  "GBP"
+                ],
+                "dateFormat": "MM/DD/YYYY",
+                "numberFormat": "en-US",
+                "flag": "🇺🇸"
+              },
+              {
+                "code": "de",
+                "name": "Deutsch",
+                "currencies": [
+                  "EUR",
+                  "USD"
+                ],
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "de-DE",
+                "flag": "🇩🇪"
+              },
+              {
+                "code": "pl",
+                "name": "Polski",
+                "currencies": [
+                  "PLN",
+                  "EUR",
+                  "USD"
+                ],
+                "dateFormat": "DD.MM.YYYY",
+                "numberFormat": "pl-PL",
+                "flag": "🇵🇱"
+              }
+            ],
+            "currentLocale": "ru"
+          },
+          "timestamp": "2025-08-13T17:11:04.999Z",
+          "duration": 0.09999999403953552
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.999Z",
+      "totalDuration": 0,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.999Z"
+    },
+    {
+      "suiteName": "Theme System",
+      "results": [
+        {
+          "testName": "Theme Operations",
+          "status": "PASS",
+          "message": "Theme system operational",
+          "details": {
+            "originalTheme": "terminal",
+            "availableThemes": [
+              "terminal",
+              "neon",
+              "forest",
+              "ocean",
+              "sunset",
+              "minimal",
+              "dark",
+              "candy",
+              "retro",
+              "monochrome",
+              "kids",
+              "manager",
+              "developer",
+              "highContrast"
+            ]
+          },
+          "timestamp": "2025-08-13T17:11:04.999Z",
+          "duration": 0.10000000149011612
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.999Z",
+      "totalDuration": 0,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.999Z"
+    },
+    {
+      "suiteName": "Import/Export",
+      "results": [
+        {
+          "testName": "JSON Export Format",
+          "status": "PASS",
+          "message": "JSON export format valid",
+          "details": {
+            "size": 19333,
+            "warehouses": 13,
+            "bucketItems": 0
+          },
+          "timestamp": "2025-08-13T17:11:04.999Z",
+          "duration": 0.3999999985098839
+        }
+      ],
+      "startTime": "2025-08-13T17:11:04.999Z",
+      "totalDuration": 0,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:04.999Z"
+    },
+    {
+      "suiteName": "Performance",
+      "results": [
+        {
+          "testName": "Data Loading Performance",
+          "status": "PASS",
+          "message": "Data loading took 0.00ms",
+          "details": {
+            "duration": 0,
+            "warehousesCount": 13
+          },
+          "timestamp": "2025-08-13T17:11:05.000Z",
+          "duration": 0.09999999403953552
+        }
+      ],
+      "startTime": "2025-08-13T17:11:05.000Z",
+      "totalDuration": 0,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:05.000Z"
+    },
+    {
+      "suiteName": "Encryption & Security",
+      "results": [
+        {
+          "testName": "Basic Encryption Operations",
+          "status": "FAIL",
+          "message": "Encryption test failed: encryptionService.encryptData is not a function",
+          "timestamp": "2025-08-13T17:11:05.002Z",
+          "duration": 2.100000001490116
+        }
+      ],
+      "startTime": "2025-08-13T17:11:05.000Z",
+      "totalDuration": 2,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:05.002Z"
+    },
+    {
+      "suiteName": "Access Control & Permissions",
+      "results": [
+        {
+          "testName": "Role-Based Permissions",
+          "status": "PASS",
+          "message": "Permission system operational",
+          "details": {
+            "testsPassed": "basic role checks"
+          },
+          "timestamp": "2025-08-13T17:11:05.002Z",
+          "duration": 0.09999999403953552
+        }
+      ],
+      "startTime": "2025-08-13T17:11:05.002Z",
+      "totalDuration": 0,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "endTime": "2025-08-13T17:11:05.002Z"
+    }
+  ],
+  "summary": {
+    "totalSuites": 17,
+    "totalTests": 29,
+    "totalPassed": 26,
+    "totalFailed": 3,
+    "totalSkipped": 0,
+    "totalDuration": 3422
+  }
+}

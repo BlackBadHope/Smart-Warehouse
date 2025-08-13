@@ -25,6 +25,7 @@ import localizationService from './services/localizationService';
 import debugService from './services/debugService';
 import userService from './services/userService';
 import themeService from './services/themeService';
+import uiUpdateService from './services/uiUpdateService';
 
 const InventoryApp: React.FC = () => {
   const [currentCurrency, setCurrentCurrency] = useState<string>(
@@ -109,23 +110,157 @@ const InventoryApp: React.FC = () => {
     // Initialize theme service
     themeService.onUserChanged();
     
+    // Set up UIUpdateService listeners for reactive UI updates
+    const unsubscribers: (() => void)[] = [];
+    
     // Listen for theme changes
+    unsubscribers.push(uiUpdateService.on('theme-changed', (payload) => {
+      debugService.info('Theme changed, forcing re-render', payload);
+      setCurrentCurrency(curr => curr); // Force re-render
+    }));
+    
+    // Listen for language changes
+    unsubscribers.push(uiUpdateService.on('language-changed', (payload) => {
+      debugService.info('Language changed, updating interface', payload);
+      setCurrentLocale(payload.data?.locale || localizationService.getCurrentLocale());
+    }));
+    
+    // Listen for warehouse changes
+    unsubscribers.push(uiUpdateService.on('warehouse-added', () => {
+      debugService.info('Warehouse added, reloading list');
+      loadWarehouses();
+    }));
+    
+    unsubscribers.push(uiUpdateService.on('warehouse-updated', () => {
+      debugService.info('Warehouse updated, reloading data');
+      loadWarehouses();
+    }));
+    
+    unsubscribers.push(uiUpdateService.on('warehouse-deleted', () => {
+      debugService.info('Warehouse deleted, reloading list');
+      loadWarehouses();
+    }));
+    
+    // Listen for room changes
+    unsubscribers.push(uiUpdateService.on('room-added', () => {
+      debugService.info('Room added, reloading rooms');
+      if (selectedWarehouseId) loadRooms(selectedWarehouseId);
+    }));
+    
+    unsubscribers.push(uiUpdateService.on('room-updated', () => {
+      debugService.info('Room updated, reloading rooms');
+      if (selectedWarehouseId) loadRooms(selectedWarehouseId);
+    }));
+    
+    unsubscribers.push(uiUpdateService.on('room-deleted', () => {
+      debugService.info('Room deleted, reloading rooms');
+      if (selectedWarehouseId) loadRooms(selectedWarehouseId);
+    }));
+    
+    // Listen for shelf/container changes
+    unsubscribers.push(uiUpdateService.on('shelf-added', () => {
+      debugService.info('Shelf added, reloading shelves');
+      if (selectedWarehouseId && selectedRoomId) loadShelves(selectedWarehouseId, selectedRoomId);
+    }));
+    
+    unsubscribers.push(uiUpdateService.on('shelf-updated', () => {
+      debugService.info('Shelf updated, reloading shelves');
+      if (selectedWarehouseId && selectedRoomId) loadShelves(selectedWarehouseId, selectedRoomId);
+    }));
+    
+    unsubscribers.push(uiUpdateService.on('shelf-deleted', () => {
+      debugService.info('Shelf deleted, reloading shelves');
+      if (selectedWarehouseId && selectedRoomId) loadShelves(selectedWarehouseId, selectedRoomId);
+    }));
+    
+    // Listen for item changes
+    unsubscribers.push(uiUpdateService.on('item-added', () => {
+      debugService.info('Item added, reloading items');
+      if (selectedWarehouseId && selectedRoomId && selectedShelfId) {
+        loadItems(selectedWarehouseId, selectedRoomId, selectedShelfId);
+      }
+    }));
+    
+    unsubscribers.push(uiUpdateService.on('item-updated', () => {
+      debugService.info('Item updated, reloading items');
+      if (selectedWarehouseId && selectedRoomId && selectedShelfId) {
+        loadItems(selectedWarehouseId, selectedRoomId, selectedShelfId);
+      }
+    }));
+    
+    unsubscribers.push(uiUpdateService.on('item-deleted', () => {
+      debugService.info('Item deleted, reloading items');
+      if (selectedWarehouseId && selectedRoomId && selectedShelfId) {
+        loadItems(selectedWarehouseId, selectedRoomId, selectedShelfId);
+      }
+    }));
+    
+    unsubscribers.push(uiUpdateService.on('item-moved', () => {
+      debugService.info('Item moved, reloading data');
+      loadBucketItems();
+      if (selectedWarehouseId && selectedRoomId && selectedShelfId) {
+        loadItems(selectedWarehouseId, selectedRoomId, selectedShelfId);
+      }
+    }));
+    
+    // Listen for bucket changes
+    unsubscribers.push(uiUpdateService.on('bucket-updated', () => {
+      debugService.info('Bucket updated, reloading bucket');
+      loadBucketItems();
+    }));
+    
+    // Listen for test events
+    unsubscribers.push(uiUpdateService.on('test-progress', (payload) => {
+      debugService.info('Test progress update', payload);
+      // Test modal will handle this internally
+    }));
+    
+    unsubscribers.push(uiUpdateService.on('test-completed', () => {
+      debugService.info('Test completed, refreshing all data');
+      loadWarehouses();
+      loadBucketItems();
+    }));
+    
+    // Listen for data import/export
+    unsubscribers.push(uiUpdateService.on('data-imported', (payload) => {
+      debugService.info('Data imported, refreshing all data', payload);
+      
+      // Force full refresh
+      loadWarehouses();
+      loadBucketItems();
+      
+      // Clear selections when data is reset
+      if (payload.data?.action === 'reset-all') {
+        setSelectedWarehouseId(null);
+        setSelectedRoomId(null);
+        setSelectedShelfId(null);
+        setRooms([]);
+        setShelves([]);
+        setShelfItems([]);
+        showNotification('All data has been reset');
+      } else {
+        showNotification('Data imported successfully');
+      }
+    }));
+    
+    unsubscribers.push(uiUpdateService.on('data-exported', () => {
+      debugService.info('Data exported successfully');
+      showNotification('Data exported successfully');
+    }));
+    
+    // Keep old event listeners for backward compatibility
     const handleThemeChange = (event: CustomEvent) => {
-      debugService.info('Theme changed, forcing re-render', event.detail);
-      // Force component re-render by updating a dummy state
+      debugService.info('Legacy theme change event', event.detail);
       setCurrentCurrency(curr => curr);
     };
     
-    // Listen for locale changes
     const handleLocaleChange = (event: CustomEvent) => {
-      debugService.info('Locale changed, updating interface', event.detail);
-      // Update locale state to trigger re-render
+      debugService.info('Legacy locale change event', event.detail);
       setCurrentLocale(event.detail.locale);
     };
     
-    // Listen for warehouse changes during testing
     const handleWarehouseUpdate = (event: CustomEvent) => {
-      debugService.info('Warehouse data changed, reloading', event.detail);
+      debugService.info('Legacy warehouse event', event.detail);
       loadWarehouses();
     };
     
@@ -137,10 +272,16 @@ const InventoryApp: React.FC = () => {
     debugService.action('App initialized successfully');
     
     return () => {
+      // Cleanup UIUpdateService listeners
+      unsubscribers.forEach(unsubscribe => unsubscribe());
+      
+      // Cleanup legacy DOM event listeners
       document.removeEventListener('themeChanged', handleThemeChange as EventListener);
       document.removeEventListener('localeChanged', handleLocaleChange as EventListener);
       document.removeEventListener('warehouseCreated', handleWarehouseUpdate as EventListener);
       document.removeEventListener('warehouseUpdated', handleWarehouseUpdate as EventListener);
+      
+      debugService.info('InventoryApp: Cleanup completed');
     };
   }, []);
 
@@ -741,7 +882,18 @@ const InventoryApp: React.FC = () => {
               }} />
               
               <button 
-                onClick={() => setShowBucketView(!showBucketView)} 
+                onClick={() => {
+                  const newBucketView = !showBucketView;
+                  setShowBucketView(newBucketView);
+                  // Force immediate data refresh when switching views
+                  setTimeout(() => {
+                    if (newBucketView) {
+                      loadBucketItems();
+                    } else if (selectedWarehouseId && selectedRoomId && selectedShelfId) {
+                      loadItems(selectedWarehouseId, selectedRoomId, selectedShelfId);
+                    }
+                  }, 0);
+                }} 
                 className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} relative`} 
                 title={showBucketView ? "View Storage" : "View Bucket"}
               >
@@ -918,7 +1070,15 @@ const InventoryApp: React.FC = () => {
                     <li 
                       key={w.id} 
                       className={`flex items-center justify-between p-2 rounded-md cursor-pointer ${selectedWarehouseId === w.id ? 'bg-yellow-600 text-black font-bold' : 'hover:bg-gray-700'}`} 
-                      onClick={() => setSelectedWarehouseId(w.id)}
+                      onClick={() => {
+                        setSelectedWarehouseId(w.id);
+                        // Force immediate UI refresh for navigation
+                        setTimeout(() => {
+                          if (selectedWarehouseId !== w.id) {
+                            loadRooms(w.id);
+                          }
+                        }, 0);
+                      }}
                     >
                       <span className="flex items-center truncate">
                         <Home className="w-4 h-4 mr-2 shrink-0"/>{w.name}
@@ -966,7 +1126,15 @@ const InventoryApp: React.FC = () => {
                     <li 
                       key={r.id} 
                       className={`flex items-center justify-between p-2 rounded-md cursor-pointer ${selectedRoomId === r.id ? 'bg-yellow-600 text-black font-bold' : 'hover:bg-gray-700'}`} 
-                      onClick={() => setSelectedRoomId(r.id)}
+                      onClick={() => {
+                        setSelectedRoomId(r.id);
+                        // Force immediate UI refresh for navigation
+                        setTimeout(() => {
+                          if (selectedWarehouseId && selectedRoomId !== r.id) {
+                            loadShelves(selectedWarehouseId, r.id);
+                          }
+                        }, 0);
+                      }}
                     >
                       <span className="flex items-center truncate">
                         <Box className="w-4 h-4 mr-2 shrink-0"/>{r.name}
@@ -1010,7 +1178,15 @@ const InventoryApp: React.FC = () => {
                     <li 
                       key={s.id} 
                       className={`flex items-center justify-between p-2 rounded-md cursor-pointer ${selectedShelfId === s.id ? 'bg-yellow-600 text-black font-bold' : 'hover:bg-gray-700'}`} 
-                      onClick={() => setSelectedShelfId(s.id)}
+                      onClick={() => {
+                        setSelectedShelfId(s.id);
+                        // Force immediate UI refresh for navigation
+                        setTimeout(() => {
+                          if (selectedWarehouseId && selectedRoomId && selectedShelfId !== s.id) {
+                            loadItems(selectedWarehouseId, selectedRoomId, s.id);
+                          }
+                        }, 0);
+                      }}
                     >
                       <span className="flex items-center truncate">
                         <List className="w-4 h-4 mr-2 shrink-0"/>{s.name}
