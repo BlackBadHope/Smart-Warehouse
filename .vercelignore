@@ -1,0 +1,17 @@
+DebugLog/
+services/selfTestService.ts
+services/selfTestService.backup.ts
+services/tests/
+server.js
+android/
+test-new-features.js
+runSelfTest.js
+simpleTest.js
+testApp.js
+*.log
+electron.config.js
+PATCHNOTES.md
+DEVELOPMENT_ROADMAP.md
+TEST_NEW_FEATURES.md
+READY_TO_GO.md
+BUGS_FIXED.md

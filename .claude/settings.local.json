@@ -21,7 +21,8 @@
       "Bash(npx tsc:*)",
       "Bash(move selfTestService.ts selfTestService.backup.ts)",
       "Bash(move selfTestService.new.ts selfTestService.ts)",
-      "Bash(set JAVA_OPTS=-Xmx1024m)"
+      "Bash(set JAVA_OPTS=-Xmx1024m)",
+      "Bash(git checkout:*)"
     ]
   },
   "dangerouslySkipPermissions": true
