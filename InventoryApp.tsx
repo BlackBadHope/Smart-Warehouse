@@ -81,6 +81,12 @@ const InventoryApp: React.FC = () => {
   const [showQRSync, setShowQRSync] = useState(false);
   const [showSelfTest, setShowSelfTest] = useState(false);
 
+  // Filtering and sorting states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [tagFilter, setTagFilter] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'quantity' | 'priority' | 'expiryDate' | 'createdAt'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
   const showNotification = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     if (type === 'success') setSuccessMessage(message);
     else setErrorMessage(message);
@@ -495,17 +501,36 @@ const InventoryApp: React.FC = () => {
     handleConfirm(async () => {
       let successCount = 0;
       let errorCount = 0;
-      for (const item of itemsToTransfer) {
+      
+      showNotification(`Transferring ${itemsToTransfer.length} item(s)...`, "info");
+      
+      // Process items with small delays to prevent UI blocking
+      for (let i = 0; i < itemsToTransfer.length; i++) {
+        const item = itemsToTransfer[i];
         try {
           localStorageService.transferBucketItem(item);
           successCount++;
+          
+          // Add small delay every 5 items to keep UI responsive
+          if (i % 5 === 0 && i > 0) {
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
         } catch (err) {
+          console.error('Transfer error:', err);
           errorCount++;
         }
       }
-      showNotification(`${successCount} item(s) transferred. ${errorCount > 0 ? `${errorCount} failed.` : ''}`);
-      loadBucketItems();
-      loadWarehouses();
+      
+      // Refresh data after transfer
+      await Promise.all([
+        new Promise(resolve => { loadBucketItems(); resolve(undefined); }),
+        new Promise(resolve => { loadWarehouses(); resolve(undefined); })
+      ]);
+      
+      showNotification(
+        `Transfer completed: ${successCount} item(s) transferred.${errorCount > 0 ? ` ${errorCount} failed.` : ''}`,
+        errorCount > 0 ? "warning" : "success"
+      );
     }, `Transfer ${itemsToTransfer.length} item(s) to their destinations?`);
   };
 
@@ -521,7 +546,59 @@ const InventoryApp: React.FC = () => {
     }
   };
   
-  const itemsToDisplay = showBucketView ? bucketItems : shelfItems;
+  // Apply filtering and sorting
+  const getFilteredAndSortedItems = () => {
+    const baseItems = showBucketView ? bucketItems : shelfItems;
+    
+    // Filter by search query and tags
+    let filtered = baseItems.filter(item => {
+      const matchesSearch = !searchQuery || 
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesTag = !tagFilter || 
+        item.labels?.some(label => label.toLowerCase().includes(tagFilter.toLowerCase()));
+      
+      return matchesSearch && matchesTag;
+    });
+    
+    // Sort items
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortBy) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'quantity':
+          comparison = a.quantity - b.quantity;
+          break;
+        case 'priority':
+          const priorityOrder = { 'High': 3, 'Normal': 2, 'Low': 1, 'Dispose': 0 };
+          comparison = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+          break;
+        case 'expiryDate':
+          const aDate = a.expiryDate ? new Date(a.expiryDate) : new Date('2099-12-31');
+          const bDate = b.expiryDate ? new Date(b.expiryDate) : new Date('2099-12-31');
+          comparison = aDate.getTime() - bDate.getTime();
+          break;
+        case 'createdAt':
+          const aCreated = a.createdAt instanceof Date ? a.createdAt : 
+                          a.createdAt?.toDate ? a.createdAt.toDate() : new Date(0);
+          const bCreated = b.createdAt instanceof Date ? b.createdAt : 
+                          b.createdAt?.toDate ? b.createdAt.toDate() : new Date(0);
+          comparison = bCreated.getTime() - aCreated.getTime(); // Newest first by default
+          break;
+      }
+      
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+    
+    return filtered;
+  };
+  
+  const itemsToDisplay = getFilteredAndSortedItems();
   const currentDisplayContext = showBucketView ? 'bucket' : 'storage';
   const displayTitle = showBucketView 
     ? localizationService.translate('nav.bucket') + " - " + localizationService.translate('ui.staging_area')
@@ -753,7 +830,11 @@ const InventoryApp: React.FC = () => {
       </header>
       
       <main>
-        <ImportExportModal show={showImportExport} onClose={() => setShowImportExport(false)} />
+        <ImportExportModal 
+          show={showImportExport} 
+          onClose={() => setShowImportExport(false)} 
+          onDataChange={handleDataChange}
+        />
         <VisualView show={showVisual} onClose={() => setShowVisual(false)} />
         <DebugModal show={showDebug} onClose={() => setShowDebug(false)} />
         <QRSyncModal show={showQRSync} onClose={() => setShowQRSync(false)} />
@@ -952,6 +1033,73 @@ const InventoryApp: React.FC = () => {
               </button>
             </div>
           </div>
+          
+          {/* Filtering and Sorting Controls */}
+          <div className="flex flex-wrap gap-4 mb-4 p-3 bg-black/40 rounded-lg border border-gray-700">
+            <div className="flex flex-col flex-1 min-w-[200px]">
+              <label className="text-sm text-gray-400 mb-1">Search</label>
+              <input
+                type="text"
+                placeholder="Search by name, description, category..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={`${ASCII_COLORS.inputBg} ${ASCII_COLORS.text} p-2 rounded border ${ASCII_COLORS.border} text-sm`}
+              />
+            </div>
+            
+            <div className="flex flex-col min-w-[150px]">
+              <label className="text-sm text-gray-400 mb-1">Filter by Tag</label>
+              <input
+                type="text"
+                placeholder="Tag filter..."
+                value={tagFilter}
+                onChange={(e) => setTagFilter(e.target.value)}
+                className={`${ASCII_COLORS.inputBg} ${ASCII_COLORS.text} p-2 rounded border ${ASCII_COLORS.border} text-sm`}
+              />
+            </div>
+            
+            <div className="flex flex-col min-w-[120px]">
+              <label className="text-sm text-gray-400 mb-1">Sort by</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className={`${ASCII_COLORS.inputBg} ${ASCII_COLORS.text} p-2 rounded border ${ASCII_COLORS.border} text-sm`}
+              >
+                <option value="name">Name</option>
+                <option value="quantity">Quantity</option>
+                <option value="priority">Priority</option>
+                <option value="expiryDate">Expiry</option>
+                <option value="createdAt">Created</option>
+              </select>
+            </div>
+            
+            <div className="flex flex-col min-w-[100px]">
+              <label className="text-sm text-gray-400 mb-1">Order</label>
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value as any)}
+                className={`${ASCII_COLORS.inputBg} ${ASCII_COLORS.text} p-2 rounded border ${ASCII_COLORS.border} text-sm`}
+              >
+                <option value="asc">↑ Asc</option>
+                <option value="desc">↓ Desc</option>
+              </select>
+            </div>
+            
+            <div className="flex flex-col justify-end">
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setTagFilter('');
+                  setSortBy('name');
+                  setSortOrder('asc');
+                }}
+                className={`${ASCII_COLORS.buttonBg} p-2 px-3 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} text-sm`}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+          
           {itemsToDisplay.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {itemsToDisplay.map(item => (

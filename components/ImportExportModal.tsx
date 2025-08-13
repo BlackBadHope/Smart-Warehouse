@@ -5,9 +5,10 @@ import { exportAll, detectConflicts, importBundle, IdConflict, ExportBundle } fr
 interface Props {
   show: boolean;
   onClose: () => void;
+  onDataChange?: () => void;
 }
 
-const ImportExportModal: React.FC<Props> = ({ show, onClose }) => {
+const ImportExportModal: React.FC<Props> = ({ show, onClose, onDataChange }) => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [log, setLog] = useState<string>('');
   const [conflicts, setConflicts] = useState<IdConflict[]>([]);
@@ -38,6 +39,7 @@ const ImportExportModal: React.FC<Props> = ({ show, onClose }) => {
       if (conflictsDetected.length === 0) {
         const report = importBundle(bundle, { onConflict: () => 'newId' });
         setLog(`Импорт завершён. Детали: ${JSON.stringify(report)}`);
+        onDataChange?.();
       } else {
         setLog(`Обнаружены конфликты ID: ${conflictsDetected.length}. Выберите стратегию и нажмите "Импортировать".`);
         // store bundle in element dataset
@@ -58,6 +60,7 @@ const ImportExportModal: React.FC<Props> = ({ show, onClose }) => {
     setLog(`Импорт завершён. Детали: ${JSON.stringify(report)}`);
     setConflicts([]);
     delete inputEl._bundle;
+    onDataChange?.();
   };
 
   return (
