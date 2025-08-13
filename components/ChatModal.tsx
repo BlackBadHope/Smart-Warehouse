@@ -112,11 +112,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ show, onClose, onDataChange }) =>
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (showApiKeyInput) {
-        handleSetApiKey();
-      } else {
-        handleSendMessage();
-      }
+      handleSendMessage();
     }
   };
 
@@ -237,7 +233,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ show, onClose, onDataChange }) =>
         </div>
 
         {/* Input */}
-        {isApiKeySet && (
+        {isAnyProviderInitialized() && (
           <div className={`p-4 border-t-2 ${ASCII_COLORS.border}`}>
             <div className="flex gap-2">
               <input

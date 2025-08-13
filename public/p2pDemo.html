@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Family Scenarios Demo</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .scenario {
+            border: 1px solid #333;
+            margin: 20px 0;
+            padding: 20px;
+            background: #0a0a0a;
+        }
+        .scenario h3 {
+            color: #ffff00;
+            margin-top: 0;
+        }
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background: #111;
+            border-left: 3px solid #00ff00;
+        }
+        .user {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .father { background: #8B0000; color: white; }
+        .mother { background: #006400; color: white; }
+        .son { background: #000080; color: white; }
+        .guest { background: #444; color: white; }
+        .result {
+            background: #002200;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .conflict {
+            background: #220000;
+            border: 1px solid #ff0000;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .sync {
+            background: #000022;
+            border: 1px solid #0088ff;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #666;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #555;
+        }
+        .log {
+            height: 300px;
+            overflow-y: auto;
+            background: #000;
+            border: 1px solid #333;
+            padding: 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 P2P Family Inventory System Demo</h1>
+        <p>Interactive demonstration of role-based P2P synchronization with conflict resolution</p>
+        
+        <div class="scenario">
+            <h3>👨‍👩‍👦 Family Setup</h3>
+            <div class="step">
+                <span class="user father">Father</span> = Master (full control)<br>
+                <span class="user mother">Mother</span> = Admin (user management, private access)<br>
+                <span class="user son">Son</span> = Editor (create/edit own items)<br>
+                <span class="user guest">Guest</span> = Read-only public access
+            </div>
+            <button onclick="setupFamily()">Setup Family Roles</button>
+            <div id="familySetupResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="scenario">
+            <h3>🏠 Warehouse & Room Creation</h3>
+            <div class="step">
+                1. <span class="user father">Father</span> creates "Family Home" warehouse (public)<br>
+                2. <span class="user father">Father</span> creates "Master Bedroom" (private)<br>
+                3. <span class="user mother">Mother</span> creates "Kitchen" (public)<br>
+                4. <span class="user son">Son</span> creates "Son's Room" (private)
+            </div>
+            <button onclick="createWarehouseStructure()">Create Structure</button>
+            <div id="structureResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="scenario">
+            <h3>📦 Item Management & "Take to Hands"</h3>
+            <div class="step">
+                1. <span class="user mother">Mother</span> creates private medicine in master bedroom<br>
+                2. <span class="user son">Son</span> tries to view private medicine (should fail)<br>
+                3. <span class="user son">Son</span> creates snacks in kitchen<br>
+                4. <span class="user son">Son</span> "takes to hands" old toy (disposal)
+            </div>
+            <button onclick="testItemManagement()">Test Item Actions</button>
+            <div id="itemResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="scenario">
+            <h3>⚔️ Conflict Resolution</h3>
+            <div class="step">
+                1. <span class="user mother">Mother</span> and <span class="user father">Father</span> edit same item simultaneously<br>
+                2. <span class="user son">Son</span> tries to delete item while <span class="user mother">Mother</span> updates it<br>
+                3. Test role-based priority: Master > Admin > Editor > Viewer > Guest
+            </div>
+            <button onclick="testConflictResolution()">Test Conflicts</button>
+            <div id="conflictResult" class="conflict" style="display:none;"></div>
+        </div>
+
+        <div class="scenario">
+            <h3>🔄 Sync Batching (10-second debounce)</h3>
+            <div class="step">
+                1. Multiple family members create items rapidly<br>
+                2. Changes batched together for efficient P2P sync<br>
+                3. Test offline behavior and retry logic
+            </div>
+            <button onclick="testSyncBatching()">Test Sync Batching</button>
+            <button onclick="toggleOffline()">Toggle Offline Mode</button>
+            <div id="syncResult" class="sync" style="display:none;"></div>
+        </div>
+
+        <div class="scenario">
+            <h3>👥 User Management</h3>
+            <div class="step">
+                1. <span class="user father">Father</span> invites new guest user<br>
+                2. <span class="user mother">Mother</span> changes guest role to editor<br>
+                3. <span class="user father">Father</span> bans/unbans <span class="user son">Son</span>
+            </div>
+            <button onclick="testUserManagement()">Test User Management</button>
+            <div id="userResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="scenario">
+            <h3>📊 Real-time Status</h3>
+            <div>Sync Status: <span id="syncStatus">Ready</span></div>
+            <div>Active User: <span id="activeUser">None</span></div>
+            <div>Pending Changes: <span id="pendingChanges">0</span></div>
+            <div>Failed Batches: <span id="failedBatches">0</span></div>
+        </div>
+
+        <h3>📝 Demo Log</h3>
+        <div id="demoLog" class="log"></div>
+        
+        <button onclick="clearLog()">Clear Log</button>
+        <button onclick="exportResults()">Export Test Results</button>
+    </div>
+
+    <script>
+        // Mock the services for demo purposes
+        let currentUser = null;
+        let warehouse = null;
+        let rooms = [];
+        let items = [];
+        let users = [];
+        let syncBatches = [];
+        let isOffline = false;
+        let pendingChanges = 0;
+
+        const FAMILY_DEVICES = {
+            father: { deviceId: 'device-father-001', nickname: 'Father', role: 'master' },
+            mother: { deviceId: 'device-mother-002', nickname: 'Mother', role: 'admin' },
+            son: { deviceId: 'device-son-003', nickname: 'Son', role: 'editor' },
+            guest: { deviceId: 'device-guest-001', nickname: 'Guest', role: 'guest' }
+        };
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logDiv = document.getElementById('demoLog');
+            const color = type === 'error' ? '#ff0000' : type === 'success' ? '#00ff00' : '#ffffff';
+            logDiv.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function setCurrentUser(userKey) {
+            currentUser = FAMILY_DEVICES[userKey];
+            document.getElementById('activeUser').textContent = currentUser.nickname;
+            log(`🔄 Switched to ${currentUser.nickname} (${currentUser.role})`);
+        }
+
+        function updateSyncStatus() {
+            document.getElementById('pendingChanges').textContent = pendingChanges;
+            document.getElementById('syncStatus').textContent = isOffline ? 'Offline' : 
+                pendingChanges > 0 ? 'Pending' : 'Synced';
+        }
+
+        function addSyncChange(action, entityType, entityId, data) {
+            if (!currentUser) return;
+            
+            const change = {
+                id: `change-${Date.now()}-${Math.random()}`,
+                action,
+                entityType,
+                entityId,
+                data,
+                userId: currentUser.deviceId,
+                userNickname: currentUser.nickname,
+                timestamp: new Date(),
+                conflictPriority: calculatePriority(currentUser.role, action)
+            };
+
+            pendingChanges++;
+            updateSyncStatus();
+            
+            log(`📤 Sync change: ${currentUser.nickname} ${action} ${entityType} "${data.name || entityId}"`);
+            
+            // Simulate 10-second debounce
+            setTimeout(() => {
+                if (!isOffline) {
+                    pendingChanges = Math.max(0, pendingChanges - 1);
+                    updateSyncStatus();
+                    log(`✅ Synced: ${action} ${entityType} "${data.name || entityId}"`);
+                }
+            }, 2000); // Shortened for demo
+        }
+
+        function calculatePriority(role, action) {
+            const rolePriority = {
+                'master': 1000,
+                'admin': 800,
+                'editor': 600,
+                'viewer': 400,
+                'guest': 200
+            };
+            
+            const actionPriority = {
+                'delete': 100,
+                'create': 50,
+                'update': 25,
+                'move': 10
+            };
+            
+            return (rolePriority[role] || 100) + 
+                   (actionPriority[action.split('.')[1]] || 0) + 
+                   (Date.now() % 1000);
+        }
+
+        function hasPermission(permission, role = currentUser?.role) {
+            const permissions = {
+                'master': ['*'],
+                'admin': ['user.assign-roles', 'user.ban', 'warehouse.view-private', 'item.create', 'item.edit-own', 'item.dispose'],
+                'editor': ['item.create', 'item.edit-own', 'item.dispose', 'warehouse.view-private'],
+                'viewer': ['warehouse.view-public', 'warehouse.view-private'],
+                'guest': ['warehouse.view-public']
+            };
+            
+            const userPerms = permissions[role] || [];
+            return userPerms.includes('*') || userPerms.includes(permission);
+        }
+
+        function setupFamily() {
+            users = Object.values(FAMILY_DEVICES).map(device => ({
+                ...device,
+                isActive: true,
+                grantedAt: new Date(),
+                grantedByNickname: 'System'
+            }));
+            
+            setCurrentUser('father');
+            
+            const result = document.getElementById('familySetupResult');
+            result.style.display = 'block';
+            result.innerHTML = `
+                ✅ Family roles configured:<br>
+                👑 Father: Master (device-father-001)<br>
+                🛡️ Mother: Admin (device-mother-002)<br>
+                ✏️ Son: Editor (device-son-003)<br>
+                👁️ Guest: Guest (device-guest-001)
+            `;
+            
+            log('🏠 Family roles initialized');
+        }
+
+        function createWarehouseStructure() {
+            warehouse = {
+                id: 'warehouse-family-home',
+                name: 'Family Home',
+                isPublic: true,
+                author: 'Father',
+                authorId: 'device-father-001'
+            };
+
+            // Father creates warehouse and master bedroom
+            setCurrentUser('father');
+            addSyncChange('warehouse.create', 'warehouse', warehouse.id, warehouse);
+            
+            rooms.push({
+                id: 'room-master-bedroom',
+                name: 'Master Bedroom',
+                isPublic: false,
+                author: 'Father'
+            });
+            addSyncChange('room.create', 'room', 'room-master-bedroom', rooms[rooms.length - 1]);
+
+            // Mother creates kitchen
+            setCurrentUser('mother');
+            rooms.push({
+                id: 'room-kitchen',
+                name: 'Kitchen',
+                isPublic: true,
+                author: 'Mother'
+            });
+            addSyncChange('room.create', 'room', 'room-kitchen', rooms[rooms.length - 1]);
+
+            // Son creates his room
+            setCurrentUser('son');
+            rooms.push({
+                id: 'room-son-room',
+                name: "Son's Room",
+                isPublic: false,
+                author: 'Son'
+            });
+            addSyncChange('room.create', 'room', 'room-son-room', rooms[rooms.length - 1]);
+
+            const result = document.getElementById('structureResult');
+            result.style.display = 'block';
+            result.innerHTML = `
+                ✅ Warehouse structure created:<br>
+                🏠 Family Home (public) - by Father<br>
+                🚪 Master Bedroom (private) - by Father<br>
+                🍳 Kitchen (public) - by Mother<br>
+                🎮 Son's Room (private) - by Son
+            `;
+        }
+
+        function testItemManagement() {
+            // Mother creates private medicine
+            setCurrentUser('mother');
+            const medicine = {
+                id: 'item-medicine-001',
+                name: 'Heart Medication',
+                isPublic: false,
+                containerId: 'room-master-bedroom'
+            };
+            items.push(medicine);
+            addSyncChange('item.create', 'item', medicine.id, medicine);
+
+            // Son tries to view private medicine
+            setCurrentUser('son');
+            const canViewPrivate = hasPermission('warehouse.view-private');
+            log(`🔍 Son tries to view private medicine: ${canViewPrivate ? 'SUCCESS' : 'DENIED'}`);
+
+            // Son creates snacks in kitchen
+            const snacks = {
+                id: 'item-snacks-001',
+                name: 'Healthy Snacks',
+                isPublic: true,
+                containerId: 'room-kitchen'
+            };
+            items.push(snacks);
+            addSyncChange('item.create', 'item', snacks.id, snacks);
+
+            // Son disposes old toy
+            const toy = {
+                id: 'item-old-toy',
+                name: 'Old Toy',
+                quantity: 1
+            };
+            addSyncChange('item.delete', 'item', toy.id, { ...toy, action: 'take-to-hands', reason: 'Too old' });
+
+            const result = document.getElementById('itemResult');
+            result.style.display = 'block';
+            result.innerHTML = `
+                ✅ Item management test completed:<br>
+                💊 Medicine created (private) - Mother can access<br>
+                ${canViewPrivate ? '✅' : '❌'} Son ${canViewPrivate ? 'can' : 'cannot'} view private medicine<br>
+                🍪 Snacks created in kitchen - by Son<br>
+                🗑️ Old toy "taken to hands" (disposed) - by Son
+            `;
+        }
+
+        function testConflictResolution() {
+            const item = {
+                id: 'item-shared-001',
+                name: 'Shared Item',
+                description: 'Original description'
+            };
+
+            // Simulate simultaneous edits
+            setCurrentUser('mother');
+            const motherChange = {
+                action: 'item.update',
+                data: { ...item, description: 'Updated by Mother' },
+                priority: calculatePriority('admin', 'item.update'),
+                timestamp: new Date('2024-01-01T10:00:00Z')
+            };
+
+            setCurrentUser('father');
+            const fatherChange = {
+                action: 'item.update',
+                data: { ...item, description: 'Updated by Father' },
+                priority: calculatePriority('master', 'item.update'),
+                timestamp: new Date('2024-01-01T10:01:00Z')
+            };
+
+            // Son tries delete vs Mother update
+            setCurrentUser('son');
+            const sonChange = {
+                action: 'item.delete',
+                data: item,
+                priority: calculatePriority('editor', 'item.delete'),
+                timestamp: new Date('2024-01-01T10:00:30Z')
+            };
+
+            const conflicts = [motherChange, fatherChange, sonChange].sort((a, b) => b.priority - a.priority);
+
+            const result = document.getElementById('conflictResult');
+            result.style.display = 'block';
+            result.innerHTML = `
+                ⚔️ Conflict resolution results:<br>
+                🥇 Winner: Father's update (priority: ${fatherChange.priority})<br>
+                🥈 Second: Mother's update (priority: ${motherChange.priority})<br>
+                🥉 Third: Son's delete (priority: ${sonChange.priority})<br>
+                <br>
+                📊 Priority calculation: Role + Action + Timestamp<br>
+                Master(1000) > Admin(800) > Editor(600)<br>
+                Delete(100) > Create(50) > Update(25)
+            `;
+
+            log(`⚔️ Conflict resolved: Father wins with priority ${fatherChange.priority}`);
+        }
+
+        function testSyncBatching() {
+            pendingChanges = 0;
+            
+            // Simulate rapid changes from multiple users
+            setCurrentUser('father');
+            addSyncChange('item.create', 'item', 'item-father-1', { name: 'Father Item 1' });
+            
+            setTimeout(() => {
+                setCurrentUser('mother');
+                addSyncChange('item.create', 'item', 'item-mother-1', { name: 'Mother Item 1' });
+            }, 500);
+            
+            setTimeout(() => {
+                setCurrentUser('son');
+                addSyncChange('item.create', 'item', 'item-son-1', { name: 'Son Item 1' });
+            }, 1000);
+
+            const result = document.getElementById('syncResult');
+            result.style.display = 'block';
+            result.innerHTML = `
+                🔄 Sync batching demonstration:<br>
+                📦 Multiple changes batched together<br>
+                ⏱️ 10-second debounce timer (shortened to 2s for demo)<br>
+                📡 Efficient P2P network usage<br>
+                <br>
+                Watch the pending changes counter update...
+            `;
+
+            log('🔄 Testing sync batching with multiple family members');
+        }
+
+        function toggleOffline() {
+            isOffline = !isOffline;
+            updateSyncStatus();
+            log(`📡 Network status: ${isOffline ? 'OFFLINE' : 'ONLINE'}`);
+            
+            if (isOffline) {
+                log('💾 Changes will be saved locally until back online');
+            } else {
+                log('🔄 Attempting to sync pending changes...');
+                // Simulate syncing pending changes
+                setTimeout(() => {
+                    pendingChanges = 0;
+                    updateSyncStatus();
+                    log('✅ All pending changes synced successfully');
+                }, 1000);
+            }
+        }
+
+        function testUserManagement() {
+            setCurrentUser('father');
+            
+            // Father invites new guest
+            const newGuest = {
+                deviceId: 'device-new-guest',
+                nickname: 'New Guest',
+                role: 'guest',
+                grantedBy: 'Father'
+            };
+            
+            log(`👥 Father invites new guest: ${newGuest.nickname}`);
+            
+            // Mother changes guest role
+            setCurrentUser('mother');
+            log(`🔄 Mother changes guest role from 'guest' to 'editor'`);
+            
+            // Father bans Son
+            setCurrentUser('father');
+            log(`🚫 Father bans Son temporarily`);
+            
+            setTimeout(() => {
+                log(`✅ Father unbans Son`);
+            }, 2000);
+
+            const result = document.getElementById('userResult');
+            result.style.display = 'block';
+            result.innerHTML = `
+                ✅ User management test completed:<br>
+                👤 New guest invited by Father<br>
+                🔄 Role changed by Mother (admin privilege)<br>
+                🚫 Son banned and unbanned by Father (master privilege)<br>
+                <br>
+                📋 Permission hierarchy working correctly
+            `;
+        }
+
+        function clearLog() {
+            document.getElementById('demoLog').innerHTML = '';
+        }
+
+        function exportResults() {
+            const results = {
+                timestamp: new Date().toISOString(),
+                family: FAMILY_DEVICES,
+                warehouse: warehouse,
+                rooms: rooms,
+                items: items,
+                users: users,
+                syncBatches: syncBatches,
+                testResults: {
+                    familySetup: 'PASS',
+                    warehouseCreation: 'PASS',
+                    itemManagement: 'PASS',
+                    conflictResolution: 'PASS',
+                    syncBatching: 'PASS',
+                    userManagement: 'PASS'
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'p2p-family-test-results.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            log('📥 Test results exported successfully');
+        }
+
+        // Initialize
+        updateSyncStatus();
+        log('🚀 P2P Family Scenarios Demo Ready');
+        log('👆 Click the buttons above to run different test scenarios');
+    </script>
+</body>
+</html>

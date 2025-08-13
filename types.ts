@@ -27,6 +27,12 @@ export interface ItemCore {
   labels?: string[];
   barcode?: string;
   createdAt?: FirestoreTimestamp | Date; // Changed Timestamp to FirestoreTimestamp
+  // Privacy and ownership
+  ownerId: string;
+  isPublic: boolean;
+  createdBy: string; // User nickname
+  lastModifiedAt?: Date;
+  lastModifiedBy?: string;
 }
 
 export interface Item extends ItemCore {
@@ -91,9 +97,22 @@ export interface Warehouse extends FirebaseEntity {
 }
 export interface Room extends FirebaseEntity {
   shelves?: Shelf[];
+  // Privacy and ownership
+  ownerId: string;
+  isPublic: boolean;
+  createdBy: string; // User nickname
+  lastModifiedAt?: Date;
+  lastModifiedBy?: string;
 }
+
 export interface Shelf extends FirebaseEntity {
   items?: Item[];
+  // Privacy and ownership  
+  ownerId: string;
+  isPublic: boolean;
+  createdBy: string; // User nickname
+  lastModifiedAt?: Date;
+  lastModifiedBy?: string;
 }
 
 export interface UserProfile {

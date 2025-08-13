@@ -21,11 +21,21 @@ import QRSyncModal from './components/QRSyncModal';
 import NetworkManager from './components/NetworkManager';
 import SocialChat from './components/SocialChat';
 import SelfTestModal from './components/SelfTestModal';
+import WelcomeScreen from './components/WelcomeScreen';
+import CreateEntityModal from './components/CreateEntityModal';
+import TrashModal from './components/TrashModal';
+import SyncStatusIndicator from './components/SyncStatusIndicator';
+import UserManagementModal from './components/UserManagementModal';
+import P2PTestRunner from './components/P2PTestRunner';
 import localizationService from './services/localizationService';
 import debugService from './services/debugService';
 import userService from './services/userService';
 import themeService from './services/themeService';
 import uiUpdateService from './services/uiUpdateService';
+import deviceIdentityService from './services/deviceIdentityService';
+import rolesPermissionService from './services/rolesPermissionService';
+import trashService from './services/trashService';
+import syncBatchService from './services/syncBatchService';
 
 const InventoryApp: React.FC = () => {
   const [currentCurrency, setCurrentCurrency] = useState<string>(
@@ -85,6 +95,17 @@ const InventoryApp: React.FC = () => {
   const [showSelfTest, setShowSelfTest] = useState(false);
   const [showNetworkManager, setShowNetworkManager] = useState(false);
   const [showSocialChat, setShowSocialChat] = useState(false);
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(false);
+  const [showCreateEntity, setShowCreateEntity] = useState(false);
+  const [showTrash, setShowTrash] = useState(false);
+  const [showUserManagement, setShowUserManagement] = useState(false);
+  const [showP2PTest, setShowP2PTest] = useState(false);
+  const [createEntityConfig, setCreateEntityConfig] = useState<{
+    type: 'warehouse' | 'room' | 'shelf' | 'item';
+    title: string;
+    label: string;
+    parentContext?: string;
+  }>({ type: 'warehouse', title: '', label: '' });
 
   // Filtering and sorting states
   const [searchQuery, setSearchQuery] = useState('');
@@ -105,6 +126,13 @@ const InventoryApp: React.FC = () => {
   useEffect(() => {
     debugService.info('Initializing Inventory OS');
     localStorageService.initializeLocalStorage();
+    
+    // Check if this is first time user
+    if (deviceIdentityService.needsWelcomeScreen()) {
+      setShowWelcomeScreen(true);
+      debugService.info('First time user detected, showing welcome screen');
+    }
+    
     loadWarehouses();
     loadBucketItems();
     // Initialize theme service
@@ -287,22 +315,69 @@ const InventoryApp: React.FC = () => {
 
   const loadWarehouses = () => {
     const warehousesData = localStorageService.getWarehouses();
-    setWarehouses(warehousesData);
+    
+    // Filter warehouses based on user role and privacy settings
+    const filteredWarehouses = warehousesData.filter(warehouse => {
+      // Master and admin can see all warehouses they have access to
+      if (rolesPermissionService.getCurrentUserRole(warehouse.id) !== 'guest') {
+        return true;
+      }
+      
+      // Guests can only see public warehouses
+      return warehouse.accessControl?.accessLevel === 'public' || warehouse.networkVisible;
+    });
+    
+    setWarehouses(filteredWarehouses);
+    debugService.info('Warehouses loaded with privacy filtering', { 
+      total: warehousesData.length, 
+      visible: filteredWarehouses.length,
+      userRole: rolesPermissionService.getCurrentUserRole()
+    });
   };
 
   const loadRooms = (warehouseId: string) => {
     const roomsData = localStorageService.getRooms(warehouseId);
-    setRooms(roomsData);
+    
+    // Filter rooms based on user role and privacy
+    const filteredRooms = roomsData.filter(room => {
+      if (rolesPermissionService.getCurrentUserRole(warehouseId) !== 'guest') {
+        return true;
+      }
+      // Guests only see public rooms (when room has isPublic field)
+      return (room as any).isPublic !== false; // Allow rooms without isPublic field for backward compatibility
+    });
+    
+    setRooms(filteredRooms);
   };
 
   const loadShelves = (warehouseId: string, roomId: string) => {
     const shelvesData = localStorageService.getShelves(warehouseId, roomId);
-    setShelves(shelvesData);
+    
+    // Filter shelves based on user role and privacy
+    const filteredShelves = shelvesData.filter(shelf => {
+      if (rolesPermissionService.getCurrentUserRole(warehouseId) !== 'guest') {
+        return true;
+      }
+      // Guests only see public shelves
+      return (shelf as any).isPublic !== false;
+    });
+    
+    setShelves(filteredShelves);
   };
 
   const loadShelfItems = (warehouseId: string, roomId: string, shelfId: string) => {
     const itemsData = localStorageService.getItems(warehouseId, roomId, shelfId);
-    setShelfItems(itemsData);
+    
+    // Filter items based on user role and privacy
+    const filteredItems = itemsData.filter(item => {
+      if (rolesPermissionService.getCurrentUserRole(warehouseId) !== 'guest') {
+        return true;
+      }
+      // Guests only see public items
+      return (item as any).isPublic !== false;
+    });
+    
+    setShelfItems(filteredItems);
   };
 
   const loadBucketItems = () => {
@@ -370,52 +445,91 @@ const InventoryApp: React.FC = () => {
   const createEntity = (type: 'warehouse' | 'room' | 'shelf') => {
     debugService.action(`Creating ${type}`, { selectedWarehouseId, selectedRoomId, selectedShelfId });
     
-    let title = '', label = '';
+    let title = '', label = '', parentContext = '';
     
     if (type === 'warehouse') {
       title = 'CREATE NEW WAREHOUSE';
       label = 'Warehouse Name:';
     } else if (type === 'room' && selectedWarehouseId) {
-      title = `CREATE NEW ROOM (in ${selectedWarehouseName || 'Selected Warehouse'})`;
+      title = 'CREATE NEW ROOM';
       label = 'Room Name:';
+      parentContext = `in ${selectedWarehouseName || 'Selected Warehouse'}`;
     } else if (type === 'shelf' && selectedWarehouseId && selectedRoomId) {
-      title = `CREATE NEW CONTAINER (in ${selectedRoomName || 'Selected Room'})`;
+      title = 'CREATE NEW CONTAINER';
       label = 'Container Name:';
+      parentContext = `in ${selectedRoomName || 'Selected Room'}`;
     } else {
       debugService.error(`Cannot create ${type}: missing parent selection`, { selectedWarehouseId, selectedRoomId });
       showNotification("Please select the parent location first.", "error");
       return;
     }
 
-    setInputModalConfig({
-      title, label, initialValue: '',
-      onSubmit: async (name) => {
-        try {
-          debugService.action(`Attempting to create ${type} with name: ${name}`);
-          
-          if (type === 'warehouse') {
-            localStorageService.addWarehouse(name);
-            debugService.info(`Warehouse "${name}" created successfully`);
-          } else if (type === 'room' && selectedWarehouseId) {
-            localStorageService.addRoom(selectedWarehouseId, name);
-            debugService.info(`Room "${name}" created successfully in warehouse ${selectedWarehouseId}`);
-          } else if (type === 'shelf' && selectedWarehouseId && selectedRoomId) {
-            localStorageService.addShelf(selectedWarehouseId, selectedRoomId, name);
-            debugService.info(`Container "${name}" created successfully in room ${selectedRoomId}`);
-          }
-          
-          showNotification(`${type} "${name}" created!`);
-          setShowInputModal(false);
-          loadWarehouses();
-          if (selectedWarehouseId) loadRooms(selectedWarehouseId);
-          if (selectedWarehouseId && selectedRoomId) loadShelves(selectedWarehouseId, selectedRoomId);
-        } catch (e) {
-          debugService.error(`Error creating ${type}`, { error: (e as Error).message, name, selectedWarehouseId, selectedRoomId });
-          showNotification(`Error creating ${type}: ${(e as Error).message}`, 'error');
-        }
+    setCreateEntityConfig({ type, title, label, parentContext });
+    setShowCreateEntity(true);
+  };
+
+  const handleCreateEntitySubmit = async (name: string, isPublic: boolean) => {
+    const { type } = createEntityConfig;
+    
+    try {
+      debugService.action(`Attempting to create ${type} with name: ${name}, public: ${isPublic}`);
+      
+      const userProfile = deviceIdentityService.getUserProfile();
+      const deviceIdentity = deviceIdentityService.getDeviceIdentity();
+      const createdBy = userProfile?.nickname || 'Anonymous';
+      const ownerId = deviceIdentity.deviceId;
+      
+      let entityId = '';
+      
+      if (type === 'warehouse') {
+        // TODO: Update localStorageService.addWarehouse to support new fields
+        entityId = localStorageService.addWarehouse(name);
+        debugService.info(`Warehouse "${name}" created successfully`);
+        
+        // Add to sync batch
+        syncBatchService.addChange(
+          'warehouse.create',
+          'warehouse',
+          entityId,
+          { name, isPublic, ownerId, createdBy }
+        );
+      } else if (type === 'room' && selectedWarehouseId) {
+        // TODO: Update localStorageService.addRoom to support new fields  
+        entityId = localStorageService.addRoom(selectedWarehouseId, name);
+        debugService.info(`Room "${name}" created successfully in warehouse ${selectedWarehouseId}`);
+        
+        // Add to sync batch
+        syncBatchService.addChange(
+          'room.create',
+          'room',
+          entityId,
+          { name, isPublic, ownerId, createdBy, warehouseId: selectedWarehouseId },
+          selectedWarehouseId
+        );
+      } else if (type === 'shelf' && selectedWarehouseId && selectedRoomId) {
+        // TODO: Update localStorageService.addShelf to support new fields
+        entityId = localStorageService.addShelf(selectedWarehouseId, selectedRoomId, name);
+        debugService.info(`Container "${name}" created successfully in room ${selectedRoomId}`);
+        
+        // Add to sync batch
+        syncBatchService.addChange(
+          'container.create',
+          'container',
+          entityId,
+          { name, isPublic, ownerId, createdBy, warehouseId: selectedWarehouseId, roomId: selectedRoomId },
+          selectedWarehouseId
+        );
       }
-    });
-    setShowInputModal(true);
+      
+      showNotification(`${type} "${name}" created as ${isPublic ? 'public' : 'private'}!`);
+      setShowCreateEntity(false);
+      loadWarehouses();
+      if (selectedWarehouseId) loadRooms(selectedWarehouseId);
+      if (selectedWarehouseId && selectedRoomId) loadShelves(selectedWarehouseId, selectedRoomId);
+    } catch (e) {
+      debugService.error(`Error creating ${type}`, { error: (e as Error).message, name, selectedWarehouseId, selectedRoomId });
+      throw new Error(`Failed to create ${type}: ${(e as Error).message}`);
+    }
   };
 
   const renameEntity = (type: 'warehouse' | 'room' | 'shelf', entity: Warehouse | Room | Shelf) => {
@@ -557,6 +671,63 @@ const InventoryApp: React.FC = () => {
     }
   };
   
+  const handleTakeItem = (item: Item | BucketItem) => {
+    handleConfirm(async () => {
+      if (showBucketView) {
+        // From bucket - move to personal hands (simulate taking)
+        localStorageService.removeBucketItem(item.id);
+        loadBucketItems();
+        showNotification(`Took "${item.name}" from bucket. Item is now in your hands.`);
+      } else if (selectedWarehouseId && selectedRoomId && selectedShelfId) {
+        // From storage - move to bucket first, then to hands
+        const originalPath = `${selectedWarehouseName} > ${selectedRoomName} > ${selectedShelfName}`;
+        localStorageService.addItemToBucket(item as Item, originalPath);
+        localStorageService.deleteItem(selectedWarehouseId, selectedRoomId, selectedShelfId, item.id);
+        loadShelfItems(selectedWarehouseId, selectedRoomId, selectedShelfId);
+        loadBucketItems();
+        showNotification(`Took "${item.name}" from storage. Item moved to your bucket.`);
+      } else {
+        throw new Error("No context to take item from.");
+      }
+      
+      debugService.action('Item taken by user', {
+        itemName: item.name,
+        fromLocation: showBucketView ? 'bucket' : 'storage',
+        takenBy: deviceIdentityService.getUserProfile()?.nickname || 'Anonymous'
+      });
+    }, `Take "${item.name}" ${showBucketView ? 'from bucket' : 'from storage'}? ${showBucketView ? 'This will remove it from your bucket.' : 'This will move it to your bucket.'}`);
+  };
+
+  const handleDisposeToTrash = (item: Item | BucketItem, reason?: string) => {
+    handleConfirm(async () => {
+      let originalLocation = '';
+      
+      if (showBucketView) {
+        originalLocation = (item as BucketItem).originalPath || 'Bucket';
+        localStorageService.removeBucketItem(item.id);
+        loadBucketItems();
+      } else if (selectedWarehouseId && selectedRoomId && selectedShelfId) {
+        originalLocation = `${selectedWarehouseName} > ${selectedRoomName} > ${selectedShelfName}`;
+        localStorageService.deleteItem(selectedWarehouseId, selectedRoomId, selectedShelfId, item.id);
+        loadShelfItems(selectedWarehouseId, selectedRoomId, selectedShelfId);
+      } else {
+        throw new Error("No context to dispose item from.");
+      }
+      
+      // Add to trash service
+      trashService.disposeItem(item, originalLocation, reason);
+      
+      showNotification(`Item "${item.name}" disposed to trash.`);
+      
+      debugService.action('Item disposed to trash', {
+        itemName: item.name,
+        fromLocation: originalLocation,
+        disposedBy: deviceIdentityService.getUserProfile()?.nickname || 'Anonymous'
+      });
+    }, `Dispose "${item.name}" to trash? You can restore it later or mark it as actually disposed.`);
+  };
+
+  // Keep the old delete function for permanent deletion (will be used later)
   const handleDeleteItem = (item: Item | BucketItem) => {
     handleConfirm(async () => {
       if (showBucketView) {
@@ -568,8 +739,8 @@ const InventoryApp: React.FC = () => {
       } else {
         throw new Error("No context to delete item from.");
       }
-      showNotification(`Item "${item.name}" deleted.`);
-    }, `Delete item "${item.name}"? This cannot be undone.`);
+      showNotification(`Item "${item.name}" deleted permanently.`);
+    }, `Permanently delete "${item.name}"? This cannot be undone.`);
   };
 
   const handleUpdateQuantity = async (item: Item | BucketItem, amount: number) => {
@@ -677,6 +848,17 @@ const InventoryApp: React.FC = () => {
         errorCount > 0 ? "warning" : "success"
       );
     }, `Transfer ${itemsToTransfer.length} item(s) to their destinations?`);
+  };
+
+  // Handle welcome screen completion
+  const handleWelcomeComplete = () => {
+    setShowWelcomeScreen(false);
+    debugService.action('Welcome screen completed, user setup finished');
+    
+    // Refresh data after setup
+    loadWarehouses();
+    loadBucketItems();
+    showNotification('Welcome to Inventory OS! You\'re all set up.', 'success');
   };
 
   // Handle data refresh when SMARTIE makes changes
@@ -824,6 +1006,16 @@ const InventoryApp: React.FC = () => {
 
   return (
     <div className={`${ASCII_COLORS.bg} ${ASCII_COLORS.text} min-h-screen font-mono p-4 sm:p-6 lg:p-8`}>
+      <WelcomeScreen show={showWelcomeScreen} onComplete={handleWelcomeComplete} />
+      <CreateEntityModal
+        show={showCreateEntity}
+        type={createEntityConfig.type}
+        title={createEntityConfig.title}
+        label={createEntityConfig.label}
+        parentContext={createEntityConfig.parentContext}
+        onSubmit={handleCreateEntitySubmit}
+        onCancel={() => setShowCreateEntity(false)}
+      />
       <InfoModal show={showInfoModal} onCancel={() => setShowInfoModal(false)} />
       <InputModal 
         show={showInputModal} 
@@ -852,6 +1044,16 @@ const InventoryApp: React.FC = () => {
         onClose={() => setShowChat(false)} 
         onDataChange={handleDataChange}
       />
+      <TrashModal 
+        show={showTrash} 
+        onClose={() => setShowTrash(false)} 
+      />
+      <UserManagementModal 
+        show={showUserManagement} 
+        onClose={() => setShowUserManagement(false)}
+        warehouseId={selectedWarehouseId || undefined}
+        warehouseName={selectedWarehouseName || undefined}
+      />
       <DestinationSelectorModal 
         show={showDestinationSelector} 
         onClose={() => { setShowDestinationSelector(false); setItemToMoveFromBucket(null);}} 
@@ -867,9 +1069,12 @@ const InventoryApp: React.FC = () => {
 
       <header className="mb-6 border-b-2 pb-4 border-dashed border-yellow-700">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <h1 className={`${ASCII_COLORS.accent} text-xl sm:text-2xl lg:text-3xl font-bold`}>
-            📦 INVENTORY OS v2.6
-          </h1>
+          <div className="flex items-center gap-4">
+            <h1 className={`${ASCII_COLORS.accent} text-xl sm:text-2xl lg:text-3xl font-bold`}>
+              📦 INVENTORY OS v2.6
+            </h1>
+            <SyncStatusIndicator />
+          </div>
           
           {/* Main Action Buttons */}
           <div className="flex items-center justify-between lg:justify-end gap-2 flex-wrap">
@@ -903,6 +1108,14 @@ const InventoryApp: React.FC = () => {
                     {bucketItems.length}
                   </span>
                 )}
+              </button>
+
+              <button 
+                onClick={() => setShowTrash(true)} 
+                className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                title="Trash & Disposal Management"
+              >
+                <Trash2 size={18} className="text-red-400"/>
               </button>
 
               <button 
@@ -964,23 +1177,37 @@ const InventoryApp: React.FC = () => {
             </div>
 
             {/* Admin Only */}
-            {userService.canExportData() && (
+            {(rolesPermissionService.hasPermission('user.assign-roles', selectedWarehouseId || undefined) || userService.canExportData()) && (
               <div className="flex items-center gap-1">
-                <button 
-                  onClick={() => setShowImportExport(true)} 
-                  className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-                  title="Import/Export (Master)"
-                >
-                  <Archive size={16} className="text-orange-400"/>
-                </button>
+                {rolesPermissionService.hasPermission('user.assign-roles', selectedWarehouseId || undefined) && (
+                  <button 
+                    onClick={() => setShowUserManagement(true)} 
+                    className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                    title="User Management"
+                  >
+                    <Users size={16} className="text-blue-400"/>
+                  </button>
+                )}
                 
-                <button 
-                  onClick={() => setShowDebug(true)} 
-                  className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-                  title="Debug Log"
-                >
-                  <Bug size={16} className="text-orange-400"/>
-                </button>
+                {userService.canExportData() && (
+                  <>
+                    <button 
+                      onClick={() => setShowImportExport(true)} 
+                      className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                      title="Import/Export (Master)"
+                    >
+                      <Archive size={16} className="text-orange-400"/>
+                    </button>
+                    
+                    <button 
+                      onClick={() => setShowDebug(true)} 
+                      className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                      title="Debug Log"
+                    >
+                      <Bug size={16} className="text-orange-400"/>
+                    </button>
+                  </>
+                )}
                 
                 <button 
                   onClick={() => setShowSelfTest(true)} 
@@ -988,6 +1215,14 @@ const InventoryApp: React.FC = () => {
                   title="Self-Test Suite"
                 >
                   <TestTube size={16} className="text-purple-400"/>
+                </button>
+                
+                <button 
+                  onClick={() => setShowP2PTest(true)} 
+                  className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                  title="P2P Family Scenarios Test"
+                >
+                  <Wifi size={16} className="text-cyan-400"/>
                 </button>
               </div>
             )}
@@ -1023,6 +1258,23 @@ const InventoryApp: React.FC = () => {
           />
         )}
         <SelfTestModal show={showSelfTest} onClose={() => setShowSelfTest(false)} />
+        
+        {/* P2P Test Runner Modal */}
+        {showP2PTest && (
+          <div className={`fixed inset-0 ${ASCII_COLORS.bg} bg-opacity-95 flex items-center justify-center z-50 p-4`}>
+            <div className="w-full max-w-6xl">
+              <P2PTestRunner />
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => setShowP2PTest(false)}
+                  className={`${ASCII_COLORS.buttonBg} px-6 py-2 rounded border ${ASCII_COLORS.border} hover:${ASCII_COLORS.buttonHoverBg}`}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {containerToMove ? (
           <div className={`${ASCII_COLORS.inputBg} p-4 border-2 ${ASCII_COLORS.border} rounded-lg`}>
             <h2 className={`text-xl font-bold mb-4 ${ASCII_COLORS.accent}`}>Move Container: {containerToMove.name}</h2>
@@ -1055,7 +1307,7 @@ const InventoryApp: React.FC = () => {
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-xl font-bold">{localizationService.translate('nav.warehouses')}</h2>
-                {userService.hasPermission('canCreateWarehouses') && (
+                {rolesPermissionService.hasPermission('warehouse.create') && (
                   <button 
                     onClick={() => createEntity('warehouse')} 
                     className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`}
@@ -1084,7 +1336,7 @@ const InventoryApp: React.FC = () => {
                         <Home className="w-4 h-4 mr-2 shrink-0"/>{w.name}
                       </span>
                       <span className="flex items-center">
-                        {userService.hasPermission('canDeleteWarehouses') && (
+                        {rolesPermissionService.hasPermission('warehouse.edit', selectedWarehouseId || undefined) && (
                           <button 
                             onClick={(e) => { e.stopPropagation(); renameEntity('warehouse', w); }} 
                             className="p-1 hover:text-yellow-400"
@@ -1092,7 +1344,7 @@ const InventoryApp: React.FC = () => {
                             <Edit size={16}/>
                           </button>
                         )}
-                        {userService.hasPermission('canDeleteWarehouses') && (
+                        {rolesPermissionService.hasPermission('warehouse.edit', selectedWarehouseId || undefined) && (
                           <button 
                             onClick={(e) => { e.stopPropagation(); deleteEntity('warehouse', w); }} 
                             className="p-1 hover:text-red-500"
@@ -1110,7 +1362,7 @@ const InventoryApp: React.FC = () => {
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-2">
                 <h2 className={`text-xl font-bold ${!selectedWarehouseId ? 'opacity-50' : ''}`}>{localizationService.translate('nav.rooms')}</h2>
-                {userService.hasPermission('canCreateRooms') && (
+                {rolesPermissionService.hasPermission('room.create', selectedWarehouseId || undefined) && (
                   <button 
                     onClick={() => createEntity('room')} 
                     disabled={!selectedWarehouseId} 
@@ -1162,7 +1414,7 @@ const InventoryApp: React.FC = () => {
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-2">
                 <h2 className={`text-xl font-bold ${!selectedRoomId ? 'opacity-50' : ''}`}>{localizationService.translate('nav.containers')}</h2>
-                {userService.hasPermission('canCreateContainers') && (
+                {rolesPermissionService.hasPermission('container.create', selectedWarehouseId || undefined) && (
                   <button 
                     onClick={() => createEntity('shelf')} 
                     disabled={!selectedRoomId} 
@@ -1232,13 +1484,15 @@ const InventoryApp: React.FC = () => {
                   <Archive className="w-4 h-4 mr-2"/>TRANSFER ({bucketItems.filter(i=>i.isReadyToTransfer && i.destination).length})
                 </button>
               )}
-              <button 
-                onClick={handleOpenAddItemModal} 
-                disabled={!showBucketView && (!selectedWarehouseId || !selectedRoomId || !selectedShelfId)} 
-                className={`${ASCII_COLORS.buttonBg} p-2 px-4 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} disabled:opacity-50 flex items-center`}
-              >
-                <Plus className="w-4 h-4 mr-1"/>ADD ITEM {showBucketView ? "TO BUCKET" : ""}
-              </button>
+              {rolesPermissionService.hasPermission('item.create', selectedWarehouseId || undefined) && (
+                <button 
+                  onClick={handleOpenAddItemModal} 
+                  disabled={!showBucketView && (!selectedWarehouseId || !selectedRoomId || !selectedShelfId)} 
+                  className={`${ASCII_COLORS.buttonBg} p-2 px-4 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} disabled:opacity-50 flex items-center`}
+                >
+                  <Plus className="w-4 h-4 mr-1"/>ADD ITEM {showBucketView ? "TO BUCKET" : ""}
+                </button>
+              )}
             </div>
           </div>
           
@@ -1318,7 +1572,7 @@ const InventoryApp: React.FC = () => {
                   currency={item.currency || currentCurrency} 
                   onMoveClick={showBucketView ? (itm) => handleEditBucketItemPath(itm as BucketItem) : (itm) => handleMoveToBucket(itm as Item)}
                   onEditClick={handleOpenEditItemModal} 
-                  onDeleteClick={handleDeleteItem} 
+                  onDeleteClick={handleTakeItem} 
                   onUpdateQuantity={handleUpdateQuantity}
                   onToggleTransfer={showBucketView ? handleToggleTransfer : undefined}
                 />

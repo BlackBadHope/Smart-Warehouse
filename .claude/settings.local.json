@@ -21,7 +21,10 @@
       "Bash(npx tsc:*)",
       "Bash(move selfTestService.ts selfTestService.backup.ts)",
       "Bash(move selfTestService.new.ts selfTestService.ts)",
-      "Bash(set JAVA_OPTS=-Xmx1024m)"
+      "Bash(set JAVA_OPTS=-Xmx1024m)",
+      "Bash(taskkill:*)",
+      "Bash(move \"android\\app\\build\\outputs\\apk\\debug\\app-debug.apk\" \"inventory-os-v2.6-p2p-update.apk\")",
+      "Bash(cp:*)"
     ]
   },
   "dangerouslySkipPermissions": true
