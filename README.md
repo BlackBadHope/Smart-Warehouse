@@ -8,7 +8,7 @@ Professional inventory management system with offline-first architecture and dev
 - **Multi-level organization**: Warehouses → Rooms → Shelves → Items
 - **Offline-first**: Works without internet connection
 - **Multi-currency support**: Global currency conversion
-- **Multi-language**: English, Russian, Spanish, and more
+- **Multi-language**: English, Ukrainian, Spanish, and more
 - **Item management**: Add, edit, delete with custom properties
 - **Search & filtering**: Advanced item search with tags
 - **Visual interface**: Clean, responsive UI

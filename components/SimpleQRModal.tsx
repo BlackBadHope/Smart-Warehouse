@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { QrCode, Copy, Check, Wifi, Camera, X } from 'lucide-react';
 import { ASCII_COLORS } from '../constants';
-import localSendStyleService from '../services/localSendStyleService';
+import nativeLocalSendService from '../services/nativeLocalSendService';
 import debugService from '../services/debugService';
 import QrScanner from 'qr-scanner';
 
@@ -50,16 +50,8 @@ const SimpleQRModal: React.FC<SimpleQRModalProps> = ({ show, onClose, onDeviceCo
       setIsLoading(true);
       debugService.info('SimpleQR: Creating connection QR...');
 
-      // Запускаем сервер если не запущен
-      if (!localSendStyleService.isRunning()) {
-        const started = await localSendStyleService.startServer();
-        if (!started) {
-          throw new Error('Failed to start server');
-        }
-      }
-
-      // Создаем простой QR код
-      const qrString = await localSendStyleService.createConnectionQR();
+      // Создаем простой QR код как в LocalSend
+      const qrString = await nativeLocalSendService.createConnectionQR();
       setQrData(qrString);
       setQrImageError(false);
       setMode('share');
@@ -126,8 +118,8 @@ const SimpleQRModal: React.FC<SimpleQRModalProps> = ({ show, onClose, onDeviceCo
         setQrScanner(null);
       }
 
-      // Подключаемся
-      const success = await localSendStyleService.connectByQR(qrDataString);
+      // Подключаемся как в LocalSend
+      const success = await nativeLocalSendService.connectByQR(qrDataString);
       
       if (success) {
         const qrData = JSON.parse(qrDataString);
@@ -169,7 +161,7 @@ const SimpleQRModal: React.FC<SimpleQRModalProps> = ({ show, onClose, onDeviceCo
       setIsLoading(true);
       debugService.info('SimpleQR: Connecting to device...');
 
-      const success = await localSendStyleService.connectByQR(textarea.value.trim());
+      const success = await nativeLocalSendService.connectByQR(textarea.value.trim());
       
       if (success) {
         const qrData = JSON.parse(textarea.value.trim());

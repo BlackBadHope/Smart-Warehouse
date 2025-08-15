@@ -95,9 +95,16 @@ class LocalSendStyleService {
     try {
       debugService.info('LocalSendStyle: Starting HTTP server simulation...');
       
-      // В реальном мире здесь был бы HTTP сервер
-      // Для веб-браузера симулируем через Service Worker
-      await this.registerServiceWorker();
+      // Проверяем, если мы в мобильном приложении (Capacitor)
+      const isCapacitor = !!(window as any).Capacitor;
+      
+      if (isCapacitor) {
+        // В мобильном приложении пропускаем Service Worker
+        debugService.info('LocalSendStyle: Mobile app detected, skipping Service Worker');
+      } else {
+        // В веб-браузере симулируем через Service Worker
+        await this.registerServiceWorker();
+      }
       
       // Запускаем mDNS-стиль discovery
       this.startDiscovery();
@@ -142,17 +149,16 @@ class LocalSendStyleService {
    * Создать QR код для подключения (ПРОСТОЙ - только IP + порт)
    */
   async createConnectionQR(): Promise<string> {
-    if (!this.isServerRunning) {
-      throw new Error('Server not running. Start server first.');
-    }
-
+    // Не требуем запущенный сервер - просто создаем QR с данными устройства
     const localIP = await this.getLocalIP();
     
     // СУПЕР ПРОСТОЙ QR - только необходимые данные
     const qrData = {
       ip: localIP,
       port: this.port,
-      name: this.deviceName
+      name: this.deviceName,
+      fingerprint: this.fingerprint,
+      timestamp: Date.now()
     };
 
     const qrString = JSON.stringify(qrData);
@@ -161,6 +167,9 @@ class LocalSendStyleService {
       port: this.port,
       dataSize: qrString.length
     });
+
+    // Автоматически помечаем устройство как доступное
+    this.isServerRunning = true;
 
     return qrString;
   }
