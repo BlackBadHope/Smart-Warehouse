@@ -32,6 +32,11 @@ const config: CapacitorConfig = {
     },
     Network: {
       enabled: true
+    },
+    Keyboard: {
+      resize: 'body',
+      style: 'DARK',
+      resizeOnFullScreen: true
     }
   },
   android: {

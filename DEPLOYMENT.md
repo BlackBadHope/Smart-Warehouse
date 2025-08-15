@@ -1,48 +1,48 @@
-# 🚀 Deployment Guide - Inventory OS Home Edition
+# 🚀 Deployment Guide - Inventory OS
 
 ## 📋 Overview
 
-Inventory OS Home Edition может быть развернут на различных платформах:
-- **PWA** - веб-приложение (работает везде)
-- **Android** - через Capacitor
-- **iOS** - через Capacitor  
-- **Windows/macOS/Linux** - через Electron
-- **Docker** - контейнеризованное развертывание
-- **Server** - Node.js сервер
+Inventory OS can be deployed across multiple platforms:
+- **PWA** - Progressive Web App (works everywhere)
+- **Android** - via Capacitor
+- **iOS** - via Capacitor  
+- **Windows/macOS/Linux** - via Electron
+- **Docker** - containerized deployment
+- **Server** - Node.js server
 
-## 🌐 PWA Deployment (Рекомендуется)
+## 🌐 PWA Deployment (Recommended)
 
-### Vercel (Бесплатно)
+### Vercel (Free)
 ```bash
-# 1. Установить Vercel CLI
+# 1. Install Vercel CLI
 npm i -g vercel
 
-# 2. Деплоймент
+# 2. Deploy
 npm run build
 vercel --prod
 ```
 
-### Netlify (Бесплатно)
+### Netlify (Free)
 ```bash
-# 1. Установить Netlify CLI
+# 1. Install Netlify CLI
 npm i -g netlify-cli
 
-# 2. Деплоймент
+# 2. Deploy
 npm run build
 netlify deploy --prod --dir=dist
 ```
 
 ### GitHub Pages
 ```bash
-# 1. Установить gh-pages
+# 1. Install gh-pages
 npm i -D gh-pages
 
-# 2. Добавить в package.json
+# 2. Add to package.json
 "scripts": {
   "deploy": "npm run build && gh-pages -d dist"
 }
 
-# 3. Деплоймент
+# 3. Deploy
 npm run deploy
 ```
 
@@ -51,41 +51,41 @@ npm run deploy
 ### Android (Google Play)
 
 ```bash
-# 1. Установить Capacitor
+# 1. Install Capacitor
 npm install @capacitor/core @capacitor/cli @capacitor/android
 
-# 2. Инициализация
+# 2. Initialize
 npx cap init
 
-# 3. Добавить Android платформу
+# 3. Add Android platform
 npx cap add android
 
-# 4. Сборка
+# 4. Build
 npm run build
 npx cap copy android
 npx cap sync android
 
-# 5. Открыть в Android Studio
+# 5. Open in Android Studio
 npx cap open android
 ```
 
-**Настройка для публикации:**
-1. Создать ключ подписи: `keytool -genkey -v -keystore my-release-key.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias`
-2. Настроить `android/app/build.gradle`
-3. Собрать APK: `./gradlew assembleRelease`
+**Release configuration:**
+1. Create signing key: `keytool -genkey -v -keystore my-release-key.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias`
+2. Configure `android/app/build.gradle`
+3. Build APK: `./gradlew assembleRelease`
 
 ### iOS (App Store)
 
 ```bash
-# 1. Добавить iOS платформу
+# 1. Add iOS platform
 npx cap add ios
 
-# 2. Сборка
+# 2. Build
 npm run build
 npx cap copy ios
 npx cap sync ios
 
-# 3. Открыть в Xcode
+# 3. Open in Xcode
 npx cap open ios
 ```
 
@@ -94,67 +94,67 @@ npx cap open ios
 ### Electron
 
 ```bash
-# 1. Установить Electron
+# 1. Install Electron
 npm install electron electron-builder --save-dev
 
-# 2. Добавить в package.json
+# 2. Add to package.json
 "scripts": {
   "electron": "electron electron.config.js",
   "electron:build": "npm run build && electron-builder"
 }
 
-# 3. Сборка
+# 3. Build
 npm run build
 npm run electron:build
 ```
 
 ### Windows Installer
 ```bash
-# Создать .exe установщик
+# Create .exe installer
 electron-builder --win
 ```
 
 ### macOS App
 ```bash
-# Создать .dmg для macOS
+# Create .dmg for macOS
 electron-builder --mac
 ```
 
 ### Linux AppImage
 ```bash
-# Создать AppImage для Linux
+# Create AppImage for Linux
 electron-builder --linux
 ```
 
 ## 🐳 Docker Deployment
 
-### Локальный Docker
+### Local Docker
 ```bash
-# 1. Собрать образ
-docker build -f docker/Dockerfile -t inventory-os-home .
+# 1. Build image
+docker build -f docker/Dockerfile -t inventory-os .
 
-# 2. Запустить
-docker run -p 3001:3001 -p 8080:8080 -v $(pwd)/data:/app/data inventory-os-home
+# 2. Run
+docker run -p 3001:3001 -p 8080:8080 -v $(pwd)/data:/app/data inventory-os
 ```
 
 ### Docker Compose
 ```bash
-# 1. Запуск всех сервисов
+# 1. Start all services
 docker-compose -f docker/docker-compose.yml up -d
 
-# 2. Остановка
+# 2. Stop
 docker-compose -f docker/docker-compose.yml down
 
-# 3. С backup и proxy
+# 3. With backup and proxy
 docker-compose -f docker/docker-compose.yml --profile backup --profile proxy up -d
 ```
 
-### Docker Swarm (Кластер)
+### Docker Swarm (Cluster)
 ```bash
-# 1. Инициализация Swarm
+# 1. Initialize Swarm
 docker swarm init
 
-# 2. Деплоймент стека
+# 2. Deploy stack
 docker stack deploy -c docker/docker-compose.yml inventory
 ```
 

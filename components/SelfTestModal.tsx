@@ -90,6 +90,8 @@ const SelfTestModal: React.FC<SelfTestModalProps> = ({ show, onClose }) => {
 
       const results = await selfTestService.runTestModule(moduleId);
       
+      console.log('Module test results:', moduleId, results.length);
+      
       clearInterval(progressInterval);
       setProgress(100);
       setTestResults(results);

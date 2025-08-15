@@ -503,9 +503,7 @@ class SelfTestService {
     this.testResults = [];
     
     try {
-      const networkTests = new NetworkTestSuite();
-      const results = await networkTests.runTests();
-      this.testResults.push(...results);
+      await this.runP2PTests();
       
       return this.testResults;
     } finally {

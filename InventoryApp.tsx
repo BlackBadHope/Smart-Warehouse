@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download, Bug, TestTube, Wifi, MessageCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, Home, Box, List, Info, ShoppingCart, MoveUpRight, Archive, UserCircle, BrainCircuit, Image as ImageIcon, Download, Bug, TestTube, Wifi, MessageCircle, QrCode } from 'lucide-react';
 
 import { Warehouse, Room, Shelf, Item, ItemCore, BucketItem, UserProfile } from './types';
 import { ASCII_COLORS } from './constants';
@@ -19,6 +19,8 @@ import CurrencySelector from './components/CurrencySelector';
 import UserSwitcher from './components/UserSwitcher';
 import QRSyncModal from './components/QRSyncModal';
 import NetworkManager from './components/NetworkManager';
+import SimpleNetworkStatus from './components/SimpleNetworkStatus';
+import SimpleNetworkPanel from './components/SimpleNetworkPanel';
 import SocialChat from './components/SocialChat';
 import SelfTestModal from './components/SelfTestModal';
 import WelcomeScreen from './components/WelcomeScreen';
@@ -27,6 +29,10 @@ import TrashModal from './components/TrashModal';
 import SyncStatusIndicator from './components/SyncStatusIndicator';
 import UserManagementModal from './components/UserManagementModal';
 import P2PTestRunner from './components/P2PTestRunner';
+import SimpleQRModal from './components/SimpleQRModal';
+import SettingsMenu from './components/SettingsMenu';
+import ActionFeedback from './components/ActionFeedback';
+import NavigationBreadcrumbs from './components/NavigationBreadcrumbs';
 import localizationService from './services/localizationService';
 import debugService from './services/debugService';
 import userService from './services/userService';
@@ -36,6 +42,7 @@ import deviceIdentityService from './services/deviceIdentityService';
 import rolesPermissionService from './services/rolesPermissionService';
 import trashService from './services/trashService';
 import syncBatchService from './services/syncBatchService';
+import simpleP2PService from './services/simpleP2PService';
 
 const InventoryApp: React.FC = () => {
   const [currentCurrency, setCurrentCurrency] = useState<string>(
@@ -98,8 +105,11 @@ const InventoryApp: React.FC = () => {
   const [showWelcomeScreen, setShowWelcomeScreen] = useState(false);
   const [showCreateEntity, setShowCreateEntity] = useState(false);
   const [showTrash, setShowTrash] = useState(false);
+  const [showQRConnection, setShowQRConnection] = useState(false);
+  const [showLocalSharing, setShowLocalSharing] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
   const [showP2PTest, setShowP2PTest] = useState(false);
+  const [showSimpleNetworkPanel, setShowSimpleNetworkPanel] = useState(false);
   const [createEntityConfig, setCreateEntityConfig] = useState<{
     type: 'warehouse' | 'room' | 'shelf' | 'item';
     title: string;
@@ -113,6 +123,17 @@ const InventoryApp: React.FC = () => {
   const [sortBy, setSortBy] = useState<'name' | 'quantity' | 'priority' | 'expiryDate' | 'createdAt'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
+  // UX Feedback states
+  const [actionFeedback, setActionFeedback] = useState<{
+    type: 'loading' | 'success' | 'warning' | 'tip';
+    message: string;
+    show: boolean;
+  }>({
+    type: 'tip',
+    message: '',
+    show: false
+  });
+
   const showNotification = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     if (type === 'success') setSuccessMessage(message);
     else setErrorMessage(message);
@@ -122,10 +143,40 @@ const InventoryApp: React.FC = () => {
     }, 4000);
   }, []);
 
+  const showActionFeedback = useCallback((message: string, type: 'loading' | 'success' | 'warning' | 'tip' = 'tip', duration = 3000) => {
+    setActionFeedback({ type, message, show: true });
+    if (type !== 'loading') {
+      setTimeout(() => {
+        setActionFeedback(prev => ({ ...prev, show: false }));
+      }, duration);
+    }
+  }, []);
+
+  const hideActionFeedback = useCallback(() => {
+    setActionFeedback(prev => ({ ...prev, show: false }));
+  }, []);
+
   // Initialize and load data
   useEffect(() => {
     debugService.info('Initializing Inventory OS');
     localStorageService.initializeLocalStorage();
+    showActionFeedback('Welcome to Inventory OS! 📦 Everything simplified.', 'tip', 4000);
+    
+    // Initialize Simple P2P (non-blocking, much simpler!)
+    const initializeSimpleP2P = async () => {
+      try {
+        debugService.info('Initializing Simple P2P system...');
+        await simpleP2PService.initialize();
+        debugService.info('Simple P2P ready! Open another tab to test.');
+        showActionFeedback('P2P Network ready! 🌐 Open another tab to test.', 'success', 3000);
+      } catch (error) {
+        debugService.warning('Simple P2P initialization failed - no big deal!', error);
+        showActionFeedback('P2P offline mode - working locally 🏠', 'tip', 2000);
+      }
+    };
+    
+    // Start Simple P2P in background (much faster)
+    setTimeout(() => initializeSimpleP2P(), 1000);
     
     // Check if this is first time user
     if (deviceIdentityService.needsWelcomeScreen()) {
@@ -1068,29 +1119,39 @@ const InventoryApp: React.FC = () => {
       )}
 
       <header className="mb-6 border-b-2 pb-4 border-dashed border-yellow-700">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <h1 className={`${ASCII_COLORS.accent} text-xl sm:text-2xl lg:text-3xl font-bold`}>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 lg:gap-4">
+          <div className="flex items-center gap-2 lg:gap-4 min-w-0 flex-shrink">
+            <h1 className={`${ASCII_COLORS.accent} text-sm sm:text-xl lg:text-3xl font-bold truncate`}>
               📦 INVENTORY OS v2.6
             </h1>
-            <SyncStatusIndicator />
+            <SimpleNetworkStatus onClick={() => setShowSimpleNetworkPanel(true)} />
           </div>
           
-          {/* Main Action Buttons */}
-          <div className="flex items-center justify-between lg:justify-end gap-2 flex-wrap">
-            {/* Primary Actions */}
-            <div className="flex items-center gap-1">
+          {/* SIMPLIFIED Header - Only Essential Actions */}
+          <div className="flex items-center justify-between lg:justify-end gap-1 sm:gap-2 lg:gap-4 flex-shrink-0">
+            {/* Essential User Actions */}
+            <div className="flex items-center gap-1 sm:gap-2 lg:gap-3">
               <UserSwitcher onUserChange={() => {
                 loadWarehouses();
                 loadBucketItems();
                 themeService.onUserChanged();
               }} />
               
+              {/* Storage/Bucket Toggle */}
               <button 
                 onClick={() => {
                   const newBucketView = !showBucketView;
                   setShowBucketView(newBucketView);
-                  // Force immediate data refresh when switching views
+                  
+                  // Show feedback
+                  showActionFeedback(
+                    newBucketView ? 
+                      `Switched to Bucket view 🛒 ${bucketItems.length} items waiting` : 
+                      'Switched to Storage view 🏠 Browse your inventory',
+                    'success',
+                    2500
+                  );
+                  
                   setTimeout(() => {
                     if (newBucketView) {
                       loadBucketItems();
@@ -1099,147 +1160,96 @@ const InventoryApp: React.FC = () => {
                     }
                   }, 0);
                 }} 
-                className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} relative`} 
-                title={showBucketView ? "View Storage" : "View Bucket"}
+                className={`${ASCII_COLORS.buttonBg} p-2 sm:p-3 rounded-lg ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} relative font-semibold transition-all`} 
+                title={showBucketView ? "Switch to Storage View" : "Switch to Bucket View"}
               >
-                {showBucketView ? <Archive size={18} /> : <ShoppingCart size={18} />}
+                <div className="flex items-center gap-2">
+                  {showBucketView ? (
+                    <>
+                      <Archive size={16} className="sm:w-5 sm:h-5" />
+                      <span className="hidden sm:inline">Storage</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart size={16} className="sm:w-5 sm:h-5" />
+                      <span className="hidden sm:inline">Bucket</span>
+                    </>
+                  )}
+                </div>
                 {bucketItems.length > 0 && !showBucketView && (
-                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold">
                     {bucketItems.length}
                   </span>
                 )}
               </button>
 
+              {/* Trash - Important for lifecycle management */}
               <button 
                 onClick={() => setShowTrash(true)} 
-                className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                className={`${ASCII_COLORS.buttonBg} p-2 sm:p-3 rounded-lg ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} transition-all`} 
                 title="Trash & Disposal Management"
               >
-                <Trash2 size={18} className="text-red-400"/>
+                <Trash2 size={16} className="sm:w-5 sm:h-5 text-red-400"/>
               </button>
 
+              {/* AI Assistant - Key feature */}
               <button 
                 onClick={() => setShowChat(true)} 
-                className={`${ASCII_COLORS.buttonBg} p-2 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
+                className={`${ASCII_COLORS.buttonBg} p-2 sm:p-3 rounded-lg ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} transition-all`} 
                 title="AI Assistant SMARTIE"
               >
-                <BrainCircuit size={18} className="text-purple-400"/>
+                <BrainCircuit size={16} className="sm:w-5 sm:h-5 text-purple-400"/>
               </button>
             </div>
 
-            {/* Secondary Actions Group */}
-            <div className="flex items-center gap-1">
-              
-
-              <button 
-                onClick={() => setShowQRSync(true)} 
-                className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-                title="Device Sync"
-              >
-                <Download size={16}/>
-              </button>
-
-              <button 
-                onClick={() => setShowVisual(true)} 
-                className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-                title="Visual View"
-              >
-                <ImageIcon size={16}/>
-              </button>
-
-              <button 
-                onClick={() => setShowNetworkManager(true)} 
-                className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-                title="Network Manager"
-              >
-                <Wifi size={16} className="text-blue-400"/>
-              </button>
-
-              {selectedWarehouseId && (
-                <button 
-                  onClick={() => setShowSocialChat(true)} 
-                  className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border} relative`} 
-                  title="Warehouse Chat"
-                >
-                  <MessageCircle size={16} className="text-green-400"/>
-                  {/* TODO: Add unread message indicator */}
-                </button>
-              )}
-            </div>
-
-            {/* Utility Group */}
-            <div className="flex items-center gap-1">
+            {/* Quick Access */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              {/* Language & Currency */}
               <LanguageSwitcher />
               <CurrencySelector 
                 currentCurrency={currentCurrency}
                 onCurrencyChange={handleCurrencyChange}
               />
+              
+              {/* Everything else goes into Settings */}
+              <SettingsMenu
+                onShowNetworkManager={() => setShowSimpleNetworkPanel(true)}
+                onShowQRConnection={() => setShowQRConnection(true)}
+                onShowQRSync={() => setShowQRSync(true)}
+                onShowVisual={() => setShowVisual(true)}
+                onShowSocialChat={() => setShowSocialChat(true)}
+                onShowUserManagement={() => setShowUserManagement(true)}
+                onShowImportExport={() => setShowImportExport(true)}
+                onShowDebug={() => setShowDebug(true)}
+                onShowSelfTest={() => setShowSelfTest(true)}
+                onShowP2PTest={() => setShowP2PTest(true)}
+                onShowInfo={() => setShowInfoModal(true)}
+                selectedWarehouseId={selectedWarehouseId}
+                selectedWarehouseName={selectedWarehouseName}
+              />
             </div>
-
-            {/* Admin Only */}
-            {(rolesPermissionService.hasPermission('user.assign-roles', selectedWarehouseId || undefined) || userService.canExportData()) && (
-              <div className="flex items-center gap-1">
-                {rolesPermissionService.hasPermission('user.assign-roles', selectedWarehouseId || undefined) && (
-                  <button 
-                    onClick={() => setShowUserManagement(true)} 
-                    className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-                    title="User Management"
-                  >
-                    <Users size={16} className="text-blue-400"/>
-                  </button>
-                )}
-                
-                {userService.canExportData() && (
-                  <>
-                    <button 
-                      onClick={() => setShowImportExport(true)} 
-                      className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-                      title="Import/Export (Master)"
-                    >
-                      <Archive size={16} className="text-orange-400"/>
-                    </button>
-                    
-                    <button 
-                      onClick={() => setShowDebug(true)} 
-                      className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-                      title="Debug Log"
-                    >
-                      <Bug size={16} className="text-orange-400"/>
-                    </button>
-                  </>
-                )}
-                
-                <button 
-                  onClick={() => setShowSelfTest(true)} 
-                  className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-                  title="Self-Test Suite"
-                >
-                  <TestTube size={16} className="text-purple-400"/>
-                </button>
-                
-                <button 
-                  onClick={() => setShowP2PTest(true)} 
-                  className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-                  title="P2P Family Scenarios Test"
-                >
-                  <Wifi size={16} className="text-cyan-400"/>
-                </button>
-              </div>
-            )}
-
-            {/* Info - Always Last */}
-            <button 
-              onClick={() => setShowInfoModal(true)} 
-              className={`${ASCII_COLORS.buttonBg} p-1.5 rounded-md ${ASCII_COLORS.buttonHoverBg} border ${ASCII_COLORS.border}`} 
-              title="Info"
-            >
-              <Info size={16}/>
-            </button>
           </div>
         </div>
       </header>
       
       <main>
+        {/* Navigation Breadcrumbs */}
+        <NavigationBreadcrumbs
+          showBucketView={showBucketView}
+          selectedWarehouseName={selectedWarehouseName}
+          selectedRoomName={selectedRoomName}
+          selectedShelfName={selectedShelfName}
+          onNavigateToWarehouse={() => {
+            setSelectedRoomId(null);
+            setSelectedShelfId(null);
+            showActionFeedback('Navigated to warehouse level', 'tip', 2000);
+          }}
+          onNavigateToRoom={() => {
+            setSelectedShelfId(null);
+            showActionFeedback('Navigated to room level', 'tip', 2000);
+          }}
+        />
+
         <ImportExportModal 
           show={showImportExport} 
           onClose={() => setShowImportExport(false)} 
@@ -1249,6 +1259,13 @@ const InventoryApp: React.FC = () => {
         <DebugModal show={showDebug} onClose={() => setShowDebug(false)} />
         <QRSyncModal show={showQRSync} onClose={() => setShowQRSync(false)} />
         <NetworkManager show={showNetworkManager} onClose={() => setShowNetworkManager(false)} />
+        <SimpleQRModal 
+          show={showQRConnection} 
+          onClose={() => setShowQRConnection(false)}
+          onDeviceConnected={(deviceInfo) => {
+            showNotification(`Подключено к устройству: ${deviceInfo.name} (${deviceInfo.ip})`, 'success');
+          }}
+        />
         {selectedWarehouseId && selectedWarehouseName && (
           <SocialChat 
             warehouseId={selectedWarehouseId} 
@@ -1258,6 +1275,7 @@ const InventoryApp: React.FC = () => {
           />
         )}
         <SelfTestModal show={showSelfTest} onClose={() => setShowSelfTest(false)} />
+        <SimpleNetworkPanel show={showSimpleNetworkPanel} onClose={() => setShowSimpleNetworkPanel(false)} />
         
         {/* P2P Test Runner Modal */}
         {showP2PTest && (
@@ -1597,6 +1615,13 @@ const InventoryApp: React.FC = () => {
           Made with <span className={`${ASCII_COLORS.accent}`}>Claude</span>, with love ❤️
         </p>
       </footer>
+
+      {/* Action Feedback */}
+      <ActionFeedback
+        type={actionFeedback.type}
+        message={actionFeedback.message}
+        show={actionFeedback.show}
+      />
     </div>
   );
 }

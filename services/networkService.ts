@@ -1,6 +1,8 @@
 import { NetworkDevice, NetworkMessage, NetworkState, MessageType, SyncData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import debugService from './debugService';
+import webrtcService from './webrtcService';
+import p2pSyncService from './p2pSyncService';
 
 class NetworkService {
   private state: NetworkState;
@@ -10,6 +12,8 @@ class NetworkService {
   private isInitialized = false;
   private websocket?: WebSocket;
   private reconnectInterval?: number;
+  private reconnectAttempts = 0;
+  private maxReconnectAttempts = 3;
 
   constructor() {
     this.state = {
@@ -28,23 +32,32 @@ class NetworkService {
       id: deviceId,
       name: localStorage.getItem('inventory-device-name') || `Inventory-${deviceId.slice(0, 8)}`,
       ipAddress: '', // Will be determined at runtime
-      port: 8080, // Default port
+      port: 3001, // Default port
       lastSeen: new Date(),
       capabilities: ['sync', 'discovery', 'encryption']
     };
   }
 
   async initialize(): Promise<void> {
-    if (this.isInitialized) return;
+    if (this.isInitialized) {
+      debugService.info('NetworkService: Already initialized, skipping');
+      return;
+    }
 
     try {
       debugService.info('NetworkService: Initializing P2P network');
+      
+      // Clean up any existing connections
+      this.cleanup();
       
       // Try to get local IP address
       await this.detectLocalIP();
       
       // Connect to WebSocket server for real-time sync
       await this.connectToWebSocketServer();
+      
+      // Initialize WebRTC P2P system
+      await this.initializeP2P();
       
       // Start network discovery
       this.startDiscovery();
@@ -64,6 +77,138 @@ class NetworkService {
     } catch (error) {
       debugService.error('NetworkService: Failed to initialize', error);
       throw error;
+    }
+  }
+
+  private cleanup(): void {
+    // Clear intervals
+    this.clearReconnectInterval();
+    if (this.discoveryInterval) {
+      clearInterval(this.discoveryInterval);
+      this.discoveryInterval = undefined;
+    }
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = undefined;
+    }
+    
+    // Close existing WebSocket
+    if (this.websocket) {
+      this.websocket.onopen = null;
+      this.websocket.onclose = null;
+      this.websocket.onerror = null;
+      this.websocket.onmessage = null;
+      if (this.websocket.readyState === WebSocket.OPEN) {
+        this.websocket.close();
+      }
+      this.websocket = undefined;
+    }
+    
+    // Reset reconnect attempts
+    this.reconnectAttempts = 0;
+  }
+
+  private async initializeP2P(): Promise<void> {
+    try {
+      debugService.info('NetworkService: Initializing WebRTC P2P system');
+      debugService.info('NetworkService: Local device info', {
+        id: this.state.localDevice.id,
+        name: this.state.localDevice.name,
+        ipAddress: this.state.localDevice.ipAddress
+      });
+      
+      // Initialize WebRTC service with our device info
+      await webrtcService.initialize(this.state.localDevice);
+      
+      // Setup P2P event listeners
+      this.setupP2PEventListeners();
+      
+      debugService.info('NetworkService: WebRTC P2P system initialized successfully');
+      
+      // Dispatch event to notify UI that P2P is ready
+      this.dispatchNetworkEvent('p2p_initialized', { isInitialized: true });
+      
+    } catch (error) {
+      debugService.error('NetworkService: Failed to initialize WebRTC P2P - DETAILED ERROR:', {
+        error: error.message,
+        stack: error.stack,
+        localDevice: this.state.localDevice
+      });
+      
+      // Dispatch event to notify UI of P2P failure
+      this.dispatchNetworkEvent('p2p_initialization_failed', { 
+        error: error.message,
+        canContinue: true 
+      });
+      
+      // Continue without P2P - not critical for basic functionality
+      debugService.warning('NetworkService: Continuing without P2P functionality');
+    }
+  }
+
+  private setupP2PEventListeners(): void {
+    // Listen for peer connections
+    document.addEventListener('peer-connected', (event: any) => {
+      const { deviceId } = event.detail;
+      debugService.info('NetworkService: P2P peer connected', deviceId);
+      
+      // Update discovered devices
+      this.updateDiscoveredDevice(deviceId, 'connected');
+      
+      // Dispatch network event
+      this.dispatchNetworkEvent('device_connected', { deviceId });
+    });
+
+    document.addEventListener('peer-disconnected', (event: any) => {
+      const { deviceId } = event.detail;
+      debugService.info('NetworkService: P2P peer disconnected', deviceId);
+      
+      // Update discovered devices
+      this.updateDiscoveredDevice(deviceId, 'disconnected');
+      
+      // Dispatch network event
+      this.dispatchNetworkEvent('device_disconnected', { deviceId });
+    });
+
+    // Listen for sync events
+    document.addEventListener('inventory-sync-received', (event: any) => {
+      const { senderId, data } = event.detail;
+      debugService.info('NetworkService: Inventory sync received from peer', senderId);
+      
+      // Dispatch to app
+      this.dispatchNetworkEvent('sync_received', { senderId, data });
+    });
+
+    document.addEventListener('sync-conflicts-detected', (event: any) => {
+      const { senderId, conflicts } = event.detail;
+      debugService.warning('NetworkService: Sync conflicts detected', { senderId, conflictsCount: conflicts.length });
+      
+      // Dispatch to app for UI handling
+      this.dispatchNetworkEvent('sync_conflicts', { senderId, conflicts });
+    });
+  }
+
+  private updateDiscoveredDevice(deviceId: string, status: 'connected' | 'disconnected'): void {
+    const existingDevice = this.state.discoveredDevices.find(d => d.id === deviceId);
+    
+    if (status === 'connected') {
+      if (!existingDevice) {
+        // Add new device (we'll get more info from P2P discovery)
+        const device: NetworkDevice = {
+          id: deviceId,
+          name: `Device-${deviceId.slice(0, 8)}`,
+          ipAddress: 'P2P',
+          port: 0,
+          lastSeen: new Date(),
+          capabilities: ['p2p', 'sync']
+        };
+        this.state.discoveredDevices.push(device);
+      } else {
+        existingDevice.lastSeen = new Date();
+      }
+    } else {
+      // Remove disconnected device
+      this.state.discoveredDevices = this.state.discoveredDevices.filter(d => d.id !== deviceId);
     }
   }
 
@@ -92,76 +237,101 @@ class NetworkService {
           }
         };
         
-        // Fallback after timeout
+        // Fallback after timeout - try to get a real IP, not localhost
         setTimeout(() => {
-          this.state.localDevice.ipAddress = '127.0.0.1';
+          this.state.localDevice.ipAddress = this.getNetworkIP() || 'unknown';
           pc.close();
           resolve();
         }, 2000);
       });
     } catch (error) {
-      this.state.localDevice.ipAddress = '127.0.0.1';
-      debugService.warning('NetworkService: Could not detect local IP, using fallback');
+      this.state.localDevice.ipAddress = this.getNetworkIP() || 'unknown';
+      debugService.warning('NetworkService: Could not detect local IP via WebRTC, using alternative method');
     }
   }
 
   private async connectToWebSocketServer(): Promise<void> {
+    // Skip WebSocket on mobile devices - they can't run servers anyway
+    if (this.isMobileDevice()) {
+      debugService.info('NetworkService: Mobile device detected - using P2P-only mode');
+      // On mobile, we'll still have P2P available through WebRTC
+      // Just no WebSocket server connectivity
+      return; // Don't throw error, just skip WebSocket
+    }
+    
     try {
-      // Try connecting to localhost server first
-      const wsUrl = `ws://localhost:8080`;
+      // Use different port to avoid conflicts  
+      const wsUrl = `ws://localhost:3001`;
       this.websocket = new WebSocket(wsUrl);
       
-      this.websocket.onopen = () => {
-        debugService.info('NetworkService: Connected to WebSocket server');
-        this.clearReconnectInterval();
-        
-        // Send initial device announcement
-        this.websocket?.send(JSON.stringify({
-          type: 'device_announce',
-          device: this.state.localDevice
-        }));
-      };
-      
-      this.websocket.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          this.handleWebSocketMessage(data);
-        } catch (error) {
-          debugService.error('NetworkService: Error parsing WebSocket message', error);
-        }
-      };
-      
-      this.websocket.onclose = () => {
-        debugService.warning('NetworkService: WebSocket connection closed, attempting reconnect');
-        this.scheduleReconnect();
-      };
-      
-      this.websocket.onerror = (error) => {
-        debugService.error('NetworkService: WebSocket error', error);
-      };
-      
-      // Wait for connection or timeout
+      // Wait for connection or timeout with proper event handling
       await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
+          this.websocket?.close();
           reject(new Error('WebSocket connection timeout'));
         }, 5000);
         
-        this.websocket!.onopen = () => {
+        const cleanup = () => {
           clearTimeout(timeout);
+        };
+        
+        this.websocket!.onopen = () => {
+          cleanup();
           debugService.info('NetworkService: Connected to WebSocket server');
           this.clearReconnectInterval();
+          this.reconnectAttempts = 0;
+          
+          // Send initial device announcement
+          this.websocket?.send(JSON.stringify({
+            type: 'device_announce',
+            device: this.state.localDevice
+          }));
+          
+          // Set up persistent event handlers after successful connection
+          this.setupWebSocketHandlers();
           resolve(void 0);
         };
         
         this.websocket!.onerror = () => {
-          clearTimeout(timeout);
+          cleanup();
           reject(new Error('WebSocket connection failed'));
+        };
+        
+        this.websocket!.onclose = () => {
+          cleanup();
+          reject(new Error('WebSocket connection closed during setup'));
         };
       });
       
     } catch (error) {
       debugService.warning('NetworkService: Could not connect to WebSocket server, continuing with P2P only mode');
     }
+  }
+
+  private setupWebSocketHandlers(): void {
+    if (!this.websocket) return;
+    
+    this.websocket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        this.handleWebSocketMessage(data);
+      } catch (error) {
+        debugService.error('NetworkService: Error parsing WebSocket message', error);
+      }
+    };
+    
+    this.websocket.onclose = () => {
+      if (this.reconnectAttempts < this.maxReconnectAttempts) {
+        debugService.warning(`NetworkService: WebSocket connection closed, attempting reconnect (${this.reconnectAttempts + 1}/${this.maxReconnectAttempts})`);
+        this.scheduleReconnect();
+      } else {
+        debugService.info('NetworkService: Max reconnect attempts reached, switching to P2P-only mode');
+      }
+    };
+    
+    this.websocket.onerror = (error) => {
+      debugService.error('NetworkService: WebSocket error', error);
+    };
   }
 
   private handleWebSocketMessage(data: any): void {
@@ -186,13 +356,33 @@ class NetworkService {
   }
 
   private scheduleReconnect(): void {
+    // Don't schedule reconnect if we've already reached the limit
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      debugService.info('NetworkService: Max reconnect attempts reached, not scheduling more attempts');
+      return;
+    }
+    
     this.clearReconnectInterval();
-    this.reconnectInterval = window.setTimeout(() => {
-      if (!this.websocket || this.websocket.readyState === WebSocket.CLOSED) {
-        debugService.info('NetworkService: Attempting WebSocket reconnection');
-        this.connectToWebSocketServer();
+    this.reconnectAttempts++;
+    
+    const delay = Math.min(5000 * this.reconnectAttempts, 30000); // Exponential backoff, max 30s
+    debugService.info(`NetworkService: Scheduling reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms`);
+    
+    this.reconnectInterval = window.setTimeout(async () => {
+      if (this.reconnectAttempts < this.maxReconnectAttempts && 
+          (!this.websocket || this.websocket.readyState === WebSocket.CLOSED)) {
+        debugService.info(`NetworkService: Attempting WebSocket reconnection (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+        try {
+          await this.connectToWebSocketServer();
+        } catch (error) {
+          debugService.warning('NetworkService: Reconnection attempt failed', error);
+          // If this was our last attempt, don't schedule more
+          if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+            debugService.info('NetworkService: Max reconnect attempts reached, switching to P2P-only mode');
+          }
+        }
       }
-    }, 5000);
+    }, delay);
   }
 
   private clearReconnectInterval(): void {
@@ -200,6 +390,20 @@ class NetworkService {
       clearTimeout(this.reconnectInterval);
       this.reconnectInterval = undefined;
     }
+  }
+
+  // Public method to reset reconnection attempts (useful for manual retry)
+  resetReconnectAttempts(): void {
+    this.reconnectAttempts = 0;
+    this.clearReconnectInterval();
+    debugService.info('NetworkService: Reconnect attempts reset and intervals cleared');
+  }
+
+  // Public method to stop all reconnection attempts
+  stopReconnecting(): void {
+    this.reconnectAttempts = this.maxReconnectAttempts;
+    this.clearReconnectInterval();
+    debugService.info('NetworkService: All reconnection attempts stopped');
   }
 
   private startDiscovery(): void {
@@ -595,7 +799,7 @@ class NetworkService {
         // Try to establish WebSocket connection to this specific server
         if (serverDevice.capabilities.includes('websocket')) {
           try {
-            const wsUrl = `ws://${serverDevice.ipAddress}:8080`;
+            const wsUrl = `ws://${serverDevice.ipAddress}:3002`; // Different port for P2P WebSocket
             const serverWs = new WebSocket(wsUrl);
             
             serverWs.onopen = () => {
@@ -622,6 +826,100 @@ class NetworkService {
       debugService.error('NetworkService: Failed to connect to server', error);
       return false;
     }
+  }
+
+  // Public methods for status checking
+  getConnectionStatus(): { websocketConnected: boolean; attempts: number; maxAttempts: number; p2pMode: boolean } {
+    return {
+      websocketConnected: this.websocket?.readyState === WebSocket.OPEN,
+      attempts: this.reconnectAttempts,
+      maxAttempts: this.maxReconnectAttempts,
+      p2pMode: this.reconnectAttempts >= this.maxReconnectAttempts
+    };
+  }
+
+  // Helper methods
+  private isMobileDevice(): boolean {
+    const userAgent = navigator.userAgent.toLowerCase();
+    return /android|iphone|ipad|ipod|blackberry|windows phone|mobile/.test(userAgent);
+  }
+
+  private getNetworkIP(): string | null {
+    // Try to determine network IP from common network interfaces
+    // This is a fallback method when WebRTC fails
+    try {
+      // In browser environment, we can only get limited network info
+      // The best we can do is parse connection info if available
+      const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+      
+      if (connection) {
+        debugService.info('NetworkService: Connection info available', connection);
+      }
+      
+      // For browsers, we need to rely on external IP detection or server assistance
+      // Since we don't want external dependencies, we'll return null
+      // and let the WebRTC method handle IP detection
+      debugService.info('NetworkService: Browser IP detection limited, using WebRTC method');
+      return null;
+    } catch (error) {
+      debugService.warning('NetworkService: Could not determine network IP', error);
+      return null;
+    }
+  }
+
+  // Method to disable WebSocket for troubleshooting
+  disableWebSocket(): void {
+    this.stopReconnecting();
+    if (this.websocket) {
+      this.websocket.close();
+      this.websocket = undefined;
+    }
+    debugService.info('NetworkService: WebSocket manually disabled, using P2P-only mode');
+  }
+
+  // P2P Methods
+  connectToP2PDevice(deviceId: string): Promise<boolean> {
+    return webrtcService.connectToPeer(deviceId);
+  }
+
+  getP2PConnectedDevices(): string[] {
+    return webrtcService.getConnectedPeers();
+  }
+
+  getP2PStats(): { totalPeers: number; connectedPeers: number; isInitialized: boolean } {
+    return webrtcService.getStats();
+  }
+
+  syncWithDevice(deviceId: string): void {
+    p2pSyncService.requestFullSync(deviceId);
+  }
+
+  syncWithAllDevices(): void {
+    p2pSyncService.syncWithAllPeers();
+  }
+
+  getSyncStatus(): { 
+    connectedPeers: number; 
+    activeSyncs: number; 
+    lastSyncTimes: Record<string, number> 
+  } {
+    return p2pSyncService.getSyncStatus();
+  }
+
+  sendP2PMessage(deviceId: string, type: string, data: any): boolean {
+    return webrtcService.sendMessage(deviceId, {
+      type: type as any,
+      senderId: this.state.localDevice.id,
+      timestamp: Date.now(),
+      data
+    });
+  }
+
+  broadcastP2PMessage(type: string, data: any): void {
+    webrtcService.broadcastMessage({
+      type: type as any,
+      data
+    });
   }
 }
 

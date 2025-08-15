@@ -71,7 +71,7 @@ class NetworkSyncService {
   async connectToServer(serverUrl: string): Promise<boolean> {
     try {
       this.serverUrl = serverUrl;
-      const wsUrl = serverUrl.replace('http', 'ws').replace('3001', '8080');
+      const wsUrl = serverUrl.replace('http', 'ws').replace('3001', '3002');
       
       this.ws = new WebSocket(wsUrl);
 

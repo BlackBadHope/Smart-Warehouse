@@ -5,7 +5,7 @@
   "author": "BlackHope (Ilya Pikalov) <dirl2030@gmail.com>",
   "license": "PROPRIETARY",
   "homepage": "https://github.com/BlackBadHope/inventory-os",
-  "description": "Professional inventory management system for warehouses, rooms, and containers",
+  "description": "Offline-first inventory management system with P2P synchronization and role-based access control",
   "repository": {
     "type": "git",
     "url": "https://github.com/BlackBadHope/inventory-os.git"
@@ -16,11 +16,14 @@
   },
   "keywords": [
     "inventory",
-    "warehouse",
     "management",
-    "mobile",
-    "ukraine",
-    "claude-ai"
+    "offline",
+    "p2p",
+    "collaboration",
+    "privacy",
+    "react",
+    "typescript",
+    "pwa"
   ],
   "type": "module",
   "scripts": {
@@ -39,6 +42,7 @@
     "@capacitor/ios": "^7.4.2",
     "@vitejs/plugin-react": "^5.0.0",
     "lucide-react": "^0.514.0",
+    "qr-scanner": "^1.4.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "uuid": "^10.0.0"

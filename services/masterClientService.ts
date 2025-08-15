@@ -115,25 +115,23 @@ class MasterClientService {
       // Get local IP to determine network range
       const localIP = await this.getLocalIP();
       const networkBase = this.getNetworkBase(localIP);
-      console.log('Scanning network:', networkBase + '.x');
+      console.log('Scanning network:', networkBase + '.x (parallel scan with 30s timeout)');
       
-      // Scan common local network ranges for master servers
+      // Scan common local network ranges for master servers with timeout
       const possibleIPs = this.generateIPRange(networkBase);
       
-      for (const ip of possibleIPs) {
-        try {
-          const isReachable = await this.pingIP(ip);
-          if (isReachable) {
-            const isMaster = await this.checkIfMaster(ip);
-            if (isMaster) {
-              this.masterIP = ip;
-              console.log('Found master server at:', ip);
-              return true;
-            }
-          }
-        } catch (error) {
-          // Continue scanning
-        }
+      // Use Promise.race for overall timeout
+      const discoveryPromise = this.scanIPsInParallel(possibleIPs);
+      const timeoutPromise = new Promise<string | null>((_, reject) => 
+        setTimeout(() => reject(new Error('Discovery timeout after 30 seconds')), 30000)
+      );
+      
+      const foundIP = await Promise.race([discoveryPromise, timeoutPromise]);
+      
+      if (foundIP) {
+        this.masterIP = foundIP;
+        console.log('Found master server at:', foundIP);
+        return true;
       }
       
       console.log('No master server found in network');
@@ -142,6 +140,38 @@ class MasterClientService {
       console.error('Network discovery failed:', error);
       return false;
     }
+  }
+
+  private async scanIPsInParallel(ips: string[]): Promise<string | null> {
+    // Batch processing to avoid overwhelming the network
+    const batchSize = 10;
+    
+    for (let i = 0; i < ips.length; i += batchSize) {
+      const batch = ips.slice(i, i + batchSize);
+      const promises = batch.map(async (ip) => {
+        try {
+          const isReachable = await this.pingIP(ip);
+          if (isReachable) {
+            const isMaster = await this.checkIfMaster(ip);
+            if (isMaster) {
+              return ip;
+            }
+          }
+          return null;
+        } catch {
+          return null;
+        }
+      });
+      
+      const results = await Promise.allSettled(promises);
+      for (const result of results) {
+        if (result.status === 'fulfilled' && result.value) {
+          return result.value;
+        }
+      }
+    }
+    
+    return null;
   }
 
   async connectToMaster(): Promise<boolean> {
@@ -360,12 +390,22 @@ class MasterClientService {
 
   private generateIPRange(networkBase: string): string[] {
     const ips: string[] = [];
-    // Scan common host ranges (avoid broadcast addresses)
+    
+    // Priority IPs (common router/server addresses)
+    const priorityIPs = [1, 10, 100, 254, 2, 20, 50];
+    
+    // Add priority IPs first
+    for (const ip of priorityIPs) {
+      ips.push(`${networkBase}.${ip}`);
+    }
+    
+    // Add remaining IPs
     for (let i = 1; i < 255; i++) {
-      if (i !== 255) { // Skip broadcast
+      if (!priorityIPs.includes(i) && i !== 255) {
         ips.push(`${networkBase}.${i}`);
       }
     }
+    
     return ips;
   }
 
@@ -373,7 +413,7 @@ class MasterClientService {
     try {
       // Use a simple HTTP request to check if device is reachable
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1000);
+      const timeoutId = setTimeout(() => controller.abort(), 500); // Reduced from 1000ms to 500ms
       
       const response = await fetch(`http://${ip}:${this.serverPort}/ping`, {
         method: 'GET',
@@ -391,7 +431,7 @@ class MasterClientService {
   private async checkIfMaster(ip: string): Promise<boolean> {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      const timeoutId = setTimeout(() => controller.abort(), 1000); // Reduced from 2000ms to 1000ms
       
       const response = await fetch(`http://${ip}:${this.serverPort}/api/status`, {
         method: 'GET',

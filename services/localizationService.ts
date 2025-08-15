@@ -266,6 +266,78 @@ class LocalizationService {
       'en': 'Staging Area',
       'de': 'Bereitstellungsbereich',
       'pl': 'Obszar przygotowania'
+    },
+
+    // P2P Network & QR Connections
+    'p2p.title': {
+      'uk': 'QR P2P З\'єднання',
+      'ru': 'QR P2P Подключение',
+      'en': 'QR P2P Connection',
+      'de': 'QR P2P Verbindung',
+      'pl': 'Połączenie QR P2P'
+    },
+    'p2p.create_qr': {
+      'uk': 'Створити QR',
+      'ru': 'Создать QR',
+      'en': 'Create QR',
+      'de': 'QR erstellen',
+      'pl': 'Utwórz QR'
+    },
+    'p2p.connect': {
+      'uk': 'Підключитися',
+      'ru': 'Подключиться',
+      'en': 'Connect',
+      'de': 'Verbinden',
+      'pl': 'Połącz'
+    },
+    'p2p.copy_data': {
+      'uk': 'Копіювати дані',
+      'ru': 'Копировать данные',
+      'en': 'Copy Data',
+      'de': 'Daten kopieren',
+      'pl': 'Kopiuj dane'
+    },
+    'p2p.connect_device': {
+      'uk': 'Підключити пристрій',
+      'ru': 'Подключить устройство',
+      'en': 'Connect Device',
+      'de': 'Gerät verbinden',
+      'pl': 'Podłącz urządzenie'
+    },
+    'p2p.connection_desc': {
+      'uk': 'Підключення пристроїв через QR коди',
+      'ru': 'Подключение устройств через QR коды',
+      'en': 'Connect devices via QR codes',
+      'de': 'Geräte über QR-Codes verbinden',
+      'pl': 'Łączenie urządzeń przez kody QR'
+    },
+    'p2p.paste_prompt': {
+      'uk': 'Вставте сюди JSON дані з QR коду...',
+      'ru': 'Вставьте сюда JSON данные из QR кода...',
+      'en': 'Paste JSON data from QR code here...',
+      'de': 'JSON-Daten vom QR-Code hier einfügen...',
+      'pl': 'Wklej tutaj dane JSON z kodu QR...'
+    },
+    'p2p.creating': {
+      'uk': 'Створення...',
+      'ru': 'Создание...',
+      'en': 'Creating...',
+      'de': 'Erstellen...',
+      'pl': 'Tworzenie...'
+    },
+    'p2p.connecting': {
+      'uk': '🔄 Підключаємося...',
+      'ru': '🔄 Подключаемся...',
+      'en': '🔄 Connecting...',
+      'de': '🔄 Verbinden...',
+      'pl': '🔄 Łączenie...'
+    },
+    'p2p.copied': {
+      'uk': 'Скопійовано!',
+      'ru': 'Скопировано!',
+      'en': 'Copied!',
+      'de': 'Kopiert!',
+      'pl': 'Skopiowane!'
     }
   };
 

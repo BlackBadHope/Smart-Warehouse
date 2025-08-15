@@ -1,297 +1,287 @@
-# 📦 Inventory OS v2.6 - P2P Family Edition
+# 📦 Inventory OS v2.6 - Smart Inventory Management
 
-Современная система управления семейным инвентарем с P2P синхронизацией, ролевой системой доступа и продвинутой оффлайн безопасностью.
+Professional inventory management system with P2P synchronization, role-based access control, and advanced offline security.
 
-## 🎯 Для кого это приложение?
+## 🎯 What is Inventory OS?
 
-**Семьи** - главная целевая аудитория. Представьте семью из **Папы (Master)**, **Мамы (Admin)** и **Сына (Editor)**:
-- 👨 **Папа** контролирует всю систему, может добавлять пользователей и управлять доступом
-- 👩 **Мама** управляет пользователями, имеет доступ к приватным вещам, может менять роли
-- 👦 **Сын** может создавать/редактировать свои вещи, "брать в руки" (утилизировать) предметы
-- 👤 **Гости** имеют только чтение публичных предметов
+A modern **offline-first** inventory management system designed for personal use, small teams, and organizations. Whether you're managing household items, office equipment, or warehouse inventory - Inventory OS provides powerful tools while keeping your data private and secure.
 
-## 🚀 Ключевые особенности
+## 🚀 Key Features
 
-### 🔒 **Полная оффлайн безопасность**
-- ✅ **Без внешних серверов** - все данные хранятся локально
-- ✅ **Никаких API ключей для основных функций** - работает полностью автономно
-- ✅ **P2P синхронизация** - прямое соединение между устройствами семьи
-- ✅ **Шифрование данных** - локальное шифрование чувствительной информации
-- ✅ **Защищенные роли** - многоуровневая система доступа
+### 🔒 **Complete Offline Privacy**
+- ✅ **No external servers** - all data stored locally
+- ✅ **No API keys required** for core functionality
+- ✅ **P2P synchronization** - direct device-to-device connections
+- ✅ **End-to-end encryption** - secure data transmission
+- ✅ **Role-based security** - multi-level access control
 
-### 👨‍👩‍👦 **Семейная ролевая система**
+### 👥 **Multi-User Collaboration**
 ```
-Master (Папа)    → Полный контроль системы
-├── Admin (Мама) → Управление пользователями + приватный доступ  
-├── Editor (Сын) → Создание/редактирование своих вещей
-├── Viewer       → Просмотр всех данных
-└── Guest        → Только публичные данные
+Master      → Full system control
+├── Admin   → User management + advanced access
+├── Editor  → Create/edit own items + collaborative features
+├── Viewer  → Read-only access to all data
+└── Guest   → Limited access to public items only
 ```
 
-### 🗑️ **"Взять в руки" вместо удаления**
-- Никакие предметы не удаляются безвозвратно
-- Система **утилизации** с отслеживанием времени разложения
-- **Восстановление** из корзины в любой момент
-- **Напоминания** об утилизации с приоритетами
+### 🗑️ **Smart Item Lifecycle**
+- **No permanent deletion** - items move to recycle system
+- **Time-based disposal** tracking with automatic reminders
+- **Easy restoration** from trash at any time
+- **Priority-based** management (High/Normal/Low/Dispose)
 
-### 🔄 **Умная P2P синхронизация**  
-- **10-секундный debounce** - группировка изменений для эффективности
-- **Разрешение конфликтов** на основе ролей (Master > Admin > Editor)
-- **Оффлайн режим** - изменения сохраняются и синхронизируются позже
-- **Статус синхронизации** в реальном времени
+### 🔄 **Intelligent P2P Sync**
+- **10-second debounce** - efficient batch synchronization
+- **Conflict resolution** based on user roles and timestamps
+- **Offline mode** - changes saved locally and synced when online
+- **Real-time status** indicators
 
-## 📱 Установка и запуск
+## 📱 Installation
 
-### 🖥️ Веб-версия (Рекомендуется для начала)
+### 🖥️ Web Version (Recommended)
 ```bash
-# 1. Клонируйте репозиторий
-git clone https://github.com/BlackBadHope/Smart-Warehouse
-cd Smart-Warehouse
+# 1. Clone repository
+git clone https://github.com/BlackBadHope/inventory-os
+cd inventory-os
 
-# 2. Установите зависимости  
+# 2. Install dependencies
 npm install
 
-# 3. Запустите приложение
+# 3. Run application
 npm run dev
 
-# 4. Откройте http://localhost:5173
+# 4. Open http://localhost:5173
 ```
 
-### 📱 Android APK
-Скачайте готовый APK: [`inventory-os-v2.6-p2p-update.apk`](https://github.com/BlackBadHope/Smart-Warehouse/releases)
+### 📱 Mobile Apps
+- **Android APK**: Download from [releases page](https://github.com/BlackBadHope/inventory-os/releases)
+- **PWA**: Install directly from web browser ("Add to Home Screen")
+- **iOS**: Install as PWA through Safari
 
-### 💻 PWA (Прогрессивное веб-приложение)
-- Откройте приложение в браузере
-- Нажмите "Добавить на главный экран" 
-- Работает полностью оффлайн
+### 💻 Desktop Apps
+- **Windows/macOS/Linux**: Use web version or build Electron app
+- **Self-hosted**: Run local server for network access
 
-## 🏗️ Архитектура данных
+## 🏗️ Data Architecture
 
-### 📂 Иерархическая структура
+### 📂 Hierarchical Structure
 ```
-🏠 Warehouses (Склады)
-├── 🚪 Rooms (Комнаты) 
-│   ├── 📦 Containers (Контейнеры)
-│   │   └── 📱 Items (Предметы)
-│   └── 📚 Shelves (Полки)
-│       └── 📱 Items (Предметы)
-└── 🗑️ Trash (Корзина)
-    └── ♻️ Disposed Items (Утилизированные предметы)
-```
-
-### 🔐 Система приватности
-```
-Public Warehouse (Всем видно)
-├── Private Room (Только Master/Admin)
-│   ├── Private Container (Наследует приватность)
-│   └── Public Container (Явно публичный)
-└── Public Room (Всем видно)
-    └── Private Container (Только создатель + Master/Admin)
+🏠 Warehouses
+├── 🚪 Rooms
+│   ├── 📦 Containers/Shelves
+│   │   └── 📱 Items
+│   └── 🗑️ Trash
+│       └── ♻️ Disposed Items
 ```
 
-## 🧠 Логика работы приложения
-
-### 1️⃣ **Первый запуск (Welcome Screen)**
+### 🔐 Privacy System
 ```
-Новый пользователь → Ввод никнейма → Создание Device ID → Готово к работе
-```
-
-### 2️⃣ **Создание семейной структуры**
-```
-1. Папа создает склад "Семейный дом" (публичный)
-2. Папа создает приватную "Главную спальню"  
-3. Мама создает публичную "Кухню"
-4. Сын создает приватную "Комнату сына"
+Public Warehouse (Visible to all users)
+├── Private Room (Master/Admin only)
+│   ├── Private Container (Inherits privacy)
+│   └── Public Container (Explicitly public)
+└── Public Room (Visible to all)
+    └── Private Container (Creator + Master/Admin only)
 ```
 
-### 3️⃣ **Управление предметами**
-```
-Создание → Выбор публичный/приватный → Автор отслеживается
-Редактирование → Только свои предметы (кроме Master/Admin)
-"Взять в руки" → В корзину с причиной → Напоминание об утилизации
-Восстановление → Из корзины обратно в инвентарь
-```
+## 🧠 Application Logic
 
-### 4️⃣ **P2P синхронизация**
-```
-Изменение → Debounce 10 сек → Батч отправка → Разрешение конфликтов
-Оффлайн → Локальное сохранение → Онлайн → Автосинхронизация
-```
+### 1️⃣ **First Launch**
+- New user onboarding with username setup
+- Automatic device ID generation
+- Welcome screen with feature introduction
 
-## 🔒 Безопасность и приватность
+### 2️⃣ **Structure Creation**
+- Create warehouses with public/private visibility
+- Organize rooms and containers within warehouses
+- Set appropriate access levels for different areas
 
-### 🛡️ **Оффлайн безопасность**
-- **Локальное хранение**: Все данные в localStorage браузера
-- **Нет серверов**: Никаких внешних API для основных функций
-- **P2P шифрование**: Прямая передача между устройствами
-- **Роли и права**: Многоуровневая система доступа
+### 3️⃣ **Item Management**
+- Add items with detailed metadata (category, expiry, price, etc.)
+- Choose public/private visibility per item
+- Track ownership and modification history
 
-### 🔐 **Защита данных**
-- **Device ID**: Уникальный идентификатор устройства
-- **Роли**: Строгие права доступа по иерархии
-- **Приватность**: Наследуемая система приват/публик
-- **Аудит**: Отслеживание всех изменений с авторством
+### 4️⃣ **Collaboration**
+- Invite users with appropriate role assignments
+- Real-time synchronization across devices
+- Conflict resolution with role-based priority
 
-### 🚫 **Что НЕ отправляется никуда**
-- Структура складов и комнат
-- Списки предметов и их содержимое  
-- Пользовательские данные и роли
-- История изменений
-- Корзина и утилизированные предметы
+## 🔒 Security & Privacy
 
-### ✅ **Опциональные внешние сервисы** 
-- **SMARTIE AI**: Claude/OpenAI для умного помощника (только если пользователь добавит API ключ)
-- **Local LLM**: Подключение к локальной AI модели (LM Studio и др.)
+### 🛡️ **Offline-First Security**
+- **Local storage**: All data in browser localStorage/device storage
+- **No external servers**: Core functionality works completely offline
+- **P2P encryption**: Direct encrypted communication between devices
+- **Role hierarchy**: Strict access control based on user roles
 
-## 🧪 Тестирование функций
+### 🔐 **Data Protection**
+- **Device ID**: Unique cryptographic device identification
+- **Permission inheritance**: Smart public/private data handling
+- **Audit trail**: Complete change history with authorship
+- **Zero external transmission**: Core data never leaves your network
 
-### 🔬 **Встроенный селф-тест**
-1. Нажмите кнопку **TestTube** (фиолетовая) в интерфейсе
-2. Выберите модуль **"P2P & Family Scenarios"**  
-3. Запустите автоматические тесты
-4. Проверьте результаты всех компонентов
+### 🚫 **What stays private**
+- Warehouse and room structure
+- Item lists and inventory details
+- User data and role assignments
+- Change history and audit logs
+- Trash and disposal records
 
-### 🌐 **Интерактивное демо**
-Откройте [`/public/p2pDemo.html`](./public/p2pDemo.html) для симуляции семейных сценариев в браузере
+### ✅ **Optional external services**
+- **AI Assistant**: Claude/OpenAI API (only if you provide API key)
+- **Local LLM**: Connect to local AI models (LM Studio, etc.)
 
-### 📋 **Что тестируется**
+## 🧪 Testing & Validation
+
+### 🔬 **Built-in Self-Test**
+1. Click the **TestTube** button (purple) in the interface
+2. Select **"P2P & Family Scenarios"** test module
+3. Run comprehensive automated tests
+4. Review results for all system components
+
+### 🌐 **Interactive Demo**
+Open [`/public/p2pDemo.html`](./public/p2pDemo.html) for live system simulation
+
+### 📋 **Test Coverage**
 - ✅ Device Identity & User Profiles
-- ✅ Role Assignment & Permissions  
+- ✅ Role Assignment & Permission System
 - ✅ Public/Private Visibility Rules
-- ✅ Conflict Resolution (Master > Admin > Editor)
-- ✅ Sync Batching (10-second debounce)
-- ✅ Trash Management & Restoration
-- ✅ User Ban/Unban System
-- ✅ Family Collaboration Scenarios
+- ✅ Conflict Resolution Algorithms
+- ✅ Sync Batching & Network Protocol
+- ✅ Trash Management & Recovery
+- ✅ User Management System
+- ✅ Multi-user Collaboration Scenarios
 
-## 🎮 Сценарии использования
+## 🎮 Use Cases
 
-### 👨‍👩‍👦 **Семейный сценарий**
+### 🏢 **Office/Team Environment**
 ```
-1. Папа приглашает Маму как Admin в склад "Семейный дом"
-2. Мама приглашает Сына как Editor  
-3. Сын создает предметы в своей комнате (приватные)
-4. Мама создает лекарства в главной спальне (приватные)
-5. Сын НЕ МОЖЕТ видеть лекарства мамы
-6. Папа может видеть ВСЕ как Master
-7. Сын "берет в руки" старую игрушку → попадает в корзину
-8. Папа может восстановить игрушку из корзины
+1. Administrator creates "Office Inventory" warehouse
+2. Creates private "Server Room" for sensitive equipment
+3. Invites team members as Editors for general areas
+4. Tracks equipment, supplies, and shared resources
+5. Maintains security for confidential items
 ```
 
-### 🏢 **Офисный сценарий**
+### 🏠 **Personal/Household Management**
 ```
-1. Админ создает склад "Офис" (публичный)
-2. Создает приватную "Серверную комнату" 
-3. Приглашает сотрудников как Editors
-4. Сотрудники могут создавать предметы в общих зонах
-5. Только Админ имеет доступ к серверной
-```
-
-### 🏠 **Соседский сценарий** 
-```
-1. Семья создает публичный склад "Общий двор"
-2. Приглашает соседей как Guests
-3. Соседи видят публичные инструменты для аренды
-4. НЕ видят приватные семейные вещи
+1. Create "Home" warehouse with room organization
+2. Set private areas for personal items
+3. Share public areas for family collaboration
+4. Track expiry dates for food and medications
+5. Manage household supplies and equipment
 ```
 
-## 🛠️ Сборка и развертывание
+### 🏪 **Small Business Inventory**
+```
+1. Business owner manages main inventory as Master
+2. Employees have Editor access to their departments
+3. Customers/partners get Guest access to public catalogs
+4. Track sales, restocking, and equipment maintenance
+```
 
-### 📦 **Веб-сборка**
+### 🤝 **Community/Shared Spaces**
+```
+1. Community center creates shared tool library
+2. Members get Viewer/Editor access to relevant sections
+3. Track borrowed items and maintenance schedules
+4. Maintain private administrative areas
+```
+
+## 🛠️ Build & Deploy
+
+### 📦 **Web Build**
 ```bash
-npm run build       # Сборка в папку dist/
-npm run preview     # Предпросмотр сборки
+npm run build       # Build to dist/ folder
+npm run preview     # Preview build locally
 ```
 
-### 📱 **Android APK**
+### 📱 **Mobile Build**
 ```bash
-npm run build       # Сборка веб-части
-npx cap copy android # Копирование в Android проект  
-npx cap open android # Открытие в Android Studio
-# Или
-cd android && ./gradlew assembleDebug # Прямая сборка APK
+# Android
+npm run build && npx cap copy android && npx cap open android
+
+# iOS
+npm run build && npx cap copy ios && npx cap open ios
 ```
 
-### 🍎 **iOS App**
+### 🐳 **Docker Deploy**
 ```bash
-npm run build      # Сборка веб-части
-npx cap copy ios   # Копирование в iOS проект
-npx cap open ios   # Открытие в Xcode
+docker build -f docker/Dockerfile -t inventory-os .
+docker run -p 3001:3001 -p 8080:8080 inventory-os
 ```
 
-## 🚀 Дополнительные возможности
+## 🚀 Advanced Features
 
-### 🤖 **SMARTIE AI Помощник**
-- **Claude**: Введите API ключ Anthropic
-- **Local LLM**: Укажите URL локального сервера (например, LM Studio: `http://localhost:1234`)
-- **OpenAI**: Поддержка через совместимый API
+### 🤖 **AI Assistant (SMARTIE)**
+- **Claude Integration**: Natural language inventory management
+- **Local LLM Support**: Privacy-focused AI with local models
+- **Smart Suggestions**: Automated categorization and organization
+- **Voice Commands**: Natural language item operations
 
-### 📊 **Импорт/Экспорт**  
-- **JSON Export**: Кнопка экспорта в шапке
-- **Smart Import**: Разрешение конфликтов ID (новые/перезапись/пропуск)
-- **Backup**: Автоматические бэкапы перед тестированием
+### 📊 **Import/Export System**
+- **JSON Export**: Complete data backup functionality
+- **Smart Import**: Intelligent conflict resolution
+- **Batch Operations**: Bulk item management
+- **Migration Tools**: Easy data transfer between systems
 
-### 🎨 **Персонализация**
-- **Темы**: Множество цветовых схем  
-- **Языки**: Поддержка локализации
-- **Валюты**: Настройка отображения цен
+### 🎨 **Customization**
+- **Multiple Themes**: Dark/light modes with color schemes
+- **Localization**: Multi-language support
+- **Currency Support**: Global currency formatting
+- **Custom Fields**: Extensible item metadata
 
-## 📚 Техническая документация
+## 📚 Technical Documentation
 
-### 🏗️ **Архитектура**
+### 🏗️ **Architecture**
 - **Frontend**: React 18 + TypeScript + Vite
-- **Storage**: localStorage + IndexedDB  
-- **Sync**: Custom P2P protocol with WebRTC
+- **Storage**: localStorage + IndexedDB for offline functionality
+- **Networking**: Custom P2P protocol with WebRTC
 - **Security**: Role-based access control (RBAC)
 
-### 📁 **Структура проекта**
+### 📁 **Project Structure**
 ```
-inventory-os-v2.6/
-├── components/          # React компоненты
-│   ├── WelcomeScreen.tsx       # Экран первого запуска
-│   ├── UserManagementModal.tsx # Управление пользователями
-│   ├── TrashModal.tsx          # Интерфейс корзины
-│   ├── SyncStatusIndicator.tsx # Индикатор синхронизации
-│   └── P2PTestRunner.tsx       # Тестирование P2P
-├── services/           # Бизнес-логика
-│   ├── deviceIdentityService.ts    # Управление устройствами
-│   ├── rolesPermissionService.ts   # Роли и права
-│   ├── syncBatchService.ts         # P2P синхронизация
-│   ├── trashService.ts             # Система корзины
-│   └── selfTestService.ts          # Автотестирование
-├── tests/              # Тестовые сценарии
-└── public/             # Статические файлы
-    └── p2pDemo.html    # Интерактивное демо
+inventory-os/
+├── components/          # React UI components
+│   ├── WelcomeScreen.tsx       # User onboarding
+│   ├── UserManagementModal.tsx # Role management
+│   ├── TrashModal.tsx          # Disposal system
+│   └── P2PTestRunner.tsx       # Network testing
+├── services/           # Business logic layer
+│   ├── deviceIdentityService.ts    # Device management
+│   ├── rolesPermissionService.ts   # Access control
+│   ├── syncBatchService.ts         # P2P synchronization
+│   └── trashService.ts             # Disposal system
+└── tests/              # Automated test suites
 ```
 
-## 🤝 Поддержка
+## 🤝 Support & Documentation
 
-### 📖 **Документация**
-- [Deployment Guide](./DEPLOYMENT.md) - Развертывание
-- [Business Plan](./BUSINESS_PLAN.md) - Бизнес модель  
-- [Privacy Policy](./PRIVACY_POLICY.md) - Политика приватности
+### 📖 **Additional Documentation**
+- [Deployment Guide](./DEPLOYMENT.md) - Complete deployment instructions
+- [Privacy Policy](./PRIVACY_POLICY.md) - Privacy and data protection
 
-### 🐛 **Проблемы и предложения**
-- GitHub Issues: [Создать issue](https://github.com/BlackBadHope/Smart-Warehouse/issues)
-- Обратная связь: Используйте встроенный селф-тест для диагностики
+### 🐛 **Issues & Feedback**
+- GitHub Issues: [Report issues](https://github.com/BlackBadHope/inventory-os/issues)
+- Built-in Diagnostics: Use self-test feature for troubleshooting
 
-### 🔄 **Обновления**
-Приложение автоматически проверяет обновления и уведомляет о новых версиях.
+### 🔄 **Updates**
+Automatic update checking with notification system for new versions.
 
 ---
 
-## 🎯 Следующие шаги
+## 🎯 Getting Started
 
-1. **Установите** приложение (веб/APK/PWA)
-2. **Пройдите** Welcome Screen с вашим никнеймом
-3. **Создайте** первый склад для вашей семьи
-4. **Пригласите** членов семьи с соответствующими ролями
-5. **Протестируйте** P2P функции через селф-тест
-6. **Настройте** приватность для ваших предметов
-7. **Попробуйте** "взять в руки" механизм утилизации
+1. **Install** the application (web/mobile/desktop)
+2. **Complete** the welcome screen setup with your username
+3. **Create** your first warehouse with appropriate privacy settings
+4. **Invite** team members with suitable role assignments
+5. **Test** P2P functionality using the built-in test suite
+6. **Configure** privacy settings for your items and areas
+7. **Explore** the disposal system for item lifecycle management
 
-**Готово к использованию!** 🚀
+**Ready to organize your world!** 🚀
 
 ---
 
-*Inventory OS v2.6 - Семейная система управления инвентарем с полной оффлайн безопасностью и P2P синхронизацией.*
+*Inventory OS v2.6 - Professional inventory management with complete offline privacy and P2P collaboration.*

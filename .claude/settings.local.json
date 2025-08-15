@@ -25,8 +25,16 @@
       "Bash(taskkill:*)",
       "Bash(move \"android\\app\\build\\outputs\\apk\\debug\\app-debug.apk\" \"inventory-os-v2.6-p2p-update.apk\")",
       "Bash(cp:*)",
-      "Bash(git commit:*)"
-    ]
+      "Bash(git commit:*)",
+      "Bash(rm:*)",
+      "Bash(curl:*)",
+      "WebSearch",
+      "Bash(.gradlew assembleDebug)",
+      "Bash(move:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(gradlew:*)"
+    ],
+    "defaultMode": "acceptEdits"
   },
   "dangerouslySkipPermissions": true
 }

@@ -60,9 +60,18 @@ const NetworkManager: React.FC<NetworkManagerProps> = ({ show, onClose }) => {
   const handleInitializeNetwork = async () => {
     setIsInitializing(true);
     try {
-      await networkService.initialize();
+      // Add timeout to prevent infinite initialization
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Network initialization timeout after 60 seconds')), 60000)
+      );
+      
+      await Promise.race([
+        networkService.initialize(),
+        timeoutPromise
+      ]);
     } catch (error) {
       debugService.error('NetworkManager: Failed to initialize network', error);
+    } finally {
       setIsInitializing(false);
     }
   };

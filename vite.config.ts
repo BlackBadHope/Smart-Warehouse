@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => {
       build: {
         target: 'esnext',
         rollupOptions: {
+          external: ['openai', '@google/generative-ai'],
           output: {
             manualChunks: undefined,
           },

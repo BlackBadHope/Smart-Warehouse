@@ -1,12 +1,12 @@
 # Privacy Policy for Inventory OS
 
-**Last updated:** August 10, 2025
+**Last updated:** August 14, 2025
 
 ## Developer Information
 - **App Name:** Inventory OS
 - **Developer:** BlackHope (Ilya Pikalov)
 - **Contact:** dirl2030@gmail.com
-- **Location:** Ukraine
+- **Version:** 2.6.0
 
 ## Data Collection and Storage
 
@@ -24,12 +24,13 @@ Inventory OS stores all your inventory data locally on your device using:
 - Crash reports
 - Any data transmitted to external servers
 
-### Optional Features (If Enabled)
+### Optional External Services (User-Controlled)
 **AI Assistant (SMARTIE):** 
-- If you choose to use the AI features, your inventory data may be sent to Anthropic's Claude API
-- This is optional and only occurs when you actively use AI features
+- If you manually configure AI features by providing your own API keys, inventory data may be sent to AI providers (Anthropic Claude, OpenAI, or local LLM servers)
+- This is completely optional and only occurs when you actively use AI features with your own API configuration
+- No API keys are embedded in the application
 - No data is stored on external servers permanently
-- You can disable AI features at any time
+- You can disable AI features at any time by removing your API configuration
 
 ### Debug Logging
 - Debug logs are stored locally on your device only
@@ -60,4 +61,4 @@ Updates will be distributed through app updates. Continued use constitutes accep
 For privacy concerns: dirl2030@gmail.com
 
 ---
-*This app is developed in Ukraine and complies with international privacy standards including GDPR and CCPA.*
+*Inventory OS is designed with privacy-first principles and complies with international privacy standards including GDPR and CCPA. All core functionality operates offline without external data transmission.*

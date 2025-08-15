@@ -252,7 +252,10 @@ const NetworkStatusModal: React.FC<Props> = ({ show, onClose }) => {
                 {isInitializing ? (
                   <>
                     <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    {status.mode === 'master' ? 'Запуск сервера...' : 'Поиск сервера...'}
+                    {status.mode === 'master' 
+                      ? 'Запуск сервера...' 
+                      : 'Сканирование сети (до 30с)...'
+                    }
                   </>
                 ) : (
                   <>
