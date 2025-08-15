@@ -54,7 +54,12 @@
       "Bash(../flutter/bin/flutter analyze --verbose)",
       "Bash(../flutter/bin/flutter analyze lib/models/warehouse.dart)",
       "Bash(../flutter/bin/flutter analyze lib/services/database_service.dart)",
-      "Bash(../flutter/bin/flutter:*)"
+      "Bash(../flutter/bin/flutter:*)",
+      "Bash(./flutter/bin/flutter doctor)",
+      "Bash(./flutter/bin/flutter analyze)",
+      "Bash(./flutter/bin/flutter build apk --release)",
+      "Bash(./flutter/bin/flutter clean)",
+      "Bash(git add:*)"
     ],
     "defaultMode": "acceptEdits",
     "additionalDirectories": [

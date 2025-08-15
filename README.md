@@ -1,127 +1,173 @@
-# Inventory OS
+# Inventory OS - Professional Inventory Management System
 
-Professional inventory management system with offline-first architecture and device synchronization.
+**Девиз**: "КАТАЛОГИЗИРУЙ ВСЕЛЕННУЮ"
 
-## Features
+Professional inventory management system with offline-first architecture and P2P synchronization. Built for scale from personal use to enterprise systems with 100-100,000 users.
+
+## 🚀 Current Status
+
+**Version**: 2.6.0  
+**Platform**: Flutter + dart:io HttpServer  
+**Development Status**: ~80% complete  
+**Architecture**: LocalSend-inspired P2P system  
+
+## ⚡ Key Features
 
 ### Core Functionality
-- **Multi-level organization**: Warehouses → Rooms → Shelves → Items
-- **Offline-first**: Works without internet connection
-- **Multi-currency support**: Global currency conversion
-- **Multi-language**: English, Ukrainian, Spanish, and more
-- **Item management**: Add, edit, delete with custom properties
-- **Search & filtering**: Advanced item search with tags
-- **Visual interface**: Clean, responsive UI
+- **Multi-level Organization**: Warehouses → Rooms → Containers → Items
+- **Offline-First**: SQLite database with local storage
+- **P2P Synchronization**: Real-time device discovery and data sync
+- **QR Code Integration**: Device pairing and item management
+- **Role-Based Access**: Admin/User permissions with conflict resolution
 
-### Data Management
-- **Import/Export**: JSON, CSV data portability
-- **Backup system**: Local data backup and restore
-- **Trash management**: Soft delete with recovery
-- **User profiles**: Multiple user support with role management
-- **Encryption**: Optional data encryption for sensitive data
+### Architecture Highlights
+- **Cross-Platform**: Android, iOS, Desktop, Web support
+- **Device Discovery**: mDNS multicast discovery (LocalSend-style)
+- **HTTP API**: dart:io server on port 53317
+- **Data Sync**: CRDT + Role-based hybrid approach
+- **Security Ready**: WiFi control and GPS geofencing (Phase 2)
 
-### AI Integration
-- **Smart recommendations**: AI-powered item suggestions
-- **Multiple AI providers**: Claude, OpenAI, Local LLM support
-- **Chat interface**: Natural language inventory queries
-- **Barcode scanning**: Product identification and auto-population
+## 🛠 Technical Stack
 
-### Synchronization
-- **P2P networking**: Direct device-to-device sync
-- **QR code pairing**: Simple device connection
-- **Network discovery**: Automatic device detection
-- **Conflict resolution**: Smart merge of simultaneous changes
+```yaml
+Framework: Flutter ^3.6.0
+Database: SQLite (sqflite ^2.3.0)
+Networking: dart:io + HTTP ^1.2.2
+P2P Discovery: multicast_dns ^0.3.2
+QR Scanning: mobile_scanner ^4.0.1
+State Management: Built-in + shared_preferences
+```
 
-## Development Status
+## 📱 Recent Bug Fixes (August 2025)
 
-### Current Platform
-- **Frontend**: React + TypeScript + Vite
-- **Mobile**: Capacitor for Android/iOS
-- **State**: localStorage with offline-first design
+1. **Item Addition**: Fixed `_loadItems()` call after item creation
+2. **QR Scanning**: Implemented full `QRScannerScreen` with mobile_scanner
+3. **Data Clearing**: Added proper `clearAllData()` in storage provider  
+4. **Navigation**: Fixed all screen transitions and routing
+5. **UI Terminology**: Updated "Shelf" → "Container" throughout
 
-### Migration to Flutter
-Currently migrating to Flutter platform for:
-- Native HTTP server capabilities (dart:io)
-- Better P2P networking (multicast_dns)
-- Improved mobile performance
-- Single codebase for all platforms
+## 🏗 Installation & Setup
 
-## Technical Architecture
+### Prerequisites
+- Flutter SDK ^3.6.0
+- Android Studio / VS Code
+- Git
 
-### Current Issues
-**Problem**: Capacitor cannot create native HTTP servers on mobile platforms, limiting P2P functionality.
+### Quick Start
+```bash
+# Clone repository
+git clone [repository-url]
+cd inventory-os-v2.6
 
-**Solution**: Migration to Flutter following LocalSend's proven architecture:
-- `dart:io HttpServer` for native networking
-- `multicast_dns` for device discovery
-- Cross-platform mobile compilation
+# Install dependencies
+flutter pub get
 
-### P2P Implementation Evolution
-1. `simpleP2PService.ts` - BroadcastChannel attempt
-2. `simpleQRP2PService.ts` - WebRTC without STUN
-3. `localSendStyleService.ts` - Service Worker simulation
-4. `nativeLocalSendService.ts` - Capacitor HTTP attempt (current)
+# Run on Android
+flutter run
 
-## Future Development Plans
+# Build APK
+flutter build apk --release
+```
 
-### Phase 1: Platform Migration
-- Migrate to Flutter for native mobile capabilities
-- Implement LocalSend-style P2P networking
-- Maintain feature parity with current version
+### P2P Network Setup
+The app automatically:
+1. Starts HTTP server on port 53317
+2. Broadcasts device availability via mDNS
+3. Discovers nearby devices
+4. Enables QR code pairing
 
-### Phase 2: Enhanced Intelligence
-- Improved AI integration for inventory suggestions
-- Smart home device connectivity
-- IoT sensor integration for automatic tracking
+## 📊 Development Roadmap
 
-### Phase 3: Scalability
-- Cloud synchronization options
-- Enterprise deployment capabilities
+### Phase 1 (Current - 80% Complete)
+- ✅ Core inventory management
+- ✅ P2P networking foundation  
+- ✅ Offline-first architecture
+- ✅ QR code integration
+- 🔄 Production testing & optimization
+
+### Phase 2: Enterprise Features
+- Multi-currency & multi-language UI
+- Location-based access control (GPS geofencing)
 - Advanced analytics and reporting
+- Import/Export (JSON, CSV)
 
-### Phase 4: Advanced Interfaces
-- Voice control integration
-- AR/VR inventory visualization
-- Advanced automation features
+### Phase 3: AI Integration
+- SMARTIE assistant (Claude, OpenAI, Local LLM)
+- Chat interface for inventory queries
+- Smart recommendations and auto-categorization
 
-## Installation
+### Phase 4: IoT & Advanced
+- Barcode scanning integration
+- IoT device connectivity
+- AR/VR interfaces
+- Enterprise scalability
 
-### Android APK
-Download latest release: `inventory-os-v2.6-native-localsend.apk`
+## 🔒 Security Architecture
 
-### Web Version
-```bash
-npm install
-npm run dev
+### Item Locking System
+```
+AVAILABLE → LOCKED → PHANTOM → TRASH (15min) → DELETE (24h)
 ```
 
-### Building
-```bash
-npm run build
-npx cap copy
-cd android && ./gradlew assembleDebug
+### Access Control (Phase 2)
+```dart
+// WiFi Control
+allowedSSIDs: ["Office-WiFi", "Home"]
+allowOffline: boolean
+gracePeriod: 15 // minutes
+
+// GPS Geofencing  
+latitude: 50.4501
+longitude: 30.5234
+radius: 100 // meters
 ```
 
-## Development Philosophy
+## 🌍 Language Policy
 
-**Core Principle**: Study existing solutions before building custom ones.
+- **Priority**: Ukrainian (support during war)
+- **Russian**: Technical tool only, not priority
+- **English**: International market expansion
 
-When facing the P2P networking challenge:
-- ❌ Wrong approach: "How to make Capacitor work?"
-- ✅ Right approach: "How does LocalSend solve this?"
-- **Result**: Platform migration to Flutter
+## 📋 Project Philosophy
 
-This principle saves weeks of development time and leads to more robust solutions.
+> "Правильные решения уже придуманы кем-то" - study existing solutions instead of reinventing the wheel.
 
-## License
+### Core Principles
+- Study LocalSend → proven P2P architecture
+- Flutter + dart:io → cross-platform native performance  
+- CRDT + Role-based → conflict resolution
+- Professional positioning → enterprise-ready
 
-MIT License - see LICENSE file for details.
+### Critical Lessons Learned
+- ❌ Theoretical solutions without proven analogs
+- ❌ WebRTC for simple tasks (overcomplicated)
+- ❌ "Family app" positioning (limits scale)
+- ✅ Analyze successful projects (LocalSend model)
+- ✅ Choose mature platforms (Flutter ecosystem)
+- ✅ Professional presentation (enterprise market)
 
-## Contributing
+## 🚀 Deployment
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+### Mobile App Stores
+- **Google Play**: $25 developer registration
+- **iOS App Store**: $99/year Apple Developer Program  
+- **Requirement**: 100% functionality before store submission
 
-For major changes, please open an issue first to discuss what you would like to change.
+### APK Naming Convention
+- ✅ Semantic versioning: `inventory-os-v2.6.0.apk`
+- ❌ Descriptive names: `inventory-os-v2.6-flutter-FULL-WORKING.apk`
+
+## 🤝 Contributing
+
+This is a professional inventory management system in active development. The project prioritizes:
+
+1. **Proven Architecture**: Based on successful P2P implementations
+2. **Cross-Platform**: Flutter for maximum compatibility
+3. **Enterprise Ready**: Designed for 100-100,000 user scale
+4. **Production Quality**: 100% functionality target before release
+
+---
+
+**Target Market**: Personal to Enterprise inventory management  
+**Deployment Goal**: Google Play & iOS App Store  
+**Development Status**: Pre-production testing phase
