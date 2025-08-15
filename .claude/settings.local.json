@@ -1,5 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "importantContext": [
+    ".claude/development-context.md"
+  ],
   "permissions": {
     "allow": [
       "Bash(echo $env:USERPROFILE)",
@@ -32,7 +35,13 @@
       "Bash(.gradlew assembleDebug)",
       "Bash(move:*)",
       "WebFetch(domain:github.com)",
-      "Bash(gradlew:*)"
+      "Bash(gradlew:*)",
+      "Bash(pkill:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npm uninstall:*)",
+      "Bash(flutter:*)",
+      "Bash(либо поймем почему никто так не делает\"\n\nПрименение принципа:\n- Задача: P2P между Android устройствами\n- Неверный вопрос: \"Как заставить Capacitor работать?\"\n- Верный вопрос: \"Как это сделал LocalSend?\"\n- Решение: Flutter + dart:io HttpServer\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)"
     ],
     "defaultMode": "acceptEdits"
   },
